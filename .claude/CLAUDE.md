@@ -4,14 +4,30 @@
 This is an ongoing project with an active execution plan. **DO NOT start from scratch.**
 Read the plan file and memory file, then continue from where we left off.
 
-- **Execution Plan**: `C:\Users\arkariz\.claude\plans\prancy-herding-pascal.md`
-- **Memory/Progress**: See auto-memory MEMORY.md
+- **Progress Overview**: `.claude/PROGRESS.md` (high-level status)
+- **Execution Plan**: `.claude/plans/execution-plan.md` (full plan)
+- **Task List**: `.claude/tasks/task-list.md` (current tasks)
+- **Memory/Context**: `.claude/memory/MEMORY.md` (agent context)
 
 ## Current Progress
-- Phase 1 Step 1 (Analyzer) — DONE
-- Phase 1 Step 2 (Planner: Design enhanced docs) — IN PROGRESS ← RESUME HERE
-- Phase 1 Step 3-4 — Pending
-- Phase 2-4 — Pending
+- Phase 1 — DONE (Documentation complete, essential docs only)
+- Phase 2 Step 5-6 — DONE (Analyzer extracted 86 files, Project scaffolded)
+- Phase 2 Step 7 — NEXT: QA Validation (flutter pub get) ← RESUME HERE
+- Phase 2 Step 8 — Pending (Port core infrastructure)
+- Phases 3-4 — Pending
+
+## Agent Onboarding Protocol
+
+**CRITICAL FOR ALL SPAWNED AGENTS:**
+Every agent spawned for this project MUST read `.claude/AGENT_CONTEXT.md` BEFORE starting any work.
+This master context file contains essential project information, architecture rules, and constraints.
+
+**Reading Order for Agents:**
+1. `.claude/AGENT_CONTEXT.md` (MASTER - always first)
+2. `.claude/agents/task-{N}-{role}-brief.md` (Task-specific briefing)
+3. Additional docs listed in the briefing
+
+Lead agent: When spawning any agent, explicitly include this reading order in the prompt.
 
 ## Agent Team Workflow
 Use specialized role-based agents via Task tool:

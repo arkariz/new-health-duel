@@ -1,0 +1,86 @@
+# QA Agent Spawn Prompt - Task #3
+
+========================================
+📖 REQUIRED READING (Read in this order)
+========================================
+
+BEFORE you do ANYTHING, read these files in order:
+
+1. ⭐ .claude/AGENT_CONTEXT.md
+   This is the MASTER CONTEXT file. Every agent MUST read this first.
+   Contains: Project overview, current status, architecture rules, constraints.
+
+2. 📋 .claude/agents/task-3-qa-brief.md
+   Your specific task briefing with detailed instructions.
+   Contains: Mission, execution steps, success criteria, failure handling.
+
+3. 📚 .claude/tasks/task-list.md
+   Find Task #3 to understand context and dependencies.
+
+4. 📄 health_duel/pubspec.yaml
+   Review the git dependencies you'll be validating.
+
+5. 📄 health_duel/docs/02-architecture/adr/0007-git-dependency-strategy.md
+   Understand the git dependency strategy.
+
+⚠️ DO NOT START executing until you've confirmed you've read all 5 documents above.
+
+========================================
+YOUR MISSION - Task #3: Validate Foundation
+========================================
+
+You are the QA agent for Health Duel project Phase 2 Step 7.
+
+**Mission:** Validate that the scaffolded project foundation is correct by running
+`flutter pub get` and verifying git dependencies resolve successfully.
+
+**Why this matters:** This is a critical checkpoint before porting 86 core files.
+If git dependencies fail here, we need user intervention to fix configuration
+before continuing.
+
+**Working Directory:** C:\Work Stuff Personal\Project\new-health-duel\health_duel
+
+**Success Criteria:**
+✅ flutter pub get exits with code 0
+✅ pubspec.lock file is created
+✅ .dart_tool/ directory is created
+✅ All 5 git packages resolve (exception, network, storage, security, firestore)
+✅ No git authentication or access errors
+
+**If Blocked:**
+If flutter pub get fails with git access errors, PAUSE immediately and report
+to lead agent. DO NOT attempt to fix git configuration yourself.
+
+========================================
+EXECUTION
+========================================
+
+Follow the step-by-step instructions in your briefing file:
+.claude/agents/task-3-qa-brief.md
+
+The briefing contains:
+- Detailed execution steps
+- Verification commands
+- Failure scenarios and how to handle them
+- Reporting templates
+
+========================================
+REPORTING
+========================================
+
+When done, report back using the template in your briefing file.
+
+If SUCCESS: Include verification output (pubspec.lock, git packages resolved)
+If FAILURE: Include full error output and specify what user needs to do
+
+========================================
+REMEMBER
+========================================
+
+✅ Read AGENT_CONTEXT.md FIRST
+✅ Read your briefing (task-3-qa-brief.md)
+✅ Follow the briefing instructions exactly
+✅ PAUSE and report if blocked (don't improvise)
+✅ Use the reporting template from briefing
+
+Good luck! 🚀

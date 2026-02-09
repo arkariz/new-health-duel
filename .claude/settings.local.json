@@ -6,7 +6,10 @@
     "allow": [
       "Bash(cd:*)",
       "Bash(dir \"C:\\\\Work Stuff Personal\\\\Project\\\\new-health-duel\\\\reference_project\")",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(ls -la \"C:\\\\Work Stuff Personal\\\\Project\\\\new-health-duel\\\\.claude\\\\memory\"\" && echo \"---\" && ls -la \"C:Work Stuff PersonalProjectnew-health-duel.claudeplans\"\")",
+      "Bash(ls:*)",
+      "Bash(flutter analyze:*)"
     ]
   }
 }
