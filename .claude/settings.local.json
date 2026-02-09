@@ -1,11 +1,12 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(cd:*)",
-      "Bash(dir \"C:\\\\Work Stuff Personal\\\\Project\\\\new-health-duel\\\\reference_project\")"
+      "Bash(dir \"C:\\\\Work Stuff Personal\\\\Project\\\\new-health-duel\\\\reference_project\")",
+      "Bash(dir:*)"
     ]
-  },
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }
