@@ -1,150 +1,177 @@
-/// Common form validators
+import 'package:health_duel/data/session/domain/value_objects/display_name.dart';
+import 'package:health_duel/data/session/domain/value_objects/email.dart';
+import 'package:health_duel/data/session/domain/value_objects/password.dart';
+
+/// Form validators that delegate to domain value objects.
 ///
-/// All validators return null if valid, or error message if invalid.
-/// Use with Flutter's Form/TextFormField validator parameter.
+/// This ensures single source of truth - business logic lives in domain,
+/// presentation layer just wraps for form validation UI feedback.
 ///
 /// Usage:
 /// ```dart
-/// TextFormField(
+/// ValidatedTextField(
+///   label: 'Email',
 ///   validator: FormValidators.email,
-/// )
-///
-/// // Combine multiple validators
-/// TextFormField(
-///   validator: (value) => FormValidators.combine(value, [
-///     FormValidators.required,
-///     FormValidators.email,
-///   ]),
 /// )
 /// ```
 class FormValidators {
-  FormValidators._();
+  FormValidators._(); // Prevent instantiation
 
-  /// Validates required field
-  static String? required(String? value, {String? fieldName}) {
-    if (value == null || value.trim().isEmpty) {
-      return fieldName != null ? 'Please enter $fieldName' : 'This field is required';
-    }
-    return null;
-  }
-
-  /// Validates email format
+  /// Email validation - delegates to [Email] value object.
+  ///
+  /// Returns error message or null if valid.
+  ///
+  /// Business rules (from Email VO):
+  /// - Cannot be empty
+  /// - Must be valid format (RFC 5322)
+  /// - Maximum 255 characters
   static String? email(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter email';
+      return 'Please enter email'; // User-friendly message
     }
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) {
-      return 'Please enter a valid email';
+
+    try {
+      Email(value); // Domain validates here
+      return null; // Valid
+    } on ArgumentError catch (e) {
+      return e.message; // Return domain error
     }
-    return null;
   }
 
-  /// Validates password minimum length
-  static String? password(String? value, {int minLength = 6}) {
+  /// Display name validation - delegates to [DisplayName] value object.
+  ///
+  /// Returns error message or null if valid.
+  ///
+  /// Business rules (from DisplayName VO):
+  /// - Cannot be empty or whitespace
+  /// - Minimum 2 characters
+  /// - Maximum 100 characters
+  static String? displayName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter password';
+      return 'Name is required';
     }
-    if (value.length < minLength) {
-      return 'Password must be at least $minLength characters';
+
+    try {
+      DisplayName(value);
+      return null;
+    } on ArgumentError catch (e) {
+      return e.message;
     }
-    return null;
   }
 
-  /// Validates password strength (uppercase, lowercase, number)
-  static String? passwordStrength(String? value) {
+  /// Password validation - delegates to [Password] value object.
+  ///
+  /// Returns error message or null if valid.
+  ///
+  /// Business rules (from Password VO):
+  /// - Cannot be empty
+  /// - Minimum 6 characters
+  /// - Maximum 128 characters
+  ///
+  /// For stronger validation (uppercase, lowercase, numbers, special chars),
+  /// use [strongPassword] instead.
+  static String? password(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter password';
+      return 'Please enter password'; // User-friendly message
     }
-    if (value.length < 8) {
-      return 'Password must be at least 8 characters';
+
+    try {
+      Password(value); // Domain validates here
+      return null;
+    } on ArgumentError catch (e) {
+      return e.message;
     }
-    if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      return 'Password must contain uppercase letter';
-    }
-    if (!RegExp(r'[a-z]').hasMatch(value)) {
-      return 'Password must contain lowercase letter';
-    }
-    if (!RegExp(r'[0-9]').hasMatch(value)) {
-      return 'Password must contain a number';
-    }
-    return null;
   }
 
-  /// Validates password confirmation matches
-  static String? confirmPassword(String? value, String password) {
+  /// Strong password validation - delegates to [Password.strong] factory.
+  ///
+  /// Use this for registration or password changes.
+  /// Use [password] for login (less strict).
+  ///
+  /// Returns error message or null if valid.
+  ///
+  /// Business rules (from Password.strong):
+  /// - Minimum 8 characters
+  /// - Maximum 128 characters
+  /// - At least one uppercase letter
+  /// - At least one lowercase letter
+  /// - At least one number
+  /// - At least one special character (!@#$%^&*...)
+  static String? strongPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please confirm password';
+      return 'Password is required';
     }
-    if (value != password) {
+
+    try {
+      Password.strong(value); // Strong validation
+      return null;
+    } on ArgumentError catch (e) {
+      return e.message;
+    }
+  }
+
+  /// Password confirmation validation.
+  ///
+  /// Checks that confirmation matches the original password.
+  static String? passwordConfirmation(String? value, String? originalPassword) {
+    if (value == null || value.isEmpty) {
+      return 'Please confirm your password';
+    }
+    if (value != originalPassword) {
       return 'Passwords do not match';
     }
     return null;
   }
 
-  /// Validates minimum length
-  static String? minLength(String? value, int min, {String? fieldName}) {
-    if (value == null || value.length < min) {
-      return '${fieldName ?? 'Field'} must be at least $min characters';
+  /// Required field validation.
+  ///
+  /// Generic validator for any required text field.
+  static String? required(String? value, {String? fieldName}) {
+    if (value == null || value.trim().isEmpty) {
+      return '${fieldName ?? 'This field'} is required';
     }
     return null;
   }
 
-  /// Validates maximum length
+  /// Minimum length validation.
+  static String? minLength(String? value, int min, {String? fieldName}) {
+    if (value == null || value.isEmpty) {
+      return '${fieldName ?? 'This field'} is required';
+    }
+    if (value.length < min) {
+      return '${fieldName ?? 'This field'} must be at least $min characters';
+    }
+    return null;
+  }
+
+  /// Maximum length validation.
   static String? maxLength(String? value, int max, {String? fieldName}) {
     if (value != null && value.length > max) {
-      return '${fieldName ?? 'Field'} must be at most $max characters';
+      return '${fieldName ?? 'This field'} cannot exceed $max characters';
     }
     return null;
   }
 
-  /// Validates phone number (basic international format)
-  static String? phone(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter phone number';
-    }
-    final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
-    if (!phoneRegex.hasMatch(value.replaceAll(RegExp(r'[\s\-\(\)]'), ''))) {
-      return 'Please enter a valid phone number';
-    }
-    return null;
+  /// Combine multiple validators.
+  ///
+  /// Runs validators in order, returns first error found.
+  ///
+  /// Example:
+  /// ```dart
+  /// validator: FormValidators.combine([
+  ///   FormValidators.required,
+  ///   FormValidators.email,
+  /// ]),
+  /// ```
+  static String? Function(String?) combine(
+    List<String? Function(String?)> validators,
+  ) {
+    return (value) {
+      for (final validator in validators) {
+        final error = validator(value);
+        if (error != null) return error;
+      }
+      return null;
+    };
   }
-
-  /// Validates numeric input only
-  static String? numeric(String? value, {String? fieldName}) {
-    if (value == null || value.isEmpty) {
-      return null; // Use with required() if needed
-    }
-    if (double.tryParse(value) == null) {
-      return '${fieldName ?? 'Field'} must be a number';
-    }
-    return null;
-  }
-
-  /// Combines multiple validators - stops at first error
-  static String? combine(String? value, List<String? Function(String?)> validators) {
-    for (final validator in validators) {
-      final error = validator(value);
-      if (error != null) return error;
-    }
-    return null;
-  }
-}
-
-/// Extension on String for quick validation checks
-extension StringValidation on String {
-  /// Check if string is valid email format
-  bool get isValidEmail => FormValidators.email(this) == null;
-
-  /// Check if string meets basic password requirements (6+ chars)
-  bool get isValidPassword => FormValidators.password(this) == null;
-
-  /// Check if string meets strong password requirements
-  bool get isStrongPassword => FormValidators.passwordStrength(this) == null;
-
-  /// Check if string is valid phone number
-  bool get isValidPhone => FormValidators.phone(this) == null;
-
-  /// Check if string is numeric
-  bool get isNumeric => double.tryParse(this) != null;
 }
