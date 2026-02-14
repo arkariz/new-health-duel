@@ -7,6 +7,7 @@ import 'package:health_duel/data/session/di/session_module.dart';
 import 'package:health_duel/features/auth/di/auth_module.dart';
 import 'package:health_duel/core/config/firebase_options.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:health_duel/features/duel/di/duel_module.dart';
 import 'package:health_duel/features/health/di/health_module.dart';
 import 'package:health_duel/features/home/di/home_module.dart';
 
@@ -53,14 +54,16 @@ Future<void> initializeDependencies() async {
   // Home feature: HomeBloc (depends on auth use cases)
   registerHomeModule(getIt);
 
-  // Health feature: step counting, health permissions (Phase 4)
+  // Health feature: step counting, health permissions
   registerHealthModule(getIt);
+
+  // Duel feature: duel management, step competitions (Phase 4)
+  registerDuelModule();
 
   // 3. Register Router (needs AuthBloc for redirect logic)
   _registerRouter();
 
   // TODO: Future phases - Register additional feature modules
-  // registerDuelsModule();
   // registerProfileModule();
 }
 

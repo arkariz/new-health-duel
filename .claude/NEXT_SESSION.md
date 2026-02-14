@@ -42,8 +42,38 @@
 - ✅ GetIt DI + GoRouter navigation
 - ✅ Firebase Auth + Firestore backend
 
-### Resume Command
-Say: **"lanjut ke Phase 4"** atau **"build Duel feature"**
+### Current Work: Phase 4 Domain Layer
+
+**Design:** ✅ COMPLETED (saved to `.claude/designs/phase-4-duel-architecture.md`)
+**Next:** Implement domain layer (~15 files)
+
+### Files to Create:
+1. Value Objects (5):
+   - duel_id.dart
+   - user_id.dart
+   - step_count.dart
+   - duel_status.dart
+   - duel_result.dart
+
+2. Entity (1):
+   - duel.dart (rich domain model)
+
+3. Repository (1):
+   - duel_repository.dart (interface)
+
+4. Use Cases (9):
+   - create_duel.dart
+   - accept_duel.dart
+   - decline_duel.dart
+   - update_step_count.dart
+   - get_active_duels.dart
+   - get_pending_duels.dart
+   - get_duel_history.dart
+   - watch_duel.dart
+   - sync_health_data.dart
+
+## Resume Command
+Say: **"lanjut implement domain"** atau **"continue"**
 
 ### Current Codebase Stats
 - **Total Files:** 164 Dart files
