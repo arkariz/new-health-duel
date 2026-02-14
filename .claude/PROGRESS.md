@@ -182,6 +182,38 @@
 
 ---
 
+## 🚀 Phase 4: Build Duel Feature (IN PROGRESS)
+
+### Architecture Design ✅
+**Status:** COMPLETED
+**Planner Agent:** af181d6
+**Design Doc:** `.claude/designs/phase-4-duel-architecture.md`
+
+**Scope Designed:**
+- Domain layer: Duel entity (rich model with 15+ business methods)
+- Value objects: DuelId, UserId, StepCount, DuelStatus, DuelResult
+- 9 Use cases: Create, Accept, Decline, Update, Watch, Sync, Get lists
+- Repository interface
+- Firestore schema + indexes
+- Data layer: DTOs, data sources, repository impl
+- Presentation: DuelBloc (EffectBloc), 4 screens, 4+ widgets
+- Real-time sync strategy (3-layered: Firestore + Health + Countdown)
+
+### Domain Layer Implementation ✅
+**Status:** COMPLETED
+**Files Created:** 18 files (15.4k tokens used)
+
+**Completed:**
+- ✅ Value objects (6 files): DuelId, UserId, StepCount, DuelStatus, DuelResult + barrel
+- ✅ Duel entity (1 file): Rich domain model with 17 business methods
+- ✅ Repository interface (1 file): 11 methods (CRUD + real-time)
+- ✅ Use cases (9 files): Create, Accept, Decline, Update, Get lists, Watch, Sync
+- ✅ Domain barrel export (1 file)
+
+**Token Usage:** ~16k tokens
+
+---
+
 ## 📁 Project Structure
 
 ```
