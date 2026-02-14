@@ -9,7 +9,11 @@
       "Bash(dir:*)",
       "Bash(ls -la \"C:\\\\Work Stuff Personal\\\\Project\\\\new-health-duel\\\\.claude\\\\memory\"\" && echo \"---\" && ls -la \"C:Work Stuff PersonalProjectnew-health-duel.claudeplans\"\")",
       "Bash(ls:*)",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter build:*)",
+      "Bash(flutter test:*)",
+      "WebSearch"
     ]
   }
 }

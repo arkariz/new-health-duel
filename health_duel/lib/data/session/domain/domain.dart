@@ -1,13 +1,13 @@
 /// Session Domain Layer Exports
 ///
 /// Provides shared domain contracts for cross-feature usage:
-/// - [User] entity for user identity
+/// - [AuthCredentials] entity for authentication input validation
 /// - [SessionRepository] interface for session management
 /// - [SignOut] use case
 library;
 
 // Entities
-export 'entities/user.dart';
+export 'entities/auth_credentials.dart';
 
 // Repositories
 export 'repositories/session_repository.dart';

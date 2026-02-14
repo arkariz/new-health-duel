@@ -77,11 +77,11 @@ class MockConnectivityCubit extends MockCubit<ConnectivityStatus>
 /// ```
 void registerFallbackValues() {
   // Auth
-  registerFallbackValue(Right<Failure, User>(FakeUser()));
-  registerFallbackValue(const Right<Failure, User?>(null));
+  registerFallbackValue(Right<Failure, UserModel>(FakeUserModel()));
+  registerFallbackValue(const Right<Failure, UserModel?>(null));
   registerFallbackValue(const Right<Failure, void>(null));
   registerFallbackValue(
-    const Left<Failure, User>(AuthFailure(message: 'test')),
+    const Left<Failure, UserModel>(AuthFailure(message: 'test')),
   );
 
   // Auth Events
@@ -96,8 +96,8 @@ void registerFallbackValues() {
   registerFallbackValue(const AuthInitial());
 }
 
-/// Fake User for fallback registration
-class FakeUser extends Fake implements User {}
+/// Fake UserModel for fallback registration
+class FakeUserModel extends Fake implements UserModel {}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Auth Mock Setup Helpers

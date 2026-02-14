@@ -15,7 +15,7 @@ class RegisterWithEmail {
   ///
   /// Creates Firebase Auth account and Firestore user document.
   ///
-  /// Validation is performed by User entity value objects (Email, DisplayName).
+  /// Validation is performed by AuthCredentials value objects (Email, DisplayName).
   /// This use case catches [ArgumentError] and converts to [ValidationFailure].
   ///
   /// Returns [UserModel] on success or [Failure] on error.
@@ -31,15 +31,19 @@ class RegisterWithEmail {
     required String name,
   }) async {
     try {
-      // Create user entity - validation happens here via value objects
+      // Create auth credentials - validation happens here via value objects
       // Throws ArgumentError if validation fails
-      final user = User.register(email: email, password: password, name: name);
+      final credentials = AuthCredentials.forRegister(
+        email: email,
+        password: password,
+        name: name,
+      );
 
       // Delegate to repository with validated values
       final result = await repository.registerWithEmail(
-        email: user.email.value, // Extract string from Email value object
-        password: user.password.value, // Extract string from Password value object
-        name: user.name.value, // Extract string from DisplayName value object
+        email: credentials.email.value, // Extract string from Email value object
+        password: credentials.password.value, // Extract string from Password value object
+        name: credentials.name.value, // Extract string from DisplayName value object
       );
 
       // Manual entity creation from DTO (ADR-006)

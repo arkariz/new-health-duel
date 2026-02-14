@@ -14,9 +14,9 @@ class SignInWithEmail {
 
   /// Execute sign in with email and password
   ///
-  /// Returns [User] on success or [Failure] on error.
+  /// Returns [UserModel] on success or [Failure] on error.
   ///
-  /// Validation is performed by User entity value objects (Email, DisplayName).
+  /// Validation is performed by AuthCredentials value objects (Email, Password).
   /// This use case catches [ArgumentError] and converts to [ValidationFailure].
   ///
   /// Possible failures:
@@ -28,14 +28,17 @@ class SignInWithEmail {
     required String password,
   }) async {
     try {
-      // Create user entity - validation happens here via value objects
+      // Create auth credentials - validation happens here via value objects
       // Throws ArgumentError if validation fails
-      final user = User.login(email: email, password: password);
+      final credentials = AuthCredentials.forLogin(
+        email: email,
+        password: password,
+      );
 
       // Delegate to repository with validated values
       final result = await repository.signInWithEmail(
-        email: user.email.value, // Extract string from Email value object
-        password: user.password.value, // Extract string from Password value object
+        email: credentials.email.value, // Extract string from Email value object
+        password: credentials.password.value, // Extract string from Password value object
       );
       return result;
     } on ArgumentError catch (e) {
