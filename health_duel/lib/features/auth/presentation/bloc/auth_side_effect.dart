@@ -6,10 +6,10 @@ extension AuthSideEffect on AuthBloc {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /// Navigate to home page after successful authentication
-  NavigateGoEffect get _effectNavigateToHome => NavigateGoEffect(route: '/home');
+  NavigateGoEffect get _effectNavigateToHome => NavigateGoEffect(route: AppRoutes.home);
 
   /// Navigate to login page after sign out
-  NavigateGoEffect get _effectNavigateToLogin => NavigateGoEffect(route: '/login');
+  NavigateGoEffect get _effectNavigateToLogin => NavigateGoEffect(route: AppRoutes.login);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SNACKBAR EFFECTS

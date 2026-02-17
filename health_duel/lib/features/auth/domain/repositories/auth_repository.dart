@@ -38,11 +38,6 @@ abstract class AuthRepository {
     required String name,
   });
 
-  /// Sign out current user
-  ///
-  /// Clears Firebase Auth session and local cache.
-  Future<Either<Failure, void>> signOut();
-
   /// Stream of authentication state changes
   ///
   /// Emits UserModel on sign in, null on sign out.

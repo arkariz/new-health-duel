@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_duel/core/presentation/widgets/widgets.dart';
+import 'package:health_duel/core/router/router.dart';
 import 'package:health_duel/core/theme/theme.dart';
 
 /// Login form with validation
@@ -111,7 +112,7 @@ class LoginForm extends StatelessWidget {
                     style: theme.textTheme.bodyMedium,
                   ),
                   TextButton(
-                    onPressed: () => context.push('/register'),
+                    onPressed: () => context.push(AppRoutes.register),
                     child: const Text('Register'),
                   ),
                 ],

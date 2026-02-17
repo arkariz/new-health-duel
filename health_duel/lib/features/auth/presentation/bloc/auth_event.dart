@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:health_duel/data/session/data/models/user_model.dart';
 
 /// Auth Events - User actions and triggers
 sealed class AuthEvent extends Equatable {
@@ -60,7 +61,7 @@ class AuthSignOutRequested extends AuthEvent {
 
 /// Auth state changed (from stream)
 class AuthStateChanged extends AuthEvent {
-  final dynamic user;
+  final UserModel? user;
 
   const AuthStateChanged(this.user);
 

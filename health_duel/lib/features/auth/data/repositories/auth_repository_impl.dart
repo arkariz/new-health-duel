@@ -102,23 +102,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> signOut() async {
-    try {
-      await _remoteDataSource.signOut();
-      return const Right(null);
-    } on CoreException catch (e) {
-      return Left(ExceptionMapper.toFailure(e));
-    } catch (e) {
-      return Left(
-        UnexpectedFailure(
-          message: 'An unexpected error occurred during sign out',
-          originalException: e.toString(),
-        ),
-      );
-    }
-  }
-
-  @override
   Stream<UserModel?> authStateChanges() {
     // Stream returns UserModel? directly without Either wrapper
     // Errors in stream are handled by Firebase and logged

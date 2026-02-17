@@ -27,35 +27,35 @@ class LoginLoadingView extends StatelessWidget {
       child: SingleChildScrollView(
         child: ConstrainedContent(
           maxWidth: 480,
-          child: Shimmer(
-            child: SkeletonBuilder(
-              padding: EdgeInsets.all(context.horizontalPadding),
-              crossAxisAlignment: CrossAxisAlignment.center,
-            )
-                // Logo skeleton
-                .addCircle(size: iconSize)
-                .addGap(16)
-                .addText(width: 150, height: 32)
-                .addGap(8)
-                .addText(width: 220)
-                .addGap(headerGap)
-                // Form skeleton (2 fields)
-                .addBox(height: 56)
-                .addGap(16)
-                .addBox(height: 56)
-                .addGap(24)
-                // Loading indicator
-                .addWidget(const CircularProgressIndicator())
-                .addGap(16)
-                .addWidget(
-                  Text(
-                    message ?? 'Loading...',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurface.withAlpha((255 * 0.6).round()),
-                    ),
-                  ),
+          child: Column(
+            children: [
+              Shimmer(
+                child: SkeletonBuilder(
+                  padding: EdgeInsets.all(context.horizontalPadding),
+                  crossAxisAlignment: CrossAxisAlignment.center,
                 )
-                .build(),
+                    // Logo skeleton
+                    .addCircle(size: iconSize)
+                    .addGap(16)
+                    .addText(width: 150, height: 32)
+                    .addGap(8)
+                    .addText(width: 220)
+                    .addGap(headerGap)
+                    // Form skeleton (2 fields)
+                    .addBox(height: 56)
+                    .addGap(16)
+                    .addBox(height: 56)
+                    .addGap(24)
+                    // Loading indicator
+                    .addWidget(const CircularProgressIndicator())
+                    .addGap(16)
+                    .build(),
+              ),
+              Text(
+                message ?? 'Loading...',
+                style: theme.textTheme.bodyLarge
+              ),
+            ],
           ),
         ),
       ),

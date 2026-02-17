@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_duel/core/router/router.dart';
 import 'package:health_duel/features/auth/domain/repositories/auth_repository.dart';
 import 'package:health_duel/features/auth/domain/usecases/register_with_email.dart';
 import 'package:health_duel/features/auth/domain/usecases/sign_in_with_apple.dart';
@@ -180,8 +181,12 @@ class AuthBloc extends EffectBloc<AuthEvent, AuthState> {
   }
 
   /// Handle auth state changes from Firebase stream
+  ///
+  /// Uses deduplication to prevent redundant state emissions:
+  /// - Skip if already authenticated as the same user (avoids unnecessary rebuilds)
+  /// - Skip if already unauthenticated (avoids duplicate signout effects)
   void _onAuthStateChanged(AuthStateChanged event, Emitter<AuthState> emit) {
-    final userModel = event.user as UserModel?;
+    final userModel = event.user;
 
     if (userModel != null) {
       // Only emit if not already authenticated with this user
