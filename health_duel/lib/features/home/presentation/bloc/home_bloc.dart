@@ -5,6 +5,8 @@ import 'package:health_duel/data/session/domain/domain.dart';
 import 'package:health_duel/features/home/presentation/bloc/home_event.dart';
 import 'package:health_duel/features/home/presentation/bloc/home_state.dart';
 
+part 'home_side_effect.dart';
+
 /// Home Bloc - Manages home screen state
 ///
 /// Uses Pattern A: Single State with Clear Partitioning
@@ -45,7 +47,7 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
         state.copyWith(
           status: HomeStatus.failure,
           errorMessage: failure.message,
-          effect: ShowSnackBarEffect(message: failure.message, severity: FeedbackSeverity.error),
+          effect: _effectError(failure.message),
         ),
       ),
       (user) {
@@ -57,7 +59,7 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
             state.copyWith(
               status: HomeStatus.failure,
               errorMessage: 'Not authenticated',
-              effect: NavigateGoEffect(route: AppRoutes.login),
+              effect: _effectNavigateToLogin,
             ),
           );
         }
@@ -75,11 +77,11 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
       (failure) => emit(
         state.copyWith(
           status: HomeStatus.loaded, // Stay on loaded state
-          effect: ShowSnackBarEffect(message: failure.message, severity: FeedbackSeverity.error),
+          effect: _effectError(failure.message),
         ),
       ),
       (_) => emit(
-        state.copyWith(status: HomeStatus.initial, clearUser: true, effect: NavigateGoEffect(route: AppRoutes.login)),
+        state.copyWith(status: HomeStatus.initial, clearUser: true, effect: _effectNavigateToLogin),
       ),
     );
   }
@@ -92,10 +94,7 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
     result.fold(
       (failure) => emit(
         state.copyWith(
-          effect: ShowSnackBarEffect(
-            message: 'Failed to refresh: ${failure.message}',
-            severity: FeedbackSeverity.warning,
-          ),
+          effect: _effectRefreshError(failure.message),
         ),
       ),
       (user) {
@@ -108,6 +107,6 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
 
   /// Navigate to health feature
   void _onNavigateToHealthRequested(HomeNavigateToHealthRequested event, Emitter<HomeState> emit) {
-    emit(state.withEffect(NavigatePushEffect(route: AppRoutes.health)));
+    emit(state.withEffect(_effectNavigateToHealth));
   }
 }
