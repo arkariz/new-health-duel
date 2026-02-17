@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
+import 'package:health_duel/core/router/router.dart';
 import 'package:health_duel/data/session/domain/domain.dart';
 import 'package:health_duel/features/home/presentation/bloc/home_event.dart';
 import 'package:health_duel/features/home/presentation/bloc/home_state.dart';
@@ -56,7 +57,7 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
             state.copyWith(
               status: HomeStatus.failure,
               errorMessage: 'Not authenticated',
-              effect: NavigateGoEffect(route: '/login'),
+              effect: NavigateGoEffect(route: AppRoutes.login),
             ),
           );
         }
@@ -78,7 +79,7 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
         ),
       ),
       (_) => emit(
-        state.copyWith(status: HomeStatus.initial, clearUser: true, effect: NavigateGoEffect(route: '/login')),
+        state.copyWith(status: HomeStatus.initial, clearUser: true, effect: NavigateGoEffect(route: AppRoutes.login)),
       ),
     );
   }
@@ -107,6 +108,6 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
 
   /// Navigate to health feature
   void _onNavigateToHealthRequested(HomeNavigateToHealthRequested event, Emitter<HomeState> emit) {
-    emit(state.withEffect(NavigatePushEffect(route: '/health')));
+    emit(state.withEffect(NavigatePushEffect(route: AppRoutes.health)));
   }
 }

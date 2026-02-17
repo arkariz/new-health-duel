@@ -183,7 +183,7 @@ class _AuthenticatedView extends StatelessWidget {
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: context.horizontalPadding, vertical: 24),
+        padding: EdgeInsets.symmetric(horizontal: context.horizontalPadding, vertical: AppSpacing.lg),
         child: ConstrainedContent(
           maxWidth: 600,
           padding: EdgeInsets.zero,
@@ -278,7 +278,7 @@ class _AuthenticatedView extends StatelessWidget {
                 Text('User Details', style: theme.textTheme.titleLarge),
               ],
             ),
-            const Divider(height: 24),
+            const Divider(height: AppSpacing.lg),
             _buildDetailRow(context, 'ID', user.id),
             _buildDetailRow(context, 'Display Name', user.name),
             _buildDetailRow(context, 'Created', _formatDate(user.createdAt)),
@@ -290,6 +290,7 @@ class _AuthenticatedView extends StatelessWidget {
   }
 
   Widget _buildDetailRow(BuildContext context, String label, String value) {
+    final theme = Theme.of(context);
     final labelWidth = context.responsiveValue(phone: 100.0, tablet: 120.0, desktop: 140.0);
 
     return Padding(
@@ -297,8 +298,11 @@ class _AuthenticatedView extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: labelWidth, child: Text('$label:', style: const TextStyle(fontWeight: FontWeight.bold))),
-          Expanded(child: Text(value, overflow: TextOverflow.ellipsis, maxLines: 2)),
+          SizedBox(
+            width: labelWidth,
+            child: Text('$label:', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+          ),
+          Expanded(child: Text(value, style: theme.textTheme.bodyMedium, overflow: TextOverflow.ellipsis, maxLines: 2)),
         ],
       ),
     );
@@ -328,19 +332,18 @@ class _AuthenticatedView extends StatelessWidget {
               children: [
                 Text(
                   'Connected!',
-                  style: TextStyle(
-                    color: successColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: context.responsiveValue(phone: 14.0, tablet: 16.0),
-                  ),
+                  style: context.responsiveValue(
+                    phone: theme.textTheme.titleSmall,
+                    tablet: theme.textTheme.titleMedium,
+                  )?.copyWith(color: successColor, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   'Auth + Firestore bootstrap successful.',
-                  style: TextStyle(
-                    color: successColor.withAlpha((255 * 0.8).round()),
-                    fontSize: context.responsiveValue(phone: 12.0, tablet: 14.0),
-                  ),
+                  style: context.responsiveValue(
+                    phone: theme.textTheme.bodySmall,
+                    tablet: theme.textTheme.bodyMedium,
+                  )?.copyWith(color: successColor.withAlpha((255 * 0.8).round())),
                 ),
               ],
             ),
