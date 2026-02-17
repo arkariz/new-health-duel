@@ -105,7 +105,12 @@ class RegisterForm extends StatelessWidget {
               FilledButton(
                 onPressed: onRegister,
                 style: FilledButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 52),
+                  foregroundColor: const Color(0xFF060A0E),
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.xlBorder,
+                  ),
                 ),
                 child: const Text('Create Account'),
               ),
@@ -125,38 +130,66 @@ class RegisterForm extends StatelessWidget {
   }
 }
 
-/// Header with icon and title
+/// Header with sports-energy icon and title
 class _RegisterHeader extends StatelessWidget {
   const _RegisterHeader();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Column(
       children: [
-        Icon(
-          Icons.person_add_outlined,
-          size: context.responsiveValue(phone: 64.0, tablet: 80.0, desktop: 96.0),
-          color: theme.colorScheme.primary,
+        // Small ALL-CAPS brand tag
+        Text(
+          'CREATE ACCOUNT',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.primary,
+            letterSpacing: 3,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: AppSpacing.md),
-        Text(
-          'Join Health Duel',
-          style: context
-              .responsiveValue(
-                phone: theme.textTheme.headlineMedium,
-                tablet: theme.textTheme.headlineLarge,
-                desktop: theme.textTheme.displaySmall,
-              )
-              ?.copyWith(fontWeight: FontWeight.bold),
+
+        // Icon with green glow effect
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: theme.colorScheme.primary.withValues(alpha: 0.12),
+            border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            ),
+          ),
+          child: Icon(
+            Icons.person_add_outlined,
+            size: 36,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+
+        // Headline with green highlight
+        RichText(
           textAlign: TextAlign.center,
+          text: TextSpan(
+            style: theme.textTheme.headlineSmall,
+            children: [
+              const TextSpan(text: 'Join '),
+              TextSpan(
+                text: 'Health Duel',
+                style: TextStyle(color: theme.colorScheme.primary),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: AppSpacing.sm),
+
+        // Subtitle
         Text(
           'Create an account to start challenging friends',
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+            color: theme.colorScheme.onSurfaceVariant,
           ),
           textAlign: TextAlign.center,
         ),
@@ -176,7 +209,7 @@ class _TermsHint extends StatelessWidget {
     return Text(
       'By creating an account, you agree to our Terms of Service and Privacy Policy',
       style: theme.textTheme.bodySmall?.copyWith(
-        color: theme.colorScheme.onSurface.withAlpha((255 * 0.5).round()),
+        color: theme.colorScheme.onSurfaceVariant,
       ),
       textAlign: TextAlign.center,
     );

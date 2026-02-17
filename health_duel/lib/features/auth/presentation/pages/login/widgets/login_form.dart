@@ -82,7 +82,12 @@ class LoginForm extends StatelessWidget {
               FilledButton(
                 onPressed: onSignIn,
                 style: FilledButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 52),
+                  foregroundColor: const Color(0xFF060A0E),
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.xlBorder,
+                  ),
                 ),
                 child: const Text('Sign In'),
               ),
@@ -98,7 +103,12 @@ class LoginForm extends StatelessWidget {
                 icon: const Icon(Icons.g_mobiledata, size: 24),
                 label: const Text('Continue with Google'),
                 style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 52),
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  side: BorderSide(color: Theme.of(context).colorScheme.outline),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.xlBorder,
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
@@ -130,7 +140,7 @@ class LoginForm extends StatelessWidget {
   }
 }
 
-/// Login header with logo and title
+/// Login header with sports-energy illustration
 class _LoginHeader extends StatelessWidget {
   const _LoginHeader({required this.theme});
 
@@ -140,34 +150,119 @@ class _LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(
-          Icons.fitness_center,
-          size: context.responsiveValue(
-            phone: 64.0,
-            tablet: 80.0,
-            desktop: 96.0,
+        // Small ALL-CAPS brand tag
+        Text(
+          'HEALTH DUEL',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.primary,
+            letterSpacing: 3,
+            fontWeight: FontWeight.w700,
           ),
-          color: theme.colorScheme.primary,
         ),
         const SizedBox(height: AppSpacing.md),
-        Text(
-          'Health Duel',
-          style: context
-              .responsiveValue(
-                phone: theme.textTheme.headlineMedium,
-                tablet: theme.textTheme.headlineLarge,
-                desktop: theme.textTheme.displaySmall,
-              )
-              ?.copyWith(fontWeight: FontWeight.bold),
+
+        // Duel avatars illustration
+        const _DuelAvatars(),
+        const SizedBox(height: AppSpacing.md),
+
+        // Headline with green highlight
+        RichText(
           textAlign: TextAlign.center,
+          text: TextSpan(
+            style: theme.textTheme.headlineMedium,
+            children: [
+              const TextSpan(text: 'Challenge Your\nFriends to '),
+              TextSpan(
+                text: 'Stay Active',
+                style: TextStyle(color: theme.colorScheme.primary),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: AppSpacing.sm),
+
+        // Subtitle
         Text(
-          'Challenge your friends to stay active!',
+          '24-hour step-count duels. May the best stepper win.',
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+            color: theme.colorScheme.onSurfaceVariant,
           ),
           textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+/// Duel avatars side-by-side with VS badge
+class _DuelAvatars extends StatelessWidget {
+  const _DuelAvatars();
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final opponent = context.appColors.opponent;
+    final gold = context.appColors.gold;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // You — green avatar
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [primary, const Color(0xFF00A872)],
+            ),
+          ),
+          child: const Center(
+            child: Text('\u{1F3C3}', style: TextStyle(fontSize: 22)),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+
+        // VS badge
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.xs,
+          ),
+          decoration: BoxDecoration(
+            color: gold.withValues(alpha: 0.15),
+            borderRadius: AppRadius.smBorder,
+            border: Border.all(color: gold.withValues(alpha: 0.3)),
+          ),
+          child: Text(
+            'VS',
+            style: TextStyle(
+              fontFamily: 'Syne',
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: gold,
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+
+        // Opponent — orange avatar
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [opponent, const Color(0xFFCC4410)],
+            ),
+          ),
+          child: const Center(
+            child: Text('\u{1F3C3}', style: TextStyle(fontSize: 22)),
+          ),
         ),
       ],
     );
@@ -190,7 +285,7 @@ class _OrDivider extends StatelessWidget {
           child: Text(
             'or',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withAlpha((255 * 0.5).round()),
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ),

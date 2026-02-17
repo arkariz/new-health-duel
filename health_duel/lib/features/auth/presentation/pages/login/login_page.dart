@@ -53,32 +53,70 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Column(
+      body: Stack(
         children: [
-          // Offline banner at top
-          const AnimatedOfflineBanner(),
-
-          // Main content with EffectListener
-          Expanded(
-            child: EffectListener<AuthBloc, AuthState>(
-              child: BlocBuilder<AuthBloc, AuthState>(
-                buildWhen: (prev, curr) => prev.runtimeType != curr.runtimeType || (prev is AuthLoading && curr is AuthLoading && prev.message != curr.message),
-                builder: (context, state) {
-                  // Show skeleton during loading
-                  if (state is AuthLoading) {
-                    return LoginLoadingView(message: state.message);
-                  }
-
-                  return LoginForm(
-                    formKey: _formKey,
-                    emailController: _emailController,
-                    passwordController: _passwordController,
-                    onSignIn: _signIn,
-                    onSignInWithGoogle: _signInWithGoogle,
-                  );
-                },
+          // Ambient radial gradient — green glow at top-right
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0.6, -0.8),
+                  radius: 0.8,
+                  colors: [
+                    const Color(0xFF00E5A0).withValues(alpha: 0.08),
+                    Colors.transparent,
+                  ],
+                ),
               ),
+            ),
+          ),
+
+          // Ambient radial gradient — subtle blue glow at bottom-left
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(-0.6, 0.9),
+                  radius: 0.6,
+                  colors: [
+                    const Color(0xFF38B6FF).withValues(alpha: 0.04),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Content
+          SafeArea(
+            child: Column(
+              children: [
+                // Offline banner at top
+                const AnimatedOfflineBanner(),
+
+                // Main content with EffectListener
+                Expanded(
+                  child: EffectListener<AuthBloc, AuthState>(
+                    child: BlocBuilder<AuthBloc, AuthState>(
+                      buildWhen: (prev, curr) => prev.runtimeType != curr.runtimeType || (prev is AuthLoading && curr is AuthLoading && prev.message != curr.message),
+                      builder: (context, state) {
+                        // Show skeleton during loading
+                        if (state is AuthLoading) {
+                          return LoginLoadingView(message: state.message);
+                        }
+
+                        return LoginForm(
+                          formKey: _formKey,
+                          emailController: _emailController,
+                          passwordController: _passwordController,
+                          onSignIn: _signIn,
+                          onSignInWithGoogle: _signInWithGoogle,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
