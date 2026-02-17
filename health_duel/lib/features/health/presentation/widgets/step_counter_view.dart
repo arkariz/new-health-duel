@@ -221,7 +221,7 @@ class _GoalIndicator extends StatelessWidget {
         color: isAchieved
             ? theme.colorScheme.primaryContainer
             : theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderRadius: AppRadius.lgBorder,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -262,7 +262,7 @@ class _ManualEntryBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: theme.colorScheme.tertiaryContainer,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: AppRadius.mdBorder,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
