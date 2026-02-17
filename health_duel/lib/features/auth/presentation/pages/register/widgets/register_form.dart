@@ -27,7 +27,7 @@ class RegisterForm extends StatelessWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: context.horizontalPadding,
-        vertical: 24,
+        vertical: AppSpacing.lg,
       ),
       child: ConstrainedContent(
         maxWidth: 480,

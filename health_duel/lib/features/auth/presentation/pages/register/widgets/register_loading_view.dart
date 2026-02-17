@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_duel/core/presentation/widgets/widgets.dart';
+import 'package:health_duel/core/theme/theme.dart';
 
 /// Loading view with skeleton for register page
 ///
@@ -27,39 +28,39 @@ class RegisterLoadingView extends StatelessWidget {
       child: SingleChildScrollView(
         child: ConstrainedContent(
           maxWidth: 480,
-          child: Shimmer(
-            child: SkeletonBuilder(
-              padding: EdgeInsets.all(context.horizontalPadding),
-              crossAxisAlignment: CrossAxisAlignment.center,
-            )
-                // Icon skeleton
-                .addCircle(size: iconSize)
-                .addGap(16)
-                .addText(width: 180, height: 32)
-                .addGap(8)
-                .addText(width: 240)
-                .addGap(headerGap)
-                // Form skeleton (4 fields)
-                .addBox(height: 56)
-                .addGap(16)
-                .addBox(height: 56)
-                .addGap(16)
-                .addBox(height: 56)
-                .addGap(16)
-                .addBox(height: 56)
-                .addGap(24)
-                // Loading indicator
-                .addWidget(const CircularProgressIndicator())
-                .addGap(16)
-                .addWidget(
-                  Text(
-                    message ?? 'Creating your account...',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurface.withAlpha((255 * 0.6).round()),
-                    ),
-                  ),
+          child: Column(
+            children: [
+              Shimmer(
+                child: SkeletonBuilder(
+                  padding: EdgeInsets.all(context.horizontalPadding),
+                  crossAxisAlignment: CrossAxisAlignment.center,
                 )
-                .build(),
+                    // Icon skeleton
+                    .addCircle(size: iconSize)
+                    .addGap(AppSpacing.md)
+                    .addText(width: 180, height: 32)
+                    .addGap(AppSpacing.sm)
+                    .addText(width: 240)
+                    .addGap(headerGap)
+                    // Form skeleton (4 fields)
+                    .addBox(height: 56)
+                    .addGap(AppSpacing.md)
+                    .addBox(height: 56)
+                    .addGap(AppSpacing.md)
+                    .addBox(height: 56)
+                    .addGap(AppSpacing.md)
+                    .addBox(height: 56)
+                    .addGap(AppSpacing.lg)
+                    // Loading indicator
+                    .addWidget(const CircularProgressIndicator())
+                    .addGap(AppSpacing.md)
+                    .build(),
+              ),
+              Text(
+                message ?? 'Creating your account...',
+                style: theme.textTheme.bodyLarge,
+              ),
+            ],
           ),
         ),
       ),

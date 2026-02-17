@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_duel/core/presentation/widgets/widgets.dart';
+import 'package:health_duel/core/theme/theme.dart';
 
 /// Loading view with skeleton for login page
 ///
@@ -36,19 +37,19 @@ class LoginLoadingView extends StatelessWidget {
                 )
                     // Logo skeleton
                     .addCircle(size: iconSize)
-                    .addGap(16)
+                    .addGap(AppSpacing.md)
                     .addText(width: 150, height: 32)
-                    .addGap(8)
+                    .addGap(AppSpacing.sm)
                     .addText(width: 220)
                     .addGap(headerGap)
                     // Form skeleton (2 fields)
                     .addBox(height: 56)
-                    .addGap(16)
+                    .addGap(AppSpacing.md)
                     .addBox(height: 56)
-                    .addGap(24)
+                    .addGap(AppSpacing.lg)
                     // Loading indicator
                     .addWidget(const CircularProgressIndicator())
-                    .addGap(16)
+                    .addGap(AppSpacing.md)
                     .build(),
               ),
               Text(
