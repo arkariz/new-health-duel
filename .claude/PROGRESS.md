@@ -1,7 +1,7 @@
 # Health Duel - Project Progress
 
-**Last Updated:** 2026-02-14 21:00
-**Current Phase:** Phase 4 - Build Duel Feature (FULLY COMPLETED ✅)
+**Last Updated:** 2026-02-17
+**Current Phase:** Phase 5 - UI Redesign (IN PROGRESS 🎨)
 
 ---
 
@@ -11,6 +11,8 @@
 - ✅ **Phase 2:** Project Foundation & Core Port (COMPLETED & APPROVED)
 - ✅ **Phase 3:** Port Features (Auth, Home, Health) - COMPLETED ✅
 - ✅ **Phase 4:** Build Duel Feature - COMPLETED ✅
+- ✅ **Phase 4.5:** Auth Cleanup & Optimization - COMPLETED ✅
+- 🎨 **Phase 5:** UI Redesign (IN PROGRESS — Step 1/4 done)
 
 ---
 
@@ -394,11 +396,88 @@ new-health-duel/
 
 ---
 
+---
+
+## 🔧 Phase 4.5: Auth Cleanup & Optimization (COMPLETED ✅)
+
+**Date:** 2026-02-17
+**Commit:** `6aee88a refactor(auth): clean up and optimize auth feature`
+**Trigger:** Manual changes by user (outside plan), held plan phases
+
+### Changes Applied
+
+| Fix | File | Category |
+|-----|------|----------|
+| Remove `signOut()` from `AuthRepository` | `auth_repository.dart`, `auth_repository_impl.dart` | Architecture |
+| Delete `AuthGuard` widget | `auth_guard.dart` (deleted) | Cleanup |
+| Remove `AuthGuard` export | `auth.dart` | Cleanup |
+| `AuthStateChanged.user`: `dynamic` → `UserModel?` | `auth_event.dart` | Type Safety |
+| Remove defensive cast | `auth_bloc.dart` | Type Safety |
+| Add deduplication comment | `auth_bloc.dart` | Documentation |
+| Use `AppRoutes.*` constants | `auth_side_effect.dart`, `login_form.dart` | Convention |
+| Refactor `LoginLoadingView` UI | `login_loading_view.dart` | UI Fix |
+
+### Architecture Notes
+- `signOut()` moved from `AuthRepository` → handled via `SessionRepository` / `SignOut` use case
+- `AuthGuard` removed → navigation/redirect logic handled by GoRouter redirect callback
+- All route strings now use `AppRoutes` constants
+
+### Verification
+- ✅ `flutter analyze`: 1 pre-existing info (HTML in doc comment)
+- ✅ `flutter test`: 42/42 PASSED
+- ✅ Build: No new errors
+
+---
+
+## 🎨 Phase 5: UI Redesign (IN PROGRESS)
+
+**Reference:** `health-duel-mockup.html` (sports-energy dark theme)
+**Approach:** Incremental — tokens first, then screen by screen
+**Theme:** Both Light + Dark maintained
+
+### Design System Decisions
+| Decision | Value |
+|----------|-------|
+| Primary (dark) | `#00E5A0` Brand Green |
+| Primary (light) | `#00A87A` Accessible Green |
+| Opponent color | `#FF6B35` Orange (new token) |
+| Gold color | `#FFC94A` Trophy/Crown (new token) |
+| Error | `#FF4D6A` |
+| Dark BG | `#080C10` |
+| Dark Surface | `#0E1318` |
+| Dark Card | `#141B22` |
+| Dark Border | `#1E2A34` |
+| Font Display | Syne (display*/headline*/titleLarge) |
+| Font Body | DM Sans (body*/label*/titleMedium/Small) |
+
+### Step 1 — Design Tokens ✅ DONE
+- `app_colors_extension.dart`: Added `opponent` + `gold`; updated all dark values
+- `app_theme.dart`: New color constants, dark ColorScheme, Syne+DM Sans typography
+- `flutter analyze`: 6 pre-existing info only (0 new errors)
+- Commit: pending
+
+### Step 2 — Auth Screens 🔲 TODO
+- Login: green CTA button, Syne heading, dark bg
+- Register: same treatment
+
+### Step 3 — Home Screen 🔲 TODO
+- Steps hero card (large Syne number, progress bar with glow dot)
+- Active duel card (battle bar split green/orange)
+- Quick actions 2-col grid
+- Bottom navigation bar (new widget)
+
+### Step 4 — Duel Screens 🔲 TODO
+- Active Duel: arena card, battle bar split, ambient glow, stats chips, activity feed
+- Duel Result: trophy float, confetti, winner/loser cards, rematch button
+- Duel List + Create: card redesign
+
+---
+
 ## 🎯 Next Session Actions
 
-1. **Resume from:** Task #3 (QA Validation)
-2. **Command:** Say "lanjut" or "continue"
-3. **Expected:** Spawn QA agent → flutter pub get → validate git deps
+1. **Current state:** Phase 5 Step 1 (design tokens) DONE — commit pending
+2. **Next:** Step 2 — Auth Screen redesign
+3. **Command:** Say "lanjut" to continue with auth screens
 
 ---
 

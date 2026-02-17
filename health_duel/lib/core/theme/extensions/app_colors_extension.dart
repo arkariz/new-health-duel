@@ -23,6 +23,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.success,
     required this.warning,
     required this.info,
+    required this.opponent,
+    required this.gold,
     required this.cardBackground,
     required this.subtleBackground,
     required this.divider,
@@ -38,6 +40,12 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 
   /// Info color (blue) - informational messages
   final Color info;
+
+  /// Opponent color (orange) — duel opponent, competitor states, timer urgency
+  final Color opponent;
+
+  /// Gold color — VS badge, crown, trophy, achievements
+  final Color gold;
 
   /// Card background - elevated surfaces
   final Color cardBackground;
@@ -56,9 +64,11 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 
   /// Light theme colors
   static const light = AppColorsExtension(
-    success: Color(0xFF10B981), // Emerald 500
-    warning: Color(0xFFF59E0B), // Amber 500
-    info: Color(0xFF3B82F6), // Blue 500
+    success: Color(0xFF00A87A),      // Brand Green (WCAG AA on white)
+    warning: Color(0xFFF59E0B),      // Amber 500
+    info: Color(0xFF0E89C4),         // Blue (accessible on white)
+    opponent: Color(0xFFE85A24),     // Orange (accessible on white)
+    gold: Color(0xFFD4A020),         // Gold (accessible on white)
     cardBackground: Color(0xFFFFFFFF),
     subtleBackground: Color(0xFFF3F4F6), // Gray 100
     divider: Color(0xFFE5E7EB), // Gray 200
@@ -66,16 +76,18 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     shimmerHighlight: Color(0xFFF9FAFB),
   );
 
-  /// Dark theme colors
+  /// Dark theme colors (Mockup Design System — sports-energy palette)
   static const dark = AppColorsExtension(
-    success: Color(0xFF34D399), // Emerald 400
-    warning: Color(0xFFFBBF24), // Amber 400
-    info: Color(0xFF60A5FA), // Blue 400
-    cardBackground: Color(0xFF1F2937), // Gray 800
-    subtleBackground: Color(0xFF374151), // Gray 700
-    divider: Color(0xFF4B5563), // Gray 600
-    shimmerBase: Color(0xFF374151),
-    shimmerHighlight: Color(0xFF4B5563),
+    success: Color(0xFF00E5A0),      // Brand Green #00E5A0
+    warning: Color(0xFFFBBF24),      // Amber 400
+    info: Color(0xFF38B6FF),         // Blue #38B6FF
+    opponent: Color(0xFFFF6B35),     // Orange #FF6B35
+    gold: Color(0xFFFFC94A),         // Gold #FFC94A
+    cardBackground: Color(0xFF141B22),   // --card
+    subtleBackground: Color(0xFF0E1318), // --surface
+    divider: Color(0xFF1E2A34),         // --border
+    shimmerBase: Color(0xFF1E2A34),
+    shimmerHighlight: Color(0xFF263544),
   );
 
   @override
@@ -83,6 +95,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? success,
     Color? warning,
     Color? info,
+    Color? opponent,
+    Color? gold,
     Color? cardBackground,
     Color? subtleBackground,
     Color? divider,
@@ -93,6 +107,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       success: success ?? this.success,
       warning: warning ?? this.warning,
       info: info ?? this.info,
+      opponent: opponent ?? this.opponent,
+      gold: gold ?? this.gold,
       cardBackground: cardBackground ?? this.cardBackground,
       subtleBackground: subtleBackground ?? this.subtleBackground,
       divider: divider ?? this.divider,
@@ -108,6 +124,8 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       success: Color.lerp(success, other.success, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
       info: Color.lerp(info, other.info, t)!,
+      opponent: Color.lerp(opponent, other.opponent, t)!,
+      gold: Color.lerp(gold, other.gold, t)!,
       cardBackground: Color.lerp(cardBackground, other.cardBackground, t)!,
       subtleBackground: Color.lerp(subtleBackground, other.subtleBackground, t)!,
       divider: Color.lerp(divider, other.divider, t)!,

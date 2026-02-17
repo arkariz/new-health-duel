@@ -7,44 +7,87 @@ import 'tokens/tokens.dart';
 /// Application Theme Configuration
 ///
 /// Provides centralized theme management for Light and Dark modes.
-/// Uses Google Fonts (Inter) for consistent typography.
+/// Typography: Syne (display/headline/titleLarge) + DM Sans (body/label/title sm/md)
+///
+/// Color palette matches the sports-energy mockup design system:
+/// - Primary: #00E5A0 (brand green, dark) / #00A87A (light, WCAG AA)
+/// - Opponent: #FF6B35 (orange — via AppColorsExtension)
+/// - Gold: #FFC94A (trophy/crown — via AppColorsExtension)
 class AppTheme {
   AppTheme._(); // Private constructor
 
-  // Brand Colors
-  static const Color primaryColor = Color(0xFF6366F1); // Indigo
-  static const Color secondaryColor = Color(0xFF8B5CF6); // Purple
-  static const Color accentColor = Color(0xFF10B981); // Emerald
-  static const Color errorColor = Color(0xFFEF4444); // Red
-  static const Color warningColor = Color(0xFFF59E0B); // Amber
-  static const Color successColor = Color(0xFF10B981); // Emerald
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BRAND COLORS
+  // ═══════════════════════════════════════════════════════════════════════════
 
-  // Light Mode Colors
+  /// Brand green — light mode (WCAG AA accessible on white)
+  static const Color _primaryLight = Color(0xFF00A87A);
+
+  /// Brand green — dark mode (sports-energy palette)
+  static const Color _primaryDark = Color(0xFF00E5A0);
+
+  /// Secondary blue — light mode
+  static const Color _secondaryLight = Color(0xFF0E89C4);
+
+  /// Secondary blue — dark mode (#38B6FF from mockup)
+  static const Color _secondaryDark = Color(0xFF38B6FF);
+
+  /// Error/danger red (#FF4D6A from mockup)
+  static const Color errorColor = Color(0xFFFF4D6A);
+
+  /// Warning amber (unchanged)
+  static const Color warningColor = Color(0xFFF59E0B);
+
+  /// Public alias for backward compat (= light primary)
+  static const Color primaryColor = _primaryLight;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LIGHT MODE BACKGROUNDS
+  // ═══════════════════════════════════════════════════════════════════════════
+
   static const Color lightBackground = Color(0xFFFAFAFA);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightOnSurface = Color(0xFF1F2937);
-  static const Color lightOnSurfaceVariant = Color(0xFF6B7280);
+  static const Color lightOnSurface = Color(0xFF1A2B3C);
+  static const Color lightOnSurfaceVariant = Color(0xFF4A6275);
 
-  // Dark Mode Colors
-  static const Color darkBackground = Color(0xFF111827);
-  static const Color darkSurface = Color(0xFF1F2937);
-  static const Color darkOnSurface = Color(0xFFF9FAFB);
-  static const Color darkOnSurfaceVariant = Color(0xFF9CA3AF);
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DARK MODE BACKGROUNDS (Mockup Design System)
+  // ═══════════════════════════════════════════════════════════════════════════
 
-  /// Light Theme Configuration
+  /// Main scaffold background (--bg: #080c10)
+  static const Color darkBackground = Color(0xFF080C10);
+
+  /// Surface / input fill (--surface: #0e1318)
+  static const Color darkSurface = Color(0xFF0E1318);
+
+  /// Primary text color (--text: #e8f0f5)
+  static const Color darkOnSurface = Color(0xFFE8F0F5);
+
+  /// Secondary / subtitle text (--sub: #7a95a8)
+  static const Color darkOnSurfaceVariant = Color(0xFF7A95A8);
+
+  /// Border / separator (--border: #1e2a34)
+  static const Color darkOutline = Color(0xFF1E2A34);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LIGHT THEME
+  // ═══════════════════════════════════════════════════════════════════════════
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: const ColorScheme.light(
-        primary: primaryColor,
-        secondary: secondaryColor,
+        primary: _primaryLight,
+        secondary: _secondaryLight,
         surface: lightSurface,
         error: errorColor,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: lightOnSurface,
+        onSurfaceVariant: lightOnSurfaceVariant,
         onError: Colors.white,
+        outline: Color(0xFFE5E7EB),
       ),
       scaffoldBackgroundColor: lightBackground,
 
@@ -52,24 +95,24 @@ class AppTheme {
       extensions: const <ThemeExtension<dynamic>>[
         AppColorsExtension.light,
       ],
-      
-      // Typography
+
+      // Typography: Syne (display/headline/title) + DM Sans (body/label)
       textTheme: _buildTextTheme(lightOnSurface),
-      
-      // AppBar Theme
+
+      // AppBar
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
         backgroundColor: lightSurface,
         foregroundColor: lightOnSurface,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.syne(
           fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: lightOnSurface,
         ),
       ),
-      
-      // Card Theme
+
+      // Card
       cardTheme: CardTheme(
         elevation: 1,
         shape: RoundedRectangleBorder(
@@ -77,8 +120,8 @@ class AppTheme {
         ),
         color: lightSurface,
       ),
-      
-      // Input Theme
+
+      // Input
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: lightSurface,
@@ -92,7 +135,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.lgBorder,
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+          borderSide: const BorderSide(color: _primaryLight, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: AppRadius.lgBorder,
@@ -103,8 +146,8 @@ class AppTheme {
           vertical: AppSpacing.md,
         ),
       ),
-      
-      // Button Themes
+
+      // Buttons
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
@@ -115,7 +158,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.lgBorder,
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -131,7 +174,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.lgBorder,
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -147,21 +190,21 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.lgBorder,
           ),
-          side: const BorderSide(color: primaryColor),
-          textStyle: GoogleFonts.inter(
+          side: const BorderSide(color: _primaryLight),
+          textStyle: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
 
-      // Floating Action Button
+      // FAB
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         elevation: 2,
-        backgroundColor: primaryColor,
+        backgroundColor: _primaryLight,
         foregroundColor: Colors.white,
       ),
-      
+
       // Divider
       dividerTheme: const DividerThemeData(
         color: Color(0xFFE5E7EB),
@@ -171,20 +214,25 @@ class AppTheme {
     );
   }
 
-  /// Dark Theme Configuration
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DARK THEME
+  // ═══════════════════════════════════════════════════════════════════════════
+
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(
-        primary: primaryColor,
-        secondary: secondaryColor,
+        primary: _primaryDark,
+        secondary: _secondaryDark,
         surface: darkSurface,
         error: errorColor,
-        onPrimary: Colors.white,
+        onPrimary: Color(0xFF060A0E), // Near-black on bright green (mockup style)
         onSecondary: Colors.white,
         onSurface: darkOnSurface,
+        onSurfaceVariant: darkOnSurfaceVariant,
         onError: Colors.white,
+        outline: darkOutline,
       ),
       scaffoldBackgroundColor: darkBackground,
 
@@ -193,46 +241,47 @@ class AppTheme {
         AppColorsExtension.dark,
       ],
 
-      // Typography
+      // Typography: Syne (display/headline/title) + DM Sans (body/label)
       textTheme: _buildTextTheme(darkOnSurface),
-      
-      // AppBar Theme
+
+      // AppBar (seamless — same color as scaffold)
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
-        backgroundColor: darkSurface,
+        backgroundColor: darkBackground,
         foregroundColor: darkOnSurface,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.syne(
           fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: darkOnSurface,
         ),
       ),
-      
-      // Card Theme
+
+      // Card
       cardTheme: CardTheme(
-        elevation: 1,
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.lgBorder,
+          side: const BorderSide(color: darkOutline),
         ),
-        color: darkSurface,
+        color: const Color(0xFF141B22), // --card
       ),
 
-      // Input Theme
+      // Input
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: darkSurface,
+        fillColor: const Color(0xFF141B22), // card level, one step above surface
         border: OutlineInputBorder(
           borderRadius: AppRadius.lgBorder,
-          borderSide: const BorderSide(color: Color(0xFF374151)),
+          borderSide: const BorderSide(color: darkOutline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.lgBorder,
-          borderSide: const BorderSide(color: Color(0xFF374151)),
+          borderSide: const BorderSide(color: darkOutline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.lgBorder,
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+          borderSide: const BorderSide(color: _primaryDark, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: AppRadius.lgBorder,
@@ -244,7 +293,7 @@ class AppTheme {
         ),
       ),
 
-      // Button Themes
+      // Buttons
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
@@ -255,7 +304,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.lgBorder,
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -271,7 +320,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.lgBorder,
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -287,117 +336,64 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.lgBorder,
           ),
-          side: const BorderSide(color: primaryColor),
-          textStyle: GoogleFonts.inter(
+          side: const BorderSide(color: darkOutline),
+          textStyle: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
 
-      // Floating Action Button
+      // FAB
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         elevation: 2,
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
+        backgroundColor: _primaryDark,
+        foregroundColor: Color(0xFF060A0E),
       ),
 
       // Divider
       dividerTheme: const DividerThemeData(
-        color: Color(0xFF374151),
+        color: darkOutline,
         thickness: 1,
         space: 1,
       ),
     );
   }
 
-  /// Build consistent text theme using Google Fonts
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TYPOGRAPHY
+  // Syne: display*, headline*, titleLarge  — impactful numbers & headings
+  // DM Sans: titleMedium/Small, body*, label* — readable body & labels
+  // ═══════════════════════════════════════════════════════════════════════════
+
   static TextTheme _buildTextTheme(Color color) {
     return TextTheme(
-      // Display styles
-      displayLarge: GoogleFonts.inter(
-        fontSize: 57,
-        fontWeight: FontWeight.w700,
-        color: color,
-      ),
-      displayMedium: GoogleFonts.inter(
-        fontSize: 45,
-        fontWeight: FontWeight.w700,
-        color: color,
-      ),
-      displaySmall: GoogleFonts.inter(
-        fontSize: 36,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      
-      // Headline styles
-      headlineLarge: GoogleFonts.inter(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      headlineMedium: GoogleFonts.inter(
-        fontSize: 28,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      headlineSmall: GoogleFonts.inter(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      
-      // Title styles
-      titleLarge: GoogleFonts.inter(
-        fontSize: 22,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      titleMedium: GoogleFonts.inter(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      titleSmall: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      
-      // Body styles
-      bodyLarge: GoogleFonts.inter(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        color: color,
-      ),
-      bodyMedium: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        color: color,
-      ),
-      bodySmall: GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: color,
-      ),
-      
-      // Label styles
-      labelLarge: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: color,
-      ),
-      labelMedium: GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: color,
-      ),
-      labelSmall: GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w500,
-        color: color,
-      ),
+      // ── Syne: Display (step counts, hero numbers) ──
+      displayLarge:  GoogleFonts.syne(fontSize: 57, fontWeight: FontWeight.w800, color: color),
+      displayMedium: GoogleFonts.syne(fontSize: 45, fontWeight: FontWeight.w700, color: color),
+      displaySmall:  GoogleFonts.syne(fontSize: 36, fontWeight: FontWeight.w700, color: color),
+
+      // ── Syne: Headlines (screen titles, section headers) ──
+      headlineLarge:  GoogleFonts.syne(fontSize: 32, fontWeight: FontWeight.w700, color: color),
+      headlineMedium: GoogleFonts.syne(fontSize: 28, fontWeight: FontWeight.w700, color: color),
+      headlineSmall:  GoogleFonts.syne(fontSize: 24, fontWeight: FontWeight.w700, color: color),
+
+      // ── Syne: titleLarge (card headings, large titles) ──
+      titleLarge: GoogleFonts.syne(fontSize: 22, fontWeight: FontWeight.w700, color: color),
+
+      // ── DM Sans: titleMedium/Small (player names, card subtitles) ──
+      titleMedium: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w600, color: color),
+      titleSmall:  GoogleFonts.dmSans(fontSize: 14, fontWeight: FontWeight.w600, color: color),
+
+      // ── DM Sans: Body ──
+      bodyLarge:  GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w400, color: color),
+      bodyMedium: GoogleFonts.dmSans(fontSize: 14, fontWeight: FontWeight.w400, color: color),
+      bodySmall:  GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.w400, color: color),
+
+      // ── DM Sans: Labels (tags, chips, button text) ──
+      labelLarge:  GoogleFonts.dmSans(fontSize: 14, fontWeight: FontWeight.w500, color: color),
+      labelMedium: GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.w500, color: color),
+      labelSmall:  GoogleFonts.dmSans(fontSize: 11, fontWeight: FontWeight.w500, color: color),
     );
   }
 }
