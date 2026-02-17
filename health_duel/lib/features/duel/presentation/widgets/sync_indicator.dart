@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/theme/theme.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 /// Sync Indicator - Shows last health data sync time
@@ -28,7 +29,7 @@ class SyncIndicator extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.mdBorder,
       ),
       child: Row(
         children: [
@@ -51,7 +52,7 @@ class SyncIndicator extends StatelessWidget {
               color: colorScheme.onSurfaceVariant,
             ),
 
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
 
           // Last sync text
           Expanded(

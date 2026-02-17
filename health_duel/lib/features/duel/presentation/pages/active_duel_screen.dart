@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_duel/core/presentation/widgets/widgets.dart';
+import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
@@ -104,7 +105,7 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const CircularProgressIndicator(),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             message ?? 'Loading duel...',
             style: Theme.of(context).textTheme.bodyLarge,
@@ -117,7 +118,7 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
   Widget _buildErrorView(BuildContext context, String message) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -126,18 +127,18 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
               size: 64,
               color: Theme.of(context).colorScheme.error,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               'Error Loading Duel',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               message,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
             FilledButton.icon(
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.arrow_back),
@@ -154,14 +155,14 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Countdown Timer
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: BlocBuilder<DuelBloc, DuelState>(
                 // Rebuild only on time updates (currentTime changes)
                 buildWhen: (prev, curr) {
@@ -179,12 +180,12 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
 
           // Step Progress Bars
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -194,7 +195,7 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.lg),
                   StepProgressBar(
                     duel: duel,
                     currentUserId: widget.currentUserId,
@@ -204,7 +205,7 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
 
           // Sync Indicator
           BlocBuilder<DuelBloc, DuelState>(
@@ -224,12 +225,12 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
             },
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
 
           // Duel Details Card
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -245,19 +246,19 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
                     'Status',
                     duel.status.toString().split('.').last.toUpperCase(),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   _buildDetailRow(
                     context,
                     'Started',
                     _formatDateTime(duel.startTime),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   _buildDetailRow(
                     context,
                     'Ends',
                     _formatDateTime(duel.endTime),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   _buildDetailRow(
                     context,
                     'Time Elapsed',
@@ -268,7 +269,7 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // Motivational message based on lead
           _buildMotivationalMessage(context, duel),
@@ -312,12 +313,12 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
       // Tie
       message = "It's a tie! Keep pushing to take the lead!";
       icon = Icons.balance;
-      color = Colors.orange;
+      color = context.appColors.warning;
     } else if (isWinning == true) {
       // Winning
       message = "You're in the lead! Keep it up!";
       icon = Icons.emoji_events;
-      color = Colors.green;
+      color = context.appColors.success;
     } else {
       // Losing
       final difference = duel.stepDifference;
@@ -327,16 +328,16 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.lgBorder,
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Icon(icon, color: color, size: 32),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Text(
               message,

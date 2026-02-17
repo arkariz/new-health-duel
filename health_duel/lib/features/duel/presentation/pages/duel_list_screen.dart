@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/presentation/widgets/duel_card.dart';
 
 /// Duel List Screen - Browse all duels
@@ -161,7 +162,7 @@ class _ActiveDuelsTab extends StatelessWidget {
   }) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -170,7 +171,7 @@ class _ActiveDuelsTab extends StatelessWidget {
               size: 80,
               color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge,
@@ -185,7 +186,7 @@ class _ActiveDuelsTab extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               FilledButton.icon(
                 onPressed: onAction,
                 icon: const Icon(Icons.add),
@@ -288,7 +289,7 @@ class _PendingDuelsTab extends StatelessWidget {
   }) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -297,7 +298,7 @@ class _PendingDuelsTab extends StatelessWidget {
               size: 80,
               color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge,
@@ -389,7 +390,7 @@ class _HistoryTab extends StatelessWidget {
   }) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -398,7 +399,7 @@ class _HistoryTab extends StatelessWidget {
               size: 80,
               color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge,

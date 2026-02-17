@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 
 /// Step Progress Bar - Visual comparison of step counts
@@ -51,7 +52,7 @@ class StepProgressBar extends StatelessWidget {
           isLeading: isLeading,
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.lg),
 
         // Opponent
         _buildProgressRow(
@@ -63,7 +64,7 @@ class StepProgressBar extends StatelessWidget {
           isLeading: duel.currentLeader == opponentId,
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
 
         // Difference
         if (duel.stepDifference > 0) _buildDifference(context),
@@ -95,12 +96,12 @@ class StepProgressBar extends StatelessWidget {
                     fontWeight: isLeading ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 if (isLeading)
                   Icon(
                     Icons.emoji_events,
                     size: 20,
-                    color: Colors.amber,
+                    color: context.appColors.warning,
                   ),
               ],
             ),
@@ -112,13 +113,13 @@ class StepProgressBar extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.mdBorder,
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 24,
-            backgroundColor: color.withOpacity(0.2),
+            backgroundColor: color.withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
@@ -134,7 +135,7 @@ class StepProgressBar extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.mdBorder,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -144,7 +145,7 @@ class StepProgressBar extends StatelessWidget {
             size: 20,
             color: theme.colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             'Difference: $difference steps',
             style: theme.textTheme.bodyMedium?.copyWith(

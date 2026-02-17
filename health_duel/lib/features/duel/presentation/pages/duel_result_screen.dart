@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 
 /// Duel Result Screen - Display final competition results
@@ -43,24 +44,24 @@ class DuelResultScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Result header (winner/tie)
             _buildResultHeader(context, result),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xl),
 
             // Final step counts
             _buildStepComparison(context),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Result details card
             _buildResultDetails(context, result),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Action buttons
             _buildActionButtons(context),
@@ -75,7 +76,7 @@ class DuelResultScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Duel Results')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(AppSpacing.xl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -84,7 +85,7 @@ class DuelResultScreen extends StatelessWidget {
                 size: 80,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               Text(
                 'Duel Still Active',
                 style: Theme.of(context).textTheme.headlineSmall,
@@ -124,7 +125,7 @@ class DuelResultScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -133,7 +134,7 @@ class DuelResultScreen extends StatelessWidget {
               ? [Colors.green.shade400, Colors.green.shade700]
               : [Colors.red.shade400, Colors.red.shade700],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.xlBorder,
       ),
       child: Column(
         children: [
@@ -142,7 +143,7 @@ class DuelResultScreen extends StatelessWidget {
             size: 80,
             color: Colors.white,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             isWinner ? 'Victory!' : 'Defeat',
             style: theme.textTheme.headlineLarge?.copyWith(
@@ -150,7 +151,7 @@ class DuelResultScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             isWinner
                 ? 'You won by $margin steps!'
@@ -168,14 +169,14 @@ class DuelResultScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Colors.orange.shade400, Colors.orange.shade700],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.xlBorder,
       ),
       child: Column(
         children: [
@@ -184,7 +185,7 @@ class DuelResultScreen extends StatelessWidget {
             size: 80,
             color: Colors.white,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             "It's a Tie!",
             style: theme.textTheme.headlineLarge?.copyWith(
@@ -192,7 +193,7 @@ class DuelResultScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             'Both participants walked the same number of steps',
             style: theme.textTheme.titleMedium?.copyWith(
@@ -218,7 +219,7 @@ class DuelResultScreen extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -228,7 +229,7 @@ class DuelResultScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -281,23 +282,23 @@ class DuelResultScreen extends StatelessWidget {
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.lgBorder,
             border: Border.all(
-              color: isWinner ? Colors.amber : color.withValues(alpha: 0.3),
+              color: isWinner ? context.appColors.warning : color.withValues(alpha: 0.3),
               width: isWinner ? 3 : 2,
             ),
           ),
           child: Column(
             children: [
               if (isWinner)
-                const Icon(
+                Icon(
                   Icons.emoji_events,
-                  color: Colors.amber,
+                  color: context.appColors.warning,
                   size: 24,
                 ),
               Text(
@@ -325,7 +326,7 @@ class DuelResultScreen extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -341,19 +342,19 @@ class DuelResultScreen extends StatelessWidget {
               'Started',
               _formatDateTime(duel.startTime),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _buildDetailRow(
               context,
               'Ended',
               _formatDateTime(duel.endTime),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _buildDetailRow(
               context,
               'Duration',
               '24 hours',
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _buildDetailRow(
               context,
               'Status',
@@ -398,7 +399,7 @@ class DuelResultScreen extends StatelessWidget {
           icon: const Icon(Icons.replay),
           label: const Text('Challenge Again'),
           style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
           ),
         ),
         const SizedBox(height: 12),
@@ -407,7 +408,7 @@ class DuelResultScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           label: const Text('Back to Duels'),
           style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
           ),
         ),
       ],

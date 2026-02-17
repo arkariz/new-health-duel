@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 
 /// Duel Card - Displays duel summary in list views
@@ -34,12 +35,12 @@ class DuelCard extends StatelessWidget {
     final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.lgBorder,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -64,7 +65,7 @@ class DuelCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xs),
                         _buildStatusBadge(context),
                       ],
                     ),
@@ -72,7 +73,7 @@ class DuelCard extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Step counts comparison
               if (duel.isActive || duel.isCompleted) ...[
@@ -98,7 +99,7 @@ class DuelCard extends StatelessWidget {
 
               // Action buttons for pending duels
               if (duel.isPending && !isChallenger) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 Row(
                   children: [
                     Expanded(
@@ -128,18 +129,18 @@ class DuelCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     final (text, color) = switch (duel.status) {
-      DuelStatus.pending => ('Pending', Colors.orange),
+      DuelStatus.pending => ('Pending', context.appColors.warning),
       DuelStatus.active => ('Active', colorScheme.primary),
-      DuelStatus.completed => ('Completed', Colors.green),
+      DuelStatus.completed => ('Completed', context.appColors.success),
       DuelStatus.cancelled => ('Cancelled', Colors.grey),
       DuelStatus.expired => ('Expired', Colors.red),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.smBorder,
       ),
       child: Text(
         text,
@@ -165,7 +166,7 @@ class DuelCard extends StatelessWidget {
           label,
           style: theme.textTheme.labelSmall,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -175,7 +176,7 @@ class DuelCard extends StatelessWidget {
                 size: 16,
                 color: theme.colorScheme.primary,
               ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSpacing.xs),
             Text(
               steps.toString(),
               style: theme.textTheme.titleLarge?.copyWith(

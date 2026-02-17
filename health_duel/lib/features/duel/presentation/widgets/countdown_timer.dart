@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/theme/theme.dart';
 
 /// Countdown Timer Widget - Displays remaining time in HH:MM:SS format
 ///
@@ -24,7 +25,7 @@ class CountdownTimer extends StatelessWidget {
     final seconds = remaining.inSeconds.remainder(60);
 
     final isLowTime = remaining.inHours < 1;
-    final color = isLowTime ? Colors.orange : colorScheme.onSurface;
+    final color = isLowTime ? context.appColors.warning : colorScheme.onSurface;
 
     return Column(
       children: [
@@ -34,7 +35,7 @@ class CountdownTimer extends StatelessWidget {
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -44,7 +45,7 @@ class CountdownTimer extends StatelessWidget {
                 color: color,
                 size: 32,
               ),
-            if (isLowTime) const SizedBox(width: 8),
+            if (isLowTime) const SizedBox(width: AppSpacing.sm),
             Text(
               _formatTime(hours, minutes, seconds),
               style: theme.textTheme.displayMedium?.copyWith(
@@ -55,7 +56,7 @@ class CountdownTimer extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         if (isLowTime)
           Text(
             'Hurry! Less than 1 hour left',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/theme/theme.dart';
 
 /// Create Duel Screen - Challenge a friend to a duel
 ///
@@ -30,9 +31,9 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
   void _createDuel() {
     if (_selectedFriendId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a friend to challenge'),
-          backgroundColor: Colors.orange,
+        SnackBar(
+          content: const Text('Please select a friend to challenge'),
+          backgroundColor: context.appColors.warning,
         ),
       );
       return;
@@ -50,9 +51,9 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
 
     // Temporary success feedback
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Duel challenge sent!'),
-        backgroundColor: Colors.green,
+      SnackBar(
+        content: const Text('Duel challenge sent!'),
+        backgroundColor: context.appColors.success,
       ),
     );
 
@@ -70,9 +71,9 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
         children: [
           // Instructions card
           Card(
-            margin: const EdgeInsets.all(16),
+            margin: const EdgeInsets.all(AppSpacing.md),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -108,14 +109,14 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
 
           // Friend selection section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: Row(
               children: [
                 Icon(
                   Icons.person,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 Text(
                   'Select Friend to Challenge',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -126,7 +127,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
 
           // Friend list
           Expanded(
@@ -136,7 +137,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
           // Create button
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
@@ -144,7 +145,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
                   icon: const Icon(Icons.send),
                   label: const Text('Send Challenge'),
                   style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                   ),
                 ),
               ),
@@ -168,7 +169,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
     if (mockFriends.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(AppSpacing.xl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -177,7 +178,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
                 size: 80,
                 color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               Text(
                 'No Friends Yet',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -198,7 +199,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       itemCount: mockFriends.length,
       itemBuilder: (context, index) {
         final friend = mockFriends[index];
