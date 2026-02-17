@@ -63,7 +63,7 @@ class RegisterForm extends StatelessWidget {
                 prefixIcon: const Icon(Icons.person_outline),
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.name],
-                validator: FormValidators.required,
+                validator: FormValidators.displayName,
               ),
               const SizedBox(height: AppSpacing.md),
 
@@ -84,7 +84,7 @@ class RegisterForm extends StatelessWidget {
                 controller: passwordController,
                 label: 'Password',
                 textInputAction: TextInputAction.next,
-                validator: (value) => FormValidators.password(value),
+                validator: FormValidators.strongPassword,
               ),
               const SizedBox(height: AppSpacing.md),
 
@@ -94,15 +94,10 @@ class RegisterForm extends StatelessWidget {
                 label: 'Confirm Password',
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => onRegister(),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-                  if (value != passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
+                validator: (value) => FormValidators.passwordConfirmation(
+                  value,
+                  passwordController.text,
+                ),
               ),
               const SizedBox(height: AppSpacing.xl),
 

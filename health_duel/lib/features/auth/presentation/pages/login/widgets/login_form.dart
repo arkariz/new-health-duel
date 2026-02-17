@@ -211,7 +211,7 @@ class _TestCredentialsHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+        color: context.appColors.subtleBackground,
         borderRadius: AppRadius.mdBorder,
       ),
       child: Column(
