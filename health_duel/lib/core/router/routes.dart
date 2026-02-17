@@ -26,10 +26,15 @@ abstract final class AppRoutes {
   // ═══════════════════════════════════════════════════════════════════════════
 
   static const duels = '/duels';
+  static const createDuel = '/duels/create';
   static const duel = '/duel/:id';
+  static const duelResult = '/duel/:id/result';
 
   /// Build duel path with ID
   static String duelPath(String id) => '/duel/$id';
+
+  /// Build duel result path with ID
+  static String duelResultPath(String id) => '/duel/$id/result';
 
   // ═══════════════════════════════════════════════════════════════════════════
   // Deep Link Routes

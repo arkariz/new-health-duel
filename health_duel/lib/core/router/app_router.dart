@@ -1,10 +1,16 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_duel/core/di/injection.dart';
 import 'package:health_duel/core/router/go_router_refresh.dart';
 import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/features/auth/auth.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
+import 'package:health_duel/features/duel/presentation/pages/active_duel_screen.dart';
+import 'package:health_duel/features/duel/presentation/pages/create_duel_screen.dart';
+import 'package:health_duel/features/duel/presentation/pages/duel_list_screen.dart';
+import 'package:health_duel/features/duel/presentation/pages/duel_result_screen.dart';
 import 'package:health_duel/features/health/health.dart';
 import 'package:health_duel/features/home/home.dart';
 
@@ -46,6 +52,74 @@ GoRouter createAppRouter(AuthBloc authBloc) {
         path: AppRoutes.health,
         name: 'health',
         builder: (_, __) => BlocProvider(create: (_) => getIt<HealthBloc>(), child: const HealthPage()),
+      ),
+
+      // ═══════════════════════════════════════════════════════════════════════
+      // Duel Routes (Protected)
+      // ═══════════════════════════════════════════════════════════════════════
+
+      // Duel list screen
+      GoRoute(
+        path: AppRoutes.duels,
+        name: 'duels',
+        builder: (context, state) {
+          final currentUserId = state.extra as String?;
+          return BlocProvider(
+            create: (_) => getIt<DuelBloc>(),
+            child: DuelListScreen(currentUserId: currentUserId ?? ''),
+          );
+        },
+      ),
+
+      // Create duel screen
+      GoRoute(
+        path: AppRoutes.createDuel,
+        name: 'createDuel',
+        builder: (context, state) {
+          final currentUserId = state.extra as String?;
+          return BlocProvider(
+            create: (_) => getIt<DuelBloc>(),
+            child: CreateDuelScreen(currentUserId: currentUserId ?? ''),
+          );
+        },
+      ),
+
+      // Active duel screen (real-time monitoring)
+      GoRoute(
+        path: AppRoutes.duel,
+        name: 'duel',
+        builder: (context, state) {
+          final duelId = state.pathParameters['id']!;
+          final currentUserId = state.extra as String?;
+          return BlocProvider(
+            create: (_) => getIt<DuelBloc>(),
+            child: ActiveDuelScreen(
+              duelId: duelId,
+              currentUserId: currentUserId ?? '',
+            ),
+          );
+        },
+      ),
+
+      // Duel result screen
+      // Note: DuelResultScreen expects Duel object via extra param
+      // Usage: context.push(AppRoutes.duelResultPath(id), extra: {'duel': duel, 'currentUserId': userId})
+      GoRoute(
+        path: AppRoutes.duelResult,
+        name: 'duelResult',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          if (extra == null || extra['duel'] == null) {
+            // Missing data - should not happen in normal flow
+            // Return empty page and pop immediately
+            Future.microtask(() => Navigator.of(context).pop());
+            return const SizedBox.shrink();
+          }
+          return DuelResultScreen(
+            duel: extra['duel'],
+            currentUserId: extra['currentUserId'] as String,
+          );
+        },
       ),
     ],
   );

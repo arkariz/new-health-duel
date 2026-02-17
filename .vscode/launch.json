@@ -1,0 +1,26 @@
+{
+    // See https://go.microsoft.com/fwlink/?linkid=830387 for more about launch configurations
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter Dev",
+            "request": "launch",
+            "type": "dart",
+            "cwd": "${workspaceFolder}/health_duel",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define=FLAVOR=dev"
+            ]
+        },
+        {
+            "name": "Flutter Prod",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "cwd": "${workspaceFolder}/health_duel",
+            "args": [
+                "--dart-define=FLAVOR=prod"
+            ]
+        }
+    ]
+}

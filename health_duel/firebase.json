@@ -1,0 +1,23 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "health-duel",
+                    "appId": "1:933689394164:android:8a25a32678bfa910786fa1",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/core/config/firebase_options.dart": {
+                    "projectId": "health-duel",
+                    "configurations": {
+                        "android": "1:933689394164:android:8a25a32678bfa910786fa1",
+                        "ios": "1:933689394164:ios:4715479a3d4cd696786fa1",
+                        "web": "1:933689394164:web:b599ced6e7973cb5786fa1"
+                    }
+                }
+            }
+        }
+    }
+}
