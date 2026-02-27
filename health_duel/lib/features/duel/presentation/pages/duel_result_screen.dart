@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 
-/// Duel Result Screen - Display final competition results
+/// Duel Result Screen — Sports-energy dark aesthetic
 ///
-/// Features:
-/// - Winner/Loser/Tie display
-/// - Final step counts
-/// - Margin of victory
-/// - Share button
-/// - Celebratory animations
-///
-/// Displays different UI based on [DuelResult]:
-/// - [WinnerResult] - Shows winner with trophy
-/// - [TieResult] - Shows tie with balance icon
+/// Visual layout:
+/// - Result header: gradient container (green win / red loss / amber tie)
+///   + trophy/defeat emoji + Victory! / Defeat / Tie! text
+/// - Step comparison: two stat cards side-by-side (winner glows green)
+/// - Details row: start date, end date, duration
+/// - CTA: Challenge Again (filled) + Back to Duels (outlined)
 class DuelResultScreen extends StatelessWidget {
   final Duel duel;
   final String currentUserId;
@@ -26,54 +22,46 @@ class DuelResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!duel.isCompleted) {
-      return _buildNotCompletedView(context);
-    }
-
-    final result = duel.result;
+    if (!duel.isCompleted) return _buildNotCompleted(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Duel Results'),
+        title: const Text('Duel Result'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () => _shareResult(context),
+            icon: const Icon(Icons.share_rounded),
+            onPressed: () => _onShare(context),
             tooltip: 'Share Result',
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.lg,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Result header (winner/tie)
-            _buildResultHeader(context, result),
-
-            const SizedBox(height: AppSpacing.xl),
-
-            // Final step counts
-            _buildStepComparison(context),
-
+            _ResultHeader(duel: duel, currentUserId: currentUserId),
+            const SizedBox(height: AppSpacing.md),
+            _StepComparison(duel: duel, currentUserId: currentUserId),
+            const SizedBox(height: AppSpacing.md),
+            _DetailsCard(duel: duel),
             const SizedBox(height: AppSpacing.lg),
-
-            // Result details card
-            _buildResultDetails(context, result),
-
-            const SizedBox(height: AppSpacing.lg),
-
-            // Action buttons
-            _buildActionButtons(context),
+            _ActionButtons(duel: duel),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNotCompletedView(BuildContext context) {
+  Widget _buildNotCompleted(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Duel Results')),
+      appBar: AppBar(title: const Text('Duel Result')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xl),
@@ -81,22 +69,18 @@ class DuelResultScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.timer,
-                size: 80,
-                color: Theme.of(context).colorScheme.primary,
+                Icons.timer_rounded,
+                size: 72,
+                color: theme.colorScheme.primary,
               ),
               const SizedBox(height: AppSpacing.lg),
+              Text('Duel Still Active', style: theme.textTheme.headlineSmall),
+              const SizedBox(height: AppSpacing.sm),
               Text(
-                'Duel Still Active',
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'This duel is still ongoing. Results will be available once the 24-hour window completes.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                'Results will be available once the 24-hour window completes.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -106,8 +90,24 @@ class DuelResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildResultHeader(BuildContext context, DuelResult result) {
-    return switch (result) {
+  void _onShare(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Share functionality coming soon!')),
+    );
+  }
+}
+
+// ─── Result Header ────────────────────────────────────────────────────────────
+
+class _ResultHeader extends StatelessWidget {
+  final Duel duel;
+  final String currentUserId;
+
+  const _ResultHeader({required this.duel, required this.currentUserId});
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (duel.result) {
       WinnerResult(:final winnerId, :final margin) => _buildWinnerHeader(
           context,
           isWinner: winnerId == currentUserId,
@@ -123,6 +123,10 @@ class DuelResultScreen extends StatelessWidget {
     required int margin,
   }) {
     final theme = Theme.of(context);
+    final color = isWinner ? context.appColors.success : context.appColors.opponent;
+    final gradientColors = isWinner
+        ? [const Color(0xFF0A2B1F), const Color(0xFF0C2030)]
+        : [const Color(0xFF2B0F0A), const Color(0xFF200D12)];
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
@@ -130,34 +134,44 @@ class DuelResultScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: isWinner
-              ? [Colors.green.shade400, Colors.green.shade700]
-              : [Colors.red.shade400, Colors.red.shade700],
+          colors: gradientColors,
         ),
         borderRadius: AppRadius.xlBorder,
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
-          Icon(
-            isWinner ? Icons.emoji_events : Icons.sentiment_dissatisfied,
-            size: 80,
-            color: Colors.white,
+          Text(
+            isWinner ? '🏆' : '💪',
+            style: const TextStyle(fontSize: 64),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             isWinner ? 'Victory!' : 'Defeat',
             style: theme.textTheme.headlineLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+              color: color,
+              fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            isWinner
-                ? 'You won by $margin steps!'
-                : 'You lost by $margin steps',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
+          const SizedBox(height: AppSpacing.xs),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.xs,
+            ),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: AppRadius.fullBorder,
+              border: Border.all(color: color.withValues(alpha: 0.3)),
+            ),
+            child: Text(
+              isWinner
+                  ? 'Won by ${_compact(margin)} steps'
+                  : 'Lost by ${_compact(margin)} steps',
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -167,37 +181,35 @@ class DuelResultScreen extends StatelessWidget {
 
   Widget _buildTieHeader(BuildContext context) {
     final theme = Theme.of(context);
+    final color = context.appColors.warning;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.orange.shade400, Colors.orange.shade700],
+          colors: [Color(0xFF2B1F0A), Color(0xFF201708)],
         ),
         borderRadius: AppRadius.xlBorder,
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
-          const Icon(
-            Icons.balance,
-            size: 80,
-            color: Colors.white,
-          ),
+          const Text('🤝', style: TextStyle(fontSize: 64)),
           const SizedBox(height: AppSpacing.md),
           Text(
             "It's a Tie!",
             style: theme.textTheme.headlineLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+              color: color,
+              fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.xs),
           Text(
-            'Both participants walked the same number of steps',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
+            'Both walked the same number of steps',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
           ),
@@ -206,206 +218,225 @@ class DuelResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStepComparison(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  String _compact(int v) => v >= 1000 ? '${(v / 1000).toStringAsFixed(1)}k' : '$v';
+}
 
+// ─── Step Comparison ──────────────────────────────────────────────────────────
+
+class _StepComparison extends StatelessWidget {
+  final Duel duel;
+  final String currentUserId;
+
+  const _StepComparison({required this.duel, required this.currentUserId});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isChallenger = duel.challengerId == currentUserId;
     final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
-    final opponentSteps =
-        isChallenger ? duel.challengedSteps : duel.challengerSteps;
-    final opponentId =
-        isChallenger ? duel.challengedId : duel.challengerId;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Final Step Counts',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                // You
-                _buildStepCount(
-                  context,
-                  label: 'You',
-                  steps: mySteps.value,
-                  color: colorScheme.primary,
-                  isWinner: duel.currentLeader == currentUserId,
-                ),
-
-                // VS
-                Icon(
-                  Icons.compare_arrows,
-                  size: 32,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-
-                // Opponent
-                _buildStepCount(
-                  context,
-                  label: 'Opponent',
-                  steps: opponentSteps.value,
-                  color: colorScheme.secondary,
-                  isWinner: duel.currentLeader == opponentId,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStepCount(
-    BuildContext context, {
-    required String label,
-    required int steps,
-    required Color color,
-    bool isWinner = false,
-  }) {
-    final theme = Theme.of(context);
+    final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
+    final opponentId = isChallenger ? duel.challengedId : duel.challengerId;
+    final iWon = duel.currentLeader == currentUserId;
+    final oppWon = duel.currentLeader == opponentId;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
+        Text('Final Steps', style: theme.textTheme.titleLarge),
         const SizedBox(height: AppSpacing.sm),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: AppRadius.lgBorder,
-            border: Border.all(
-              color: isWinner ? context.appColors.warning : color.withValues(alpha: 0.3),
-              width: isWinner ? 3 : 2,
+        Row(
+          children: [
+            Expanded(
+              child: _StepCard(
+                label: 'You',
+                emoji: '🏃',
+                steps: mySteps.value,
+                color: Theme.of(context).colorScheme.primary,
+                isWinner: iWon,
+              ),
             ),
-          ),
-          child: Column(
-            children: [
-              if (isWinner)
-                Icon(
-                  Icons.emoji_events,
-                  color: context.appColors.warning,
-                  size: 24,
-                ),
-              Text(
-                steps.toString(),
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+              child: Text(
+                'VS',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: context.appColors.gold,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-              Text(
-                'steps',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+            ),
+            Expanded(
+              child: _StepCard(
+                label: 'Opponent',
+                emoji: '👤',
+                steps: opponentSteps.value,
+                color: context.appColors.opponent,
+                isWinner: oppWon,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
   }
+}
 
-  Widget _buildResultDetails(BuildContext context, DuelResult result) {
+// ─── Step Card ────────────────────────────────────────────────────────────────
+
+class _StepCard extends StatelessWidget {
+  final String label;
+  final String emoji;
+  final int steps;
+  final Color color;
+  final bool isWinner;
+
+  const _StepCard({
+    required this.label,
+    required this.emoji,
+    required this.steps,
+    required this.color,
+    required this.isWinner,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderColor = isWinner ? color : context.appColors.divider;
+    final stepsText =
+        steps >= 1000 ? '${(steps / 1000).toStringAsFixed(1)}k' : '$steps';
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: isWinner
+            ? color.withValues(alpha: 0.08)
+            : context.appColors.cardBackground,
+        borderRadius: AppRadius.lgBorder,
+        border: Border.all(
+          color: borderColor.withValues(alpha: isWinner ? 0.4 : 1),
+          width: isWinner ? 2 : 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          if (isWinner) ...[
+            Icon(Icons.emoji_events_rounded, color: context.appColors.gold, size: 20),
+            const SizedBox(height: 4),
+          ],
+          Text(emoji, style: const TextStyle(fontSize: 28)),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            stepsText,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          Text(
+            'steps',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            label,
+            style: theme.textTheme.titleSmall,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Details Card ─────────────────────────────────────────────────────────────
+
+class _DetailsCard extends StatelessWidget {
+  final Duel duel;
+
+  const _DetailsCard({required this.duel});
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Duel Details',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildDetailRow(
-              context,
-              'Started',
-              _formatDateTime(duel.startTime),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _buildDetailRow(
-              context,
-              'Ended',
-              _formatDateTime(duel.endTime),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _buildDetailRow(
-              context,
-              'Duration',
-              '24 hours',
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _buildDetailRow(
-              context,
-              'Status',
-              duel.status.toString().split('.').last.toUpperCase(),
-            ),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.appColors.cardBackground,
+        borderRadius: AppRadius.lgBorder,
+        border: Border.all(color: context.appColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Duel Details', style: theme.textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.md),
+          _detailRow(context, 'Started', _formatDateTime(duel.startTime)),
+          const SizedBox(height: AppSpacing.sm),
+          _detailRow(context, 'Ended', _formatDateTime(duel.endTime)),
+          const SizedBox(height: AppSpacing.sm),
+          _detailRow(context, 'Duration', '24 hours'),
+          const SizedBox(height: AppSpacing.sm),
+          _detailRow(
+            context,
+            'Status',
+            duel.status.toString().split('.').last.toUpperCase(),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, String label, String value) {
+  Widget _detailRow(BuildContext context, String label, String value) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+          style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
         ),
       ],
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  String _formatDateTime(DateTime dt) =>
+      '${dt.day}/${dt.month}/${dt.year} '
+      '${dt.hour.toString().padLeft(2, '0')}:'
+      '${dt.minute.toString().padLeft(2, '0')}';
+}
+
+// ─── Action Buttons ───────────────────────────────────────────────────────────
+
+class _ActionButtons extends StatelessWidget {
+  final Duel duel;
+
+  const _ActionButtons({required this.duel});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         FilledButton.icon(
-          onPressed: () {
-            // Navigate to create new duel
-            // context.push('/duel/create');
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(Icons.replay),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.replay_rounded),
           label: const Text('Challenge Again'),
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         OutlinedButton.icon(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_rounded),
           label: const Text('Back to Duels'),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
@@ -413,20 +444,5 @@ class DuelResultScreen extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void _shareResult(BuildContext context) {
-    // TODO: Implement sharing functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Share functionality coming soon!'),
-      ),
-    );
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} '
-        '${dateTime.hour.toString().padLeft(2, '0')}:'
-        '${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }

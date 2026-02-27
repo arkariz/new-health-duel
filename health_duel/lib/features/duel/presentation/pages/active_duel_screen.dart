@@ -6,26 +6,21 @@ import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
-import 'package:health_duel/features/duel/presentation/widgets/countdown_timer.dart';
-import 'package:health_duel/features/duel/presentation/widgets/step_progress_bar.dart';
-import 'package:health_duel/features/duel/presentation/widgets/sync_indicator.dart';
 
-/// Active Duel Screen - Real-time duel monitoring
+/// Active Duel Screen — Sports-energy dark aesthetic
 ///
-/// Features:
-/// - Real-time Firestore updates
-/// - Countdown timer (HH:MM:SS)
-/// - Step progress bars (both participants)
-/// - Lead indicator (who's winning)
-/// - Last sync timestamp
-/// - Manual refresh button
+/// Visual layout:
+/// - Arena card: dark gradient + green glow border + LIVE badge
+/// - Two-column player layout with gradient avatars
+/// - Split battle bar (green ← | → orange)
+/// - Prominent countdown (tabular Syne font)
+/// - 3-chip stats row (steps, lead, opponent)
+/// - Motivational banner (green/orange/amber based on position)
 ///
-/// Uses [DuelBloc] with 3 real-time subscriptions:
-/// 1. Firestore listener - Duel updates
-/// 2. Health sync timer - Periodic (5 min)
-/// 3. Countdown timer - UI updates (1 sec)
-///
-/// BlocProvider is provided by router, not by this screen.
+/// BLoC wiring unchanged from original:
+/// - EffectListener at root
+/// - BlocBuilder for loading/error/loaded states
+/// - Nested BlocBuilder (buildWhen: currentTime) for countdown
 class ActiveDuelScreen extends StatefulWidget {
   final String duelId;
   final String currentUserId;
@@ -44,7 +39,6 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
   @override
   void initState() {
     super.initState();
-    // Trigger initial load after frame is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DuelBloc>().add(DuelLoadRequested(widget.duelId));
     });
@@ -57,15 +51,16 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
         appBar: AppBar(
           title: const Text('Active Duel'),
           actions: [
-            // Manual refresh button in app bar
             BlocBuilder<DuelBloc, DuelState>(
               buildWhen: (prev, curr) => prev.runtimeType != curr.runtimeType,
               builder: (context, state) {
                 if (state is DuelLoaded) {
                   return IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () => context.read<DuelBloc>().add(DuelManualRefreshRequested(widget.duelId)),
-                    tooltip: 'Sync health data now',
+                    icon: const Icon(Icons.refresh_rounded),
+                    onPressed: () => context
+                        .read<DuelBloc>()
+                        .add(DuelManualRefreshRequested(widget.duelId)),
+                    tooltip: 'Sync health data',
                   );
                 }
                 return const SizedBox.shrink();
@@ -74,24 +69,15 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
           ],
         ),
         body: BlocBuilder<DuelBloc, DuelState>(
-          buildWhen: (prev, curr) => prev.runtimeType != curr.runtimeType || (prev is DuelLoading && curr is DuelLoading && prev.message != curr.message),
+          buildWhen: (prev, curr) =>
+              prev.runtimeType != curr.runtimeType ||
+              (prev is DuelLoading &&
+                  curr is DuelLoading &&
+                  prev.message != curr.message),
           builder: (context, state) {
-            // Loading state
-            if (state is DuelLoading) {
-              return _buildLoadingView(context, state.message);
-            }
-
-            // Error state
-            if (state is DuelError) {
-              return _buildErrorView(context, state.message);
-            }
-
-            // Loaded state - Real-time duel monitoring
-            if (state is DuelLoaded) {
-              return _buildDuelView(context, state);
-            }
-
-            // Initial state
+            if (state is DuelLoading) return _buildLoading(context, state.message);
+            if (state is DuelError) return _buildError(context, state.message);
+            if (state is DuelLoaded) return _buildDuelView(context, state);
             return const Center(child: CircularProgressIndicator());
           },
         ),
@@ -99,49 +85,52 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
     );
   }
 
-  Widget _buildLoadingView(BuildContext context, String? message) {
+  // ─── Loading ─────────────────────────────────────────────────────────────────
+
+  Widget _buildLoading(BuildContext context, String? message) {
+    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(),
+          CircularProgressIndicator(color: theme.colorScheme.primary),
           const SizedBox(height: AppSpacing.md),
           Text(
             message ?? 'Loading duel...',
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildErrorView(BuildContext context, String message) {
+  // ─── Error ───────────────────────────────────────────────────────────────────
+
+  Widget _buildError(BuildContext context, String message) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.error,
-            ),
+            Icon(Icons.error_outline_rounded, size: 64, color: theme.colorScheme.error),
             const SizedBox(height: AppSpacing.md),
-            Text(
-              'Error Loading Duel',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text('Failed to Load Duel', style: theme.textTheme.titleLarge),
             const SizedBox(height: AppSpacing.sm),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: AppSpacing.lg),
             FilledButton.icon(
               onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back_rounded),
               label: const Text('Go Back'),
             ),
           ],
@@ -150,198 +139,537 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
     );
   }
 
+  // ─── Loaded ──────────────────────────────────────────────────────────────────
+
   Widget _buildDuelView(BuildContext context, DuelLoaded state) {
     final duel = state.duel;
-    final theme = Theme.of(context);
+    final isChallenger = duel.challengerId == widget.currentUserId;
+    final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
+    final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
+    final total = mySteps.value + opponentSteps.value;
+    final myBattle = total > 0 ? mySteps.value / total : 0.5;
+    final oppBattle = total > 0 ? opponentSteps.value / total : 0.5;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Countdown Timer
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: BlocBuilder<DuelBloc, DuelState>(
-                // Rebuild only on time updates (currentTime changes)
-                buildWhen: (prev, curr) {
-                  if (prev is! DuelLoaded || curr is! DuelLoaded) return true;
-                  return prev.currentTime != curr.currentTime;
-                },
-                builder: (context, state) {
-                  if (state is DuelLoaded) {
-                    final remaining = state.duel.remainingTime;
-                    return CountdownTimer(remaining: remaining);
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
+          // ── Arena Card ─────────────────────────────────────────────────────
+          _ArenaCard(
+            duel: duel,
+            mySteps: mySteps.value,
+            opponentSteps: opponentSteps.value,
+            myBattle: myBattle,
+            oppBattle: oppBattle,
+            duelId: widget.duelId,
           ),
 
           const SizedBox(height: AppSpacing.md),
 
-          // Step Progress Bars
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Step Progress',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  StepProgressBar(
-                    duel: duel,
-                    currentUserId: widget.currentUserId,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: AppSpacing.md),
-
-          // Sync Indicator
+          // ── Countdown ──────────────────────────────────────────────────────
           BlocBuilder<DuelBloc, DuelState>(
             buildWhen: (prev, curr) {
               if (prev is! DuelLoaded || curr is! DuelLoaded) return true;
-              return prev.lastSyncTime != curr.lastSyncTime;
+              return prev.currentTime != curr.currentTime;
             },
             builder: (context, state) {
-              if (state is DuelLoaded) {
-                return SyncIndicator(
-                  lastSyncTime: state.lastSyncTime,
-                  isSyncing: false, // TODO: Add syncing state to bloc if needed
-                  onRefresh: () => context.read<DuelBloc>().add(DuelManualRefreshRequested(widget.duelId)),
-                );
-              }
-              return const SizedBox.shrink();
+              if (state is! DuelLoaded) return const SizedBox.shrink();
+              return _CountdownCard(remaining: state.duel.remainingTime);
             },
           ),
 
           const SizedBox(height: AppSpacing.md),
 
-          // Duel Details Card
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Duel Details',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+          // ── Stats Chips ────────────────────────────────────────────────────
+          _StatsRow(
+            duel: duel,
+            mySteps: mySteps.value,
+            opponentSteps: opponentSteps.value,
+            currentUserId: widget.currentUserId,
+          ),
+
+          const SizedBox(height: AppSpacing.md),
+
+          // ── Motivational Banner ────────────────────────────────────────────
+          _MotivationalBanner(
+            duel: duel,
+            currentUserId: widget.currentUserId,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Arena Card ──────────────────────────────────────────────────────────────
+
+class _ArenaCard extends StatelessWidget {
+  final Duel duel;
+  final int mySteps;
+  final int opponentSteps;
+  final double myBattle;
+  final double oppBattle;
+  final String duelId;
+
+  const _ArenaCard({
+    required this.duel,
+    required this.mySteps,
+    required this.opponentSteps,
+    required this.myBattle,
+    required this.oppBattle,
+    required this.duelId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final opponent = context.appColors.opponent;
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0E1F18), Color(0xFF0D1A23)],
+        ),
+        borderRadius: AppRadius.xlBorder,
+        border: Border.all(color: primary.withValues(alpha: 0.2)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Players row
+                Row(
+                  children: [
+                    _PlayerTile(
+                      emoji: '🏃',
+                      name: 'You',
+                      steps: mySteps,
+                      color: primary,
+                      isGreen: true,
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildDetailRow(
-                    context,
-                    'Status',
-                    duel.status.toString().split('.').last.toUpperCase(),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _buildDetailRow(
-                    context,
-                    'Started',
-                    _formatDateTime(duel.startTime),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _buildDetailRow(
-                    context,
-                    'Ends',
-                    _formatDateTime(duel.endTime),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _buildDetailRow(
-                    context,
-                    'Time Elapsed',
-                    '${(duel.timeElapsedPercentage * 100).toStringAsFixed(1)}%',
-                  ),
-                ],
-              ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                      child: Text(
+                        'VS',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: context.appColors.gold,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    _PlayerTile(
+                      emoji: '👤',
+                      name: 'Opponent',
+                      steps: opponentSteps,
+                      color: opponent,
+                      isGreen: false,
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: AppSpacing.md),
+
+                // Battle bar split
+                _BattleBar(
+                  myBattle: myBattle,
+                  oppBattle: oppBattle,
+                  primary: primary,
+                  opponent: opponent,
+                ),
+
+                const SizedBox(height: AppSpacing.md),
+
+                // Duel info row
+                Row(
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      size: 12,
+                      color: context.appColors.gold,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Ends ${_formatTime(duel.endTime)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${(duel.timeElapsedPercentage * 100).toStringAsFixed(0)}% elapsed',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
 
-          const SizedBox(height: AppSpacing.lg),
-
-          // Motivational message based on lead
-          _buildMotivationalMessage(context, duel),
+          // LIVE badge
+          Positioned(
+            top: 12,
+            right: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: 3,
+              ),
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.12),
+                borderRadius: AppRadius.smBorder,
+                border: Border.all(color: primary.withValues(alpha: 0.3)),
+              ),
+              child: Text(
+                'LIVE',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: primary,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, String label, String value) {
+  String _formatTime(DateTime dt) =>
+      '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+}
+
+// ─── Player Tile ─────────────────────────────────────────────────────────────
+
+class _PlayerTile extends StatelessWidget {
+  final String emoji;
+  final String name;
+  final int steps;
+  final Color color;
+  final bool isGreen;
+
+  const _PlayerTile({
+    required this.emoji,
+    required this.name,
+    required this.steps,
+    required this.color,
+    required this.isGreen,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final stepsText =
+        steps >= 1000 ? '${(steps / 1000).toStringAsFixed(1)}k steps' : '$steps steps';
+
+    return Expanded(
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isGreen
+                    ? [const Color(0xFF00E5A0), const Color(0xFF00A872)]
+                    : [const Color(0xFFFF6B35), const Color(0xFFCC4410)],
+              ),
+            ),
+            child: Center(
+              child: Text(emoji, style: const TextStyle(fontSize: 18)),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: theme.textTheme.titleSmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  stepsText,
+                  style: theme.textTheme.bodySmall?.copyWith(color: color),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Battle Bar ──────────────────────────────────────────────────────────────
+
+class _BattleBar extends StatelessWidget {
+  final double myBattle;
+  final double oppBattle;
+  final Color primary;
+  final Color opponent;
+
+  const _BattleBar({
+    required this.myBattle,
+    required this.oppBattle,
+    required this.primary,
+    required this.opponent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+        // Left — YOUR progress (fills left → right)
+        Expanded(
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(3),
+              bottomLeft: Radius.circular(3),
+            ),
+            child: Stack(
+              children: [
+                Container(height: 8, color: context.appColors.divider),
+                FractionallySizedBox(
+                  widthFactor: myBattle.clamp(0.0, 1.0),
+                  child: Container(
+                    height: 8,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [primary, const Color(0xFF00C87A)],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+
+        // Center divider
+        Container(
+          width: 2,
+          height: 18,
+          color: context.appColors.divider,
+        ),
+
+        // Right — OPPONENT progress (fills right → left)
+        Expanded(
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(3),
+              bottomRight: Radius.circular(3),
+            ),
+            child: Stack(
+              children: [
+                Container(height: 8, color: context.appColors.divider),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FractionallySizedBox(
+                    widthFactor: oppBattle.clamp(0.0, 1.0),
+                    child: Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [const Color(0xFFCC4410), opponent],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Countdown Card ───────────────────────────────────────────────────────────
+
+class _CountdownCard extends StatelessWidget {
+  final Duration remaining;
+
+  const _CountdownCard({required this.remaining});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final hours = remaining.inHours;
+    final minutes = remaining.inMinutes.remainder(60);
+    final seconds = remaining.inSeconds.remainder(60);
+    final isLow = remaining.inHours < 1;
+    final color = isLow ? context.appColors.warning : theme.colorScheme.primary;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: context.appColors.cardBackground,
+        borderRadius: AppRadius.xlBorder,
+        border: Border.all(color: context.appColors.divider),
+      ),
+      child: Column(
+        children: [
+          Text(
+            isLow ? '⚡ HURRY UP!' : 'TIME REMAINING',
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: color,
+              letterSpacing: 2,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            '${hours.toString().padLeft(2, '0')}:'
+            '${minutes.toString().padLeft(2, '0')}:'
+            '${seconds.toString().padLeft(2, '0')}',
+            style: theme.textTheme.displaySmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w800,
+              fontFeatures: [const FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Stats Row ────────────────────────────────────────────────────────────────
+
+class _StatsRow extends StatelessWidget {
+  final Duel duel;
+  final int mySteps;
+  final int opponentSteps;
+  final String currentUserId;
+
+  const _StatsRow({
+    required this.duel,
+    required this.mySteps,
+    required this.opponentSteps,
+    required this.currentUserId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final diff = duel.stepDifference;
+    final isWinning = duel.isUserWinning(currentUserId);
+    final leadColor = isWinning == true
+        ? context.appColors.success
+        : isWinning == false
+            ? context.appColors.opponent
+            : context.appColors.warning;
+
+    return Row(
+      children: [
+        Expanded(
+          child: _StatChip(
+            icon: Icons.directions_walk_rounded,
+            label: 'Your Steps',
+            value: _compact(mySteps),
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: _StatChip(
+            icon: Icons.trending_up_rounded,
+            label: 'Lead',
+            value: diff > 0 ? '+${_compact(diff)}' : _compact(diff),
+            color: leadColor,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: _StatChip(
+            icon: Icons.flag_rounded,
+            label: 'Opp Steps',
+            value: _compact(opponentSteps),
+            color: context.appColors.opponent,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildMotivationalMessage(BuildContext context, Duel duel) {
+  String _compact(int v) => v >= 1000 ? '${(v / 1000).toStringAsFixed(1)}k' : '$v';
+}
+
+// ─── Motivational Banner ──────────────────────────────────────────────────────
+
+class _MotivationalBanner extends StatelessWidget {
+  final Duel duel;
+  final String currentUserId;
+
+  const _MotivationalBanner({
+    required this.duel,
+    required this.currentUserId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    final isWinning = duel.isUserWinning(widget.currentUserId);
     final leader = duel.currentLeader;
+    final isWinning = duel.isUserWinning(currentUserId);
+    final diff = _compact(duel.stepDifference);
 
-    String message;
-    IconData icon;
-    Color color;
-
-    if (leader == null) {
-      // Tie
-      message = "It's a tie! Keep pushing to take the lead!";
-      icon = Icons.balance;
-      color = context.appColors.warning;
-    } else if (isWinning == true) {
-      // Winning
-      message = "You're in the lead! Keep it up!";
-      icon = Icons.emoji_events;
-      color = context.appColors.success;
-    } else {
-      // Losing
-      final difference = duel.stepDifference;
-      message = "You're behind by $difference steps. Time to catch up!";
-      icon = Icons.directions_run;
-      color = colorScheme.error;
-    }
+    final (message, icon, color) = leader == null
+        ? (
+            "It's a tie! Push harder to take the lead!",
+            Icons.balance_rounded,
+            context.appColors.warning,
+          )
+        : isWinning == true
+            ? (
+                'You\'re in the lead! Keep it up!',
+                Icons.emoji_events_rounded,
+                context.appColors.success,
+              )
+            : (
+                'Behind by $diff steps — time to catch up!',
+                Icons.directions_run_rounded,
+                context.appColors.opponent,
+              );
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.08),
         borderRadius: AppRadius.lgBorder,
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: color, size: 32),
+          Icon(icon, color: color, size: 28),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Text(
               message,
-              style: theme.textTheme.bodyLarge?.copyWith(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: color,
                 fontWeight: FontWeight.w600,
               ),
@@ -352,16 +680,57 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
     );
   }
 
-  String _formatDateTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = dateTime.difference(now);
+  String _compact(int v) => v >= 1000 ? '${(v / 1000).toStringAsFixed(1)}k' : '$v';
+}
 
-    if (difference.isNegative) {
-      // Past
-      return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-    } else {
-      // Future
-      return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-    }
+// ─── Stat Chip ────────────────────────────────────────────────────────────────
+
+class _StatChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  const _StatChip({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: context.appColors.cardBackground,
+        borderRadius: AppRadius.lgBorder,
+        border: Border.all(color: context.appColors.divider),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
   }
 }
