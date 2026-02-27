@@ -2,7 +2,7 @@
 
 **Last Sync:** 2026-02-27 (auto-synced from git)
 **Branch:** main
-**Latest Commit:** `39b3d93` - feat(home): redesign home. refactor using seperate widget persection
+**Latest Commit:** `85d78c4` - refactor(docs): overhaul progress tracking system (v2.0)
 
 ---
 
@@ -66,6 +66,7 @@
 ## 🔄 Recent Activity (Last 10 Commits)
 
 ```
+85d78c4  refactor(docs): overhaul progress tracking system (v2.0)
 39b3d93  feat(home): redesign home. refactor using seperate widget persection
 9e52d4e  feat(home): redesign home dashboard to sports-energy layout
 862f397  feat(auth): redesign login & register screens
@@ -75,7 +76,6 @@ d152e20  docs: update README to reflect current project state
 5bd9d5e  refactor(duel): apply core class and theme token optimizations
 52d8984  refactor(health): apply core class optimizations
 0f85435  refactor(home): apply core class optimizations
-b6cd6e5  refactor(error): remove unused error handling widgets
 ```
 
 ---
