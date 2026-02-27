@@ -111,8 +111,9 @@ GoRouter createAppRouter(AuthBloc authBloc) {
           final extra = state.extra as Map<String, dynamic>?;
           if (extra == null || extra['duel'] == null) {
             // Missing data - should not happen in normal flow
-            // Return empty page and pop immediately
-            Future.microtask(() => Navigator.of(context).pop());
+            // Capture navigator before microtask to avoid async context issue
+            final navigator = Navigator.of(context);
+            Future.microtask(() => navigator.pop());
             return const SizedBox.shrink();
           }
           return DuelResultScreen(

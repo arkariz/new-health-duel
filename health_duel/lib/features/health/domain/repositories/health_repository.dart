@@ -10,7 +10,7 @@ typedef StepDataRaw = ({int value, DateTime startTime, DateTime endTime, String?
 
 /// Health data operations contract.
 ///
-/// Returns Either<Failure, T> for error handling (ADR-002).
+/// Returns `Either<Failure, T>` for error handling (ADR-002).
 /// No caching - always fresh data (ADR-001).
 /// Returns raw data for use case to create entities (ADR-006).
 abstract class HealthRepository {

@@ -56,10 +56,10 @@ void main() {
       testWidgets('all form elements correctly', (tester) async {
         await tester.pumpWidget(buildSubject());
 
-        // Title
-        expect(find.text('Health Duel'), findsOneWidget);
+        // Title (sports-energy redesign uses ALL CAPS brand tag + subtitle)
+        expect(find.text('HEALTH DUEL'), findsOneWidget);
         expect(
-          find.text('Challenge your friends to stay active!'),
+          find.text('24-hour step-count duels. May the best stepper win.'),
           findsOneWidget,
         );
 

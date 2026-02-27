@@ -61,14 +61,14 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
       body: Column(
         children: [
           // How it works card
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
+          const Padding(
+            padding: EdgeInsets.fromLTRB(
               AppSpacing.md,
               AppSpacing.md,
               AppSpacing.md,
               0,
             ),
-            child: const _HowItWorksCard(),
+            child: _HowItWorksCard(),
           ),
 
           const SizedBox(height: AppSpacing.md),

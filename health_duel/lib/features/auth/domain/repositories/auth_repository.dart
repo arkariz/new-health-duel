@@ -7,7 +7,7 @@ import 'package:health_duel/data/session/data/models/user_model.dart';
 /// Defines contracts for authentication operations.
 /// This interface lives in the domain layer and is implemented by the data layer.
 ///
-/// All methods return Either<Failure, T> for functional error handling (ADR-002).
+/// All methods return `Either<Failure, T>` for functional error handling (ADR-002).
 abstract class AuthRepository {
   /// Sign in with email and password
   ///

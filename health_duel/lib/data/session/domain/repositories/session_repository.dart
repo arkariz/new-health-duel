@@ -10,7 +10,7 @@ import 'package:health_duel/data/session/data/models/user_model.dart';
 /// Auth feature implements this interface via its data sources.
 /// Other features depend on this interface for user session access.
 ///
-/// All methods return Either<Failure, T> for functional error handling (ADR-002).
+/// All methods return `Either<Failure, T>` for functional error handling (ADR-002).
 abstract class SessionRepository {
   /// Get current authenticated user
   ///
