@@ -21,3 +21,14 @@ export 'presentation/bloc/home_state.dart';
 
 // Pages
 export 'presentation/pages/home_page.dart';
+
+// Widgets
+export 'presentation/widgets/states/authenticated_view.dart';
+export 'presentation/widgets/states/error_view.dart';
+export 'presentation/widgets/states/loading_view.dart';
+export 'presentation/widgets/active_duels_section.dart';
+export 'presentation/widgets//greeting_header_section.dart';
+export 'presentation/widgets//quick_action_card_section.dart';
+export 'presentation/widgets/steps_hero_card_section.dart';
+
+export 'presentation/dummy/home_dummy.dart';

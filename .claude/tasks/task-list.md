@@ -1,82 +1,77 @@
 # Health Duel - Task List
 
-## Phase 2: Project Foundation & Core Port
-
-### Task #1: Extract Core Implementation Details ✅
-**Status:** COMPLETED
-**Agent:** Analyzer (Explore)
-**Output:** 86 Dart files mapped from `reference_project/fintrack_lite/lib/core/`
-- EffectBloc pattern (5-part system) fully documented
-- DI registration order identified
-- Critical rebranding issue found (firebase_options.dart iOS bundle ID)
-- All files already use `package:health_duel` imports
-
-### Task #2: Scaffold Project Structure ✅
-**Status:** COMPLETED
-**Agent:** Coder (Lead direct)
-**Completed:**
-- Created `health_duel/` directory structure
-- Created `lib/core/`, `lib/data/`, `lib/features/` subdirectories
-- Created `pubspec.yaml` with git dependencies for flutter-package-core
-- Copied platform configs (android/, ios/, web/, env/)
-- Copied config files (analysis_options.yaml, .gitignore, .metadata)
-- Created placeholder files (main.dart, app.dart)
-- Verified Android bundle ID: `com.example.health_duel` ✓
-
-### Task #3: Validate Foundation ✅
-**Status:** COMPLETED
-**Agent:** Lead (manual verification)
-**Action:** Run `flutter pub get` to validate git dependencies resolve correctly
-**Result:** ✅ SUCCESS - Git dependencies resolved, got dependencies!
-
-### Task #4: Port Core Infrastructure ✅
-**Status:** COMPLETED
-**Agent:** Coder (general-purpose)
-**Action:** Port 86 core files from reference to health_duel
-**Result:** ✅ 85 files ported successfully + firebase_options fixed
-**Verified:** Architecture review passed (99/100, 0 critical issues)
+**Last Updated:** 2026-02-17
 
 ---
 
-## Phase 3: Port Features
+## ✅ Phase 1: Documentation (COMPLETED)
+All tasks done. See PROGRESS.md for details.
 
-### Task #5: Port Session & Auth Features ⏳
-**Status:** IN PROGRESS (NEXT)
-**Agent:** Coder-A (general-purpose, background)
-**Action:** Port session data layer + full auth feature + entry points
-**Blocked by:** None
-**Files to port:**
-- lib/data/session/ (~7 files)
-- lib/features/auth/ (~25 files)
-- lib/main.dart, lib/app.dart
+---
 
-### Task #6: Port Home & Health Features ⏳
-**Status:** IN PROGRESS
-**Agent:** Coder-B (general-purpose, background)
-**Action:** Port home and health features
-**Blocked by:** None (parallel with Task #5)
-**Files to port:**
-- lib/features/home/ (~10 files)
-- lib/features/health/ (~20 files)
+## ✅ Phase 2: Project Foundation & Core Port (COMPLETED)
+All tasks done. See PROGRESS.md for details.
 
-### Task #7: Port Tests ⏳
+---
+
+## ✅ Phase 3: Port Features (COMPLETED)
+All tasks done. See PROGRESS.md for details.
+
+---
+
+## ✅ Phase 3.5: Architecture Refinement — AuthCredentials (COMPLETED)
+Rename User → AuthCredentials. See PROGRESS.md for details.
+
+---
+
+## ✅ Phase 4: Build Duel Feature (COMPLETED)
+All tasks done (Domain, Data, Presentation, Routing, DI). See PROGRESS.md for details.
+
+---
+
+## ✅ Phase 4.5: Auth Cleanup & Optimization (COMPLETED)
+
+### Task #A1: Auth Code Quality Review ✅
+**Status:** COMPLETED
+**Agent:** Explore (reviewer)
+**Result:** 82/100 score, found type safety + convention issues
+
+### Task #A2: Apply Auth Fixes ✅
+**Status:** COMPLETED
+**Agent:** Lead (direct)
+**Changes:**
+- Remove signOut() from AuthRepository (moved to Session)
+- Delete AuthGuard widget
+- Fix AuthStateChanged.user: dynamic → UserModel?
+- Use AppRoutes constants (remove hardcoded route strings)
+- Add deduplication comment to _onAuthStateChanged
+- Refactor LoginLoadingView UI
+**Commit:** `6aee88a`
+
+### Task #A3: QA Verification ✅
+**Status:** COMPLETED
+**Result:** 42/42 tests pass, flutter analyze clean
+
+---
+
+## 🔲 Phase 5 (Plan Step 15): Write Duel Tests — NEXT
+
+### Task #15: Write Duel Tests ⏳
 **Status:** PENDING
 **Agent:** Coder (general-purpose)
-**Action:** Port all test files from reference
-**Blocked by:** Tasks #5, #6
+**Action:** Write unit tests for Duel domain + BLoC
+**Blocked by:** None
+**Scope:**
+- test/features/duel/domain/ (entity, use case tests)
+- test/features/duel/bloc/ (DuelBloc tests)
 
-### Task #8: Architecture Review ⏳
+### Task #16: Duel Code & Architecture Review ⏳
 **Status:** PENDING
 **Agent:** Reviewer (Explore)
-**Action:** Review ported features for Clean Architecture compliance
-**Blocked by:** Task #7
+**Blocked by:** Task #15
 
-### Task #9: Full Verification ⏳
+### Task #17: Duel QA Verification ⏳
 **Status:** PENDING
 **Agent:** QA (Bash)
-**Action:** flutter analyze, flutter test, flutter build apk --debug
-**Blocked by:** Task #8
-
----
-
-**Last Updated:** 2026-02-13 14:30
+**Action:** flutter analyze, flutter test, flutter build apk
+**Blocked by:** Task #16

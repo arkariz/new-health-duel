@@ -14,8 +14,7 @@
       "Bash(flutter build:*)",
       "Bash(flutter test:*)",
       "WebSearch",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git add:*)"
     ]
   }
 }

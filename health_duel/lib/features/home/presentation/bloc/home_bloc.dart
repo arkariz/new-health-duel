@@ -38,7 +38,7 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
 
   /// Load current user data
   Future<void> _onLoadUserRequested(HomeLoadUserRequested event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(status: HomeStatus.loading, loadingMessage: 'Loading your profile...', clearError: true));
+    emit(state.copyWith(status: HomeStatus.loading, clearError: true));
 
     final result = await _sessionRepository.getCurrentUser();
 
@@ -69,7 +69,7 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
 
   /// Sign out and navigate to login
   Future<void> _onSignOutRequested(HomeSignOutRequested event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(status: HomeStatus.loading, loadingMessage: 'Signing out...'));
+    emit(state.copyWith(status: HomeStatus.loading));
 
     final result = await _signOut();
 

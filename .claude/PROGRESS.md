@@ -12,7 +12,7 @@
 - ✅ **Phase 3:** Port Features (Auth, Home, Health) - COMPLETED ✅
 - ✅ **Phase 4:** Build Duel Feature - COMPLETED ✅
 - ✅ **Phase 4.5:** Auth Cleanup & Optimization - COMPLETED ✅
-- 🎨 **Phase 5:** UI Redesign (IN PROGRESS — Step 1/4 done)
+- 🎨 **Phase 5:** UI Redesign (IN PROGRESS — Step 3/4 done, Step 4 pending)
 
 ---
 
@@ -453,31 +453,39 @@ new-health-duel/
 ### Step 1 — Design Tokens ✅ DONE
 - `app_colors_extension.dart`: Added `opponent` + `gold`; updated all dark values
 - `app_theme.dart`: New color constants, dark ColorScheme, Syne+DM Sans typography
-- `flutter analyze`: 6 pre-existing info only (0 new errors)
-- Commit: pending
+- Commit: `c400114`
 
-### Step 2 — Auth Screens 🔲 TODO
-- Login: green CTA button, Syne heading, dark bg
-- Register: same treatment
+### Step 2 — Auth Screens ✅ DONE
+- Login: removed AppBar, ambient radial gradients, DuelAvatars header, RichText headline
+- Register: transparent AppBar, ambient gradients, green glow icon container
+- Both: `extendBodyBehindAppBar: true`, green FilledButton (foreground #060A0E)
+- Commit: `862f397`
 
-### Step 3 — Home Screen 🔲 TODO
-- Steps hero card (large Syne number, progress bar with glow dot)
-- Active duel card (battle bar split green/orange)
-- Quick actions 2-col grid
-- Bottom navigation bar (new widget)
+### Step 3 — Home Screen ✅ DONE (uncommitted refactor pending)
+**Committed (basic):** `9e52d4e` — transparent AppBar, greeting header, steps hero, duel card, quick actions 2-col
+**Uncommitted (faithful + refactored):**
+- Extracted to widget files: `dummy/`, `widgets/states/`, sections per widget
+- `HomeDummy` class in `presentation/dummy/home_dummy.dart` (public, easily replaceable)
+- `StepsHeroCardSection` — LayoutBuilder glow progress bar (BoxShadow dot)
+- `ActiveDuelsSection` — gradient bg, LIVE badge, `_DuelPlayerTile`, split battle bar
+- `GreetingHeaderSection` — time-aware greeting, notification bell button
+- `QuickActionCardSection` — 2×2 GridView, IconData + value field
+- `home_page.dart` slimmed to ~80 lines (delegates to section widgets)
+- Files: 8 new (dummy + 7 widgets/states), 4 modified (home_page, home.dart, home_bloc, home_state)
 
-### Step 4 — Duel Screens 🔲 TODO
-- Active Duel: arena card, battle bar split, ambient glow, stats chips, activity feed
-- Duel Result: trophy float, confetti, winner/loser cards, rematch button
-- Duel List + Create: card redesign
+### Step 4 — Duel Screens 🔲 TODO (Task #10, in_progress)
+- Active Duel: ambient glow (green+orange), arena card with player columns, battle bar split, stats chips (3-col grid), activity feed
+- Duel Result: trophy float, ambient glow, confetti effect, winner/loser cards with steps, stats grid, rematch + share buttons
+- Duel List: tab redesign (Active/Pending/History), live duel card style
+- Create Duel: friend selection redesign
 
 ---
 
 ## 🎯 Next Session Actions
 
-1. **Current state:** Phase 5 Step 1 (design tokens) DONE — commit pending
-2. **Next:** Step 2 — Auth Screen redesign
-3. **Command:** Say "lanjut" to continue with auth screens
+1. **Current state:** Phase 5 Step 3 DONE (uncommitted faithful redesign waiting)
+2. **Next:** Step 4 — Duel Screens redesign (Task #10)
+3. **Command:** Say "lanjut" to continue with duel screens
 
 ---
 

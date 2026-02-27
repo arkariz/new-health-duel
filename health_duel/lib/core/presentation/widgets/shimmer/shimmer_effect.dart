@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/theme/theme.dart';
 
 /// Shimmer effect for loading states
 ///
@@ -80,8 +81,8 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
       return widget.child;
     }
 
-    final baseColor = widget.baseColor ?? Colors.grey[300]!;
-    final highlightColor = widget.highlightColor ?? Colors.grey[100]!;
+    final baseColor = widget.baseColor ?? context.appColors.shimmerBase;
+    final highlightColor = widget.highlightColor ?? context.appColors.shimmerHighlight;
 
     return AnimatedBuilder(
       animation: _animation,

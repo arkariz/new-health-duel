@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>24-Hour Health Duels — UI Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0e1318;
+    --card: #141b22;
+    --border: #1e2a34;
+    --text: #e8f0f5;
+    --muted: #4a6070;
+    --sub: #7a95a8;
+    --green: #00e5a0;
+    --green-dim: rgba(0,229,160,0.12);
+    --green-glow: rgba(0,229,160,0.25);
+    --orange: #ff6b35;
+    --orange-dim: rgba(255,107,53,0.12);
+    --blue: #38b6ff;
+    --blue-dim: rgba(56,182,255,0.12);
+    --gold: #ffc94a;
+    --red: #ff4d6a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #060a0e;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .page-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .page-title span { color: var(--green); }
+  .page-sub {
+    font-size: 15px;
+    color: var(--sub);
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* SCREEN NAV */
+  .screen-nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .nav-btn {
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--sub);
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: var(--green); color: var(--green); }
+  .nav-btn.active { background: var(--green); color: #060a0e; border-color: var(--green); font-weight: 600; }
+
+  /* SCREENS WRAPPER */
+  .screens-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  /* PHONE SHELL */
+  .phone {
+    width: 320px;
+    background: #0a0e12;
+    border-radius: 48px;
+    border: 1.5px solid #1e2a34;
+    box-shadow:
+      0 0 0 6px #060a0e,
+      0 0 0 7px #1a2530,
+      0 40px 80px rgba(0,0,0,0.6),
+      0 0 60px rgba(0,229,160,0.04);
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .phone-notch {
+    width: 100px; height: 26px;
+    background: #0a0e12;
+    border-radius: 0 0 18px 18px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+    border: 1.5px solid #1e2a34;
+    border-top: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .notch-camera {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #1a2530;
+    border: 1px solid #242f3a;
+  }
+  .notch-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #1a2530;
+  }
+
+  .phone-screen {
+    min-height: 660px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sub);
+  }
+  .status-icons { display: flex; gap: 5px; align-items: center; }
+  .signal-bar { width: 3px; background: var(--sub); border-radius: 1px; }
+
+  /* ===== SCREEN: ONBOARDING ===== */
+  .screen-onboarding {
+    background: var(--bg);
+    min-height: 660px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .onboard-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 200px 200px at 60% 25%, rgba(0,229,160,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 160px 160px at 20% 70%, rgba(56,182,255,0.06) 0%, transparent 70%);
+  }
+  .onboard-content {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 24px 32px;
+  }
+  .onboard-illustration {
+    margin: 12px auto 24px;
+    width: 200px; height: 200px;
+    position: relative;
+  }
+  .duel-ring {
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    position: absolute;
+    top: 10px; left: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .duel-ring::before {
+    content: '';
+    position: absolute;
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--green);
+    border-right-color: var(--green);
+    animation: spin 3s linear infinite;
+  }
+  .duel-avatars {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .duel-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    position: relative;
+  }
+  .duel-avatar.you { background: linear-gradient(135deg, #00e5a0, #00b87a); }
+  .duel-avatar.them { background: linear-gradient(135deg, #ff6b35, #e8501f); }
+  .vs-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--gold);
+    background: rgba(255,201,74,0.15);
+    padding: 3px 7px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,201,74,0.3);
+  }
+  .step-pulse {
+    position: absolute;
+    bottom: 12px; right: 12px;
+    background: var(--green-dim);
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--green);
+    display: flex; gap: 5px; align-items: center;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s ease-in-out infinite; }
+
+  .onboard-tag {
+    font-size: 11px; font-weight: 600; letter-spacing: 2px;
+    color: var(--green); text-transform: uppercase; margin-bottom: 10px;
+  }
+  .onboard-h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px; font-weight: 800;
+    line-height: 1.15; margin-bottom: 12px;
+    color: var(--text);
+  }
+  .onboard-h1 span { color: var(--green); }
+  .onboard-p { font-size: 13px; color: var(--sub); line-height: 1.6; margin-bottom: 28px; }
+
+  .btn-primary {
+    width: 100%; padding: 15px;
+    background: var(--green);
+    color: #060a0e;
+    border: none; border-radius: 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-bottom: 10px;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 2.5s ease-in-out infinite;
+  }
+  .btn-secondary {
+    width: 100%; padding: 14px;
+    background: transparent;
+    color: var(--sub);
+    border: 1px solid var(--border); border-radius: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* ===== SCREEN: HOME DASHBOARD ===== */
+  .screen-home {
+    background: var(--bg);
+    min-height: 660px;
+    padding: 4px 0 0;
+  }
+  .home-header {
+    padding: 10px 20px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .home-greeting { font-size: 12px; color: var(--sub); }
+  .home-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); }
+  .notif-btn {
+    width: 36px; height: 36px;
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    position: relative;
+  }
+  .notif-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 7px; height: 7px;
+    background: var(--red); border-radius: 50%;
+    border: 1.5px solid var(--bg);
+  }
+
+  .steps-hero {
+    margin: 0 16px 16px;
+    background: var(--card);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .steps-hero::before {
+    content: '';
+    position: absolute; top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: var(--green-glow);
+    filter: blur(30px);
+  }
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sub); margin-bottom: 4px; }
+  .steps-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 44px; font-weight: 800;
+    color: var(--text); line-height: 1;
+    margin-bottom: 4px;
+  }
+  .steps-count span { color: var(--green); font-size: 24px; }
+  .steps-goal { font-size: 12px; color: var(--sub); margin-bottom: 14px; }
+  .progress-track {
+    height: 6px; background: var(--border);
+    border-radius: 3px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #00ffbb);
+    border-radius: 3px;
+    width: 68%;
+    position: relative;
+    animation: fillProgress 1.5s ease-out both;
+  }
+  .progress-fill::after {
+    content: '';
+    position: absolute; right: 0; top: -2px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+  }
+  .steps-meta {
+    display: flex; justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px; color: var(--sub);
+  }
+  .steps-meta strong { color: var(--green); }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--text);
+    padding: 0 20px 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .section-label a { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 400; color: var(--green); }
+
+  .duel-card-active {
+    margin: 0 16px 12px;
+    background: linear-gradient(135deg, #0e1f18, #0d1a23);
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 20px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .duel-card-active::before {
+    content: 'LIVE';
+    position: absolute; top: 14px; right: 14px;
+    font-size: 9px; font-weight: 700; letter-spacing: 2px;
+    color: var(--green);
+    background: var(--green-dim);
+    border: 1px solid rgba(0,229,160,0.3);
+    padding: 3px 7px; border-radius: 6px;
+  }
+  .duel-players {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .player-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+  .pa-green { background: linear-gradient(135deg, #00e5a0, #00a872); }
+  .pa-orange { background: linear-gradient(135deg, #ff6b35, #cc4410); }
+  .player-info { flex: 1; }
+  .player-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .player-steps { font-size: 11px; color: var(--sub); }
+  .player-steps strong { color: var(--green); }
+  .duel-vs { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--gold); }
+
+  .duel-progress-wrap {
+    display: flex; gap: 3px; align-items: center; margin-bottom: 10px;
+  }
+  .dp-bar { flex: 1; height: 8px; border-radius: 2px; overflow: hidden; background: var(--border); }
+  .dp-fill-you { background: linear-gradient(90deg, var(--green), #00c87a); width: 62%; height: 100%; border-radius: 2px; }
+  .dp-fill-them { background: linear-gradient(90deg, var(--orange), #e8501f); width: 51%; height: 100%; border-radius: 2px; float: right; }
+  .dp-center { width: 2px; height: 18px; background: var(--border); border-radius: 1px; }
+
+  .time-remaining {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--sub);
+  }
+  .time-remaining span { color: var(--orange); font-weight: 600; }
+
+  .quick-actions {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin: 0 16px 16px;
+  }
+  .qa-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .qa-icon { font-size: 22px; }
+  .qa-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .qa-sub { font-size: 11px; color: var(--sub); }
+
+  /* ===== SCREEN: ACTIVE DUEL ===== */
+  .screen-duel {
+    background: var(--bg);
+    min-height: 660px;
+    position: relative;
+    overflow: hidden;
+  }
+  .duel-ambient {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 180px 140px at 20% 50%, rgba(0,229,160,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 180px 140px at 80% 50%, rgba(255,107,53,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .duel-topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 20px 12px;
+  }
+  .back-btn {
+    width: 32px; height: 32px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .duel-timer-badge {
+    background: var(--orange-dim);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px; font-weight: 600; color: var(--orange);
+    display: flex; gap: 5px; align-items: center;
+  }
+  .timer-icon { animation: pulse 1s ease-in-out infinite; }
+
+  .duel-header {
+    text-align: center;
+    padding: 4px 20px 16px;
+  }
+  .duel-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .duel-subtitle { font-size: 12px; color: var(--sub); }
+
+  .arena {
+    margin: 0 16px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 20px 16px;
+    position: relative;
+  }
+
+  .arena-players {
+    display: flex; align-items: flex-start; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .arena-player {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px;
+  }
+  .arena-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    border: 2px solid transparent;
+    position: relative;
+  }
+  .arena-avatar.leading {
+    border-color: var(--green);
+    box-shadow: 0 0 16px rgba(0,229,160,0.3);
+  }
+  .arena-avatar.losing {
+    border-color: var(--border);
+  }
+  .leading-crown {
+    position: absolute; top: -10px;
+    font-size: 14px;
+    animation: float 2s ease-in-out infinite;
+  }
+  .arena-player-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .arena-player-steps {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800;
+  }
+  .arena-player-steps.green { color: var(--green); }
+  .arena-player-steps.orange { color: var(--orange); }
+  .arena-player-label { font-size: 10px; color: var(--sub); margin-top: -4px; }
+
+  .arena-vs {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; padding-top: 14px;
+  }
+  .vs-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 800; color: var(--gold);
+  }
+  .lead-badge {
+    font-size: 10px; font-weight: 600;
+    color: var(--green);
+    background: var(--green-dim);
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 6px;
+    padding: 2px 6px;
+    white-space: nowrap;
+  }
+
+  .battle-bar-wrap { position: relative; }
+  .battle-bar-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--sub);
+    margin-bottom: 4px;
+  }
+  .battle-track {
+    height: 12px; background: var(--border);
+    border-radius: 6px; overflow: hidden;
+    display: flex;
+  }
+  .battle-you {
+    background: linear-gradient(90deg, var(--green), #00d48a);
+    flex: 62;
+    transition: flex 1s ease;
+  }
+  .battle-them {
+    background: linear-gradient(90deg, #cc4410, var(--orange));
+    flex: 38;
+    transition: flex 1s ease;
+  }
+
+  .stats-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px; margin-bottom: 12px;
+  }
+  .stat-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-chip-val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
+  .stat-chip-val.green { color: var(--green); }
+  .stat-chip-label { font-size: 10px; color: var(--sub); margin-top: 2px; }
+
+  .activity-feed {
+    margin: 0 16px;
+  }
+  .feed-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--sub);
+  }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .feed-dot.orange { background: var(--orange); }
+  .feed-item strong { color: var(--text); }
+  .feed-time { margin-left: auto; font-size: 10px; color: var(--muted); }
+
+  /* ===== SCREEN: RESULT ===== */
+  .screen-result {
+    background: var(--bg);
+    min-height: 660px;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 240px 200px at 50% 30%, rgba(0,229,160,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 300px 300px at 50% 30%, rgba(255,201,74,0.04) 0%, transparent 70%);
+  }
+  .confetti {
+    position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  }
+  .conf-piece {
+    position: absolute; width: 6px; height: 6px; border-radius: 1px;
+    animation: confettiFall linear infinite;
+  }
+
+  .result-content {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 20px 24px;
+  }
+  .win-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    color: var(--green); text-transform: uppercase;
+    margin-bottom: 8px;
+    background: var(--green-dim);
+    border: 1px solid rgba(0,229,160,0.25);
+    padding: 4px 14px; border-radius: 20px;
+  }
+  .trophy { font-size: 52px; margin-bottom: 4px; animation: float 3s ease-in-out infinite; }
+  .win-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 800; color: var(--text);
+    text-align: center; line-height: 1.15; margin-bottom: 4px;
+  }
+  .win-title span { color: var(--green); }
+  .win-sub { font-size: 13px; color: var(--sub); margin-bottom: 20px; }
+
+  .result-card {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .result-players {
+    display: flex; gap: 8px; align-items: center;
+    margin-bottom: 14px;
+  }
+  .rp {
+    flex: 1;
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .rp.winner { border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.05); }
+  .rp-avatar { font-size: 26px; margin-bottom: 4px; }
+  .rp-name { font-size: 11px; font-weight: 600; color: var(--sub); margin-bottom: 2px; }
+  .rp-steps { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
+  .rp-steps.green { color: var(--green); }
+  .rp-steps.orange { color: var(--orange); }
+  .rp-win-tag { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--green); margin-top: 2px; }
+  .rp-vs { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--gold); }
+
+  .result-stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .rs-item { text-align: center; }
+  .rs-val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
+  .rs-label { font-size: 10px; color: var(--sub); margin-top: 2px; }
+
+  .result-actions { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .btn-rematch {
+    width: 100%; padding: 14px;
+    background: var(--green);
+    color: #060a0e;
+    border: none; border-radius: 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-share {
+    width: 100%; padding: 13px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border); border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    display: flex; justify-content: space-around;
+    padding: 12px 8px 16px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--muted);
+    cursor: pointer;
+  }
+  .nav-item.active { color: var(--green); }
+  .nav-icon { font-size: 20px; }
+  .nav-active-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--green); }
+
+  /* SCREEN LABEL */
+  .screen-label-tag {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 12px; font-weight: 600;
+    color: var(--sub);
+    letter-spacing: 1px;
+  }
+  .screen-label-tag span {
+    display: inline-block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 14px;
+  }
+
+  /* HIDDEN SCREENS */
+  .screen-group { display: none; flex-direction: column; align-items: center; gap: 20px; }
+  .screen-group.visible { display: flex; }
+  .screens-wrapper > .screen-group { animation: fadeUp 0.4s ease both; }
+
+  /* ANIMATIONS */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.92); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes fillProgress {
+    from { width: 0; }
+    to { width: 68%; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(700px) rotate(720deg); opacity: 0; }
+  }
+
+  /* LEGEND */
+  .legend {
+    max-width: 760px; margin: 48px auto 0;
+    background: #0e1318;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+  }
+  .legend-header { grid-column: 1 / -1; margin-bottom: 4px; }
+  .legend-header h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .legend-header p { font-size: 12px; color: var(--sub); }
+  .legend-item h4 { font-size: 12px; font-weight: 600; color: var(--green); margin-bottom: 4px; }
+  .legend-item p { font-size: 12px; color: var(--sub); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-label">UI Mockup</div>
+  <div class="page-title">24-Hour Health <span>Duels</span></div>
+  <p class="page-sub">High-fidelity mobile screens for the social step competition app. Tap the buttons below to switch between screens.</p>
+</div>
+
+<!-- NAV -->
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="showScreen('onboarding', this)">Onboarding</button>
+  <button class="nav-btn" onclick="showScreen('home', this)">Home</button>
+  <button class="nav-btn" onclick="showScreen('duel', this)">Active Duel</button>
+  <button class="nav-btn" onclick="showScreen('result', this)">Duel Result</button>
+</div>
+
+<div class="screens-wrapper">
+
+  <!-- ONBOARDING -->
+  <div class="screen-group visible" id="screen-onboarding">
+    <div class="phone">
+      <div class="phone-notch">
+        <div class="notch-dot"></div>
+        <div class="notch-camera"></div>
+        <div class="notch-dot"></div>
+      </div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons">
+            <div class="signal-bar" style="height:6px"></div>
+            <div class="signal-bar" style="height:9px"></div>
+            <div class="signal-bar" style="height:12px"></div>
+            <span style="font-size:12px">●●</span>
+            <span style="font-size:13px">⚡</span>
+          </div>
+        </div>
+        <div class="screen-onboarding">
+          <div class="onboard-bg"></div>
+          <div class="onboard-content">
+            <div class="onboard-illustration">
+              <div class="duel-ring">
+                <div class="duel-avatars">
+                  <div class="duel-avatar you">🏃</div>
+                  <div class="vs-badge">VS</div>
+                  <div class="duel-avatar them">🏃</div>
+                </div>
+              </div>
+              <div class="step-pulse">
+                <div class="step-dot"></div>
+                LIVE
+              </div>
+            </div>
+            <div class="onboard-tag">New way to stay fit</div>
+            <div class="onboard-h1">Challenge.<br><span>Compete.</span><br>Win.</div>
+            <p class="onboard-p">Invite a friend to a 24-hour step battle. Real-time tracking. One winner. Pure bragging rights.</p>
+            <button class="btn-primary">Get Started</button>
+            <button class="btn-secondary">Sign in to existing account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label-tag"><span>01 · Onboarding</span></div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen-group" id="screen-home">
+    <div class="phone">
+      <div class="phone-notch">
+        <div class="notch-dot"></div>
+        <div class="notch-camera"></div>
+        <div class="notch-dot"></div>
+      </div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons">
+            <div class="signal-bar" style="height:6px"></div>
+            <div class="signal-bar" style="height:9px"></div>
+            <div class="signal-bar" style="height:12px"></div>
+            <span style="font-size:12px">●●</span>
+            <span style="font-size:13px">⚡</span>
+          </div>
+        </div>
+        <div class="screen-home">
+          <div class="home-header">
+            <div>
+              <div class="home-greeting">Good morning 👋</div>
+              <div class="home-name">Arkariz</div>
+            </div>
+            <div class="notif-btn">🔔 <div class="notif-dot"></div></div>
+          </div>
+
+          <div class="steps-hero">
+            <div class="steps-label">Today's Steps</div>
+            <div class="steps-count">6,842 <span>steps</span></div>
+            <div class="steps-goal">Goal: 10,000 steps</div>
+            <div class="progress-track">
+              <div class="progress-fill"></div>
+            </div>
+            <div class="steps-meta">
+              <span><strong>68%</strong> to goal</span>
+              <span>3,158 remaining</span>
+            </div>
+          </div>
+
+          <div class="section-label">Active Duel <a>See all</a></div>
+          <div class="duel-card-active">
+            <div class="duel-players">
+              <div class="player-avatar pa-green">🏃</div>
+              <div class="player-info">
+                <div class="player-name">You</div>
+                <div class="player-steps"><strong>6,842</strong> steps</div>
+              </div>
+              <div class="duel-vs">VS</div>
+              <div class="player-info" style="text-align:right">
+                <div class="player-name">@rendi_s</div>
+                <div class="player-steps" style="color: var(--sub)"><strong style="color:var(--orange)">5,510</strong> steps</div>
+              </div>
+              <div class="player-avatar pa-orange">🏃</div>
+            </div>
+            <div class="duel-progress-wrap">
+              <div class="dp-bar"><div class="dp-fill-you"></div></div>
+              <div class="dp-center"></div>
+              <div class="dp-bar"><div class="dp-fill-them"></div></div>
+            </div>
+            <div class="time-remaining">⏱ <span>11h 32m</span> remaining · You're winning by 1,332 steps</div>
+          </div>
+
+          <div class="section-label" style="margin-top:8px">Quick Actions</div>
+          <div class="quick-actions">
+            <div class="qa-card">
+              <div class="qa-icon">⚔️</div>
+              <div class="qa-label">New Duel</div>
+              <div class="qa-sub">Challenge a friend</div>
+            </div>
+            <div class="qa-card">
+              <div class="qa-icon">📊</div>
+              <div class="qa-label">My Stats</div>
+              <div class="qa-sub">Win rate: 71%</div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item active">
+              <div class="nav-icon">🏠</div>
+              <div>Home</div>
+              <div class="nav-active-dot"></div>
+            </div>
+            <div class="nav-item">
+              <div class="nav-icon">⚔️</div>
+              <div>Duels</div>
+            </div>
+            <div class="nav-item">
+              <div class="nav-icon">👥</div>
+              <div>Friends</div>
+            </div>
+            <div class="nav-item">
+              <div class="nav-icon">👤</div>
+              <div>Profile</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label-tag"><span>02 · Home Dashboard</span></div>
+  </div>
+
+  <!-- ACTIVE DUEL -->
+  <div class="screen-group" id="screen-duel">
+    <div class="phone">
+      <div class="phone-notch">
+        <div class="notch-dot"></div>
+        <div class="notch-camera"></div>
+        <div class="notch-dot"></div>
+      </div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons">
+            <div class="signal-bar" style="height:6px"></div>
+            <div class="signal-bar" style="height:9px"></div>
+            <div class="signal-bar" style="height:12px"></div>
+            <span style="font-size:12px">●●</span>
+            <span style="font-size:13px">⚡</span>
+          </div>
+        </div>
+        <div class="screen-duel">
+          <div class="duel-ambient"></div>
+          <div class="duel-topbar">
+            <div class="back-btn">←</div>
+            <div class="duel-timer-badge"><span class="timer-icon">⏱</span> 11h 32m left</div>
+            <div style="width:32px"></div>
+          </div>
+          <div class="duel-header">
+            <div class="duel-title">Step Duel · Today</div>
+            <div class="duel-subtitle">First to 10,000 steps wins — or the leader at 24h</div>
+          </div>
+
+          <div class="arena">
+            <div class="arena-players">
+              <div class="arena-player">
+                <div class="arena-avatar leading pa-green">
+                  <span class="leading-crown">👑</span>
+                  🏃
+                </div>
+                <div class="arena-player-name">You</div>
+                <div class="arena-player-steps green">6,842</div>
+                <div class="arena-player-label">steps today</div>
+              </div>
+              <div class="arena-vs">
+                <div class="vs-text">VS</div>
+                <div class="lead-badge">+1,332 ahead</div>
+              </div>
+              <div class="arena-player">
+                <div class="arena-avatar losing pa-orange">🏃</div>
+                <div class="arena-player-name">@rendi_s</div>
+                <div class="arena-player-steps orange">5,510</div>
+                <div class="arena-player-label">steps today</div>
+              </div>
+            </div>
+
+            <div class="battle-bar-wrap">
+              <div class="battle-bar-labels">
+                <span style="color:var(--green)">55%</span>
+                <span style="color:var(--sub)">Battle Progress</span>
+                <span style="color:var(--orange)">45%</span>
+              </div>
+              <div class="battle-track">
+                <div class="battle-you"></div>
+                <div class="battle-them"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 0 16px; margin-bottom: 12px;">
+            <div class="stats-row">
+              <div class="stat-chip">
+                <div class="stat-chip-val green">4.2</div>
+                <div class="stat-chip-label">km walked</div>
+              </div>
+              <div class="stat-chip">
+                <div class="stat-chip-val">312</div>
+                <div class="stat-chip-label">kcal burned</div>
+              </div>
+              <div class="stat-chip">
+                <div class="stat-chip-val" style="color:var(--gold)">71%</div>
+                <div class="stat-chip-label">win rate</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">Live Updates</div>
+          <div class="activity-feed" style="padding: 0 16px 12px">
+            <div class="feed-item">
+              <div class="feed-dot"></div>
+              <span><strong>You</strong> reached 6,000 steps</span>
+              <span class="feed-time">2m ago</span>
+            </div>
+            <div class="feed-item">
+              <div class="feed-dot orange"></div>
+              <span><strong>@rendi_s</strong> hit 5,000 steps</span>
+              <span class="feed-time">8m ago</span>
+            </div>
+            <div class="feed-item">
+              <div class="feed-dot"></div>
+              <span><strong>You</strong> took the lead 🔥</span>
+              <span class="feed-time">41m ago</span>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <div class="nav-icon">🏠</div>
+              <div>Home</div>
+            </div>
+            <div class="nav-item active">
+              <div class="nav-icon">⚔️</div>
+              <div>Duels</div>
+              <div class="nav-active-dot"></div>
+            </div>
+            <div class="nav-item">
+              <div class="nav-icon">👥</div>
+              <div>Friends</div>
+            </div>
+            <div class="nav-item">
+              <div class="nav-icon">👤</div>
+              <div>Profile</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label-tag"><span>03 · Active Duel</span></div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen-group" id="screen-result">
+    <div class="phone">
+      <div class="phone-notch">
+        <div class="notch-dot"></div>
+        <div class="notch-camera"></div>
+        <div class="notch-dot"></div>
+      </div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons">
+            <div class="signal-bar" style="height:6px"></div>
+            <div class="signal-bar" style="height:9px"></div>
+            <div class="signal-bar" style="height:12px"></div>
+            <span style="font-size:12px">●●</span>
+            <span style="font-size:13px">⚡</span>
+          </div>
+        </div>
+        <div class="screen-result">
+          <div class="result-bg"></div>
+          <div class="confetti" id="confetti"></div>
+          <div class="result-content">
+            <div class="win-label">🏆 Duel Complete</div>
+            <div class="trophy">🏆</div>
+            <div class="win-title">You <span>Won!</span></div>
+            <p class="win-sub">Incredible effort — you crushed it today</p>
+
+            <div class="result-card">
+              <div class="result-players">
+                <div class="rp winner">
+                  <div class="rp-avatar">🏃</div>
+                  <div class="rp-name">You</div>
+                  <div class="rp-steps green">8,941</div>
+                  <div class="rp-win-tag">★ WINNER</div>
+                </div>
+                <div class="rp-vs">VS</div>
+                <div class="rp">
+                  <div class="rp-avatar">🏃</div>
+                  <div class="rp-name">@rendi_s</div>
+                  <div class="rp-steps orange">7,203</div>
+                  <div style="font-size:9px;color:var(--muted);margin-top:2px">Good effort</div>
+                </div>
+              </div>
+              <div class="result-stats">
+                <div class="rs-item">
+                  <div class="rs-val">+1,738</div>
+                  <div class="rs-label">Step margin</div>
+                </div>
+                <div class="rs-item">
+                  <div class="rs-val" style="color:var(--green)">24h</div>
+                  <div class="rs-label">Duration</div>
+                </div>
+                <div class="rs-item">
+                  <div class="rs-val" style="color:var(--gold)">72%</div>
+                  <div class="rs-label">Win rate</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-actions">
+              <button class="btn-rematch">⚔️ Rematch</button>
+              <button class="btn-share">📤 Share Result</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label-tag"><span>04 · Duel Result</span></div>
+  </div>
+
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-header">
+    <h3>Design System Notes</h3>
+    <p>Aesthetic direction: Dark, high-contrast, sports-energy — bold typography meets data-driven UI</p>
+  </div>
+  <div class="legend-item">
+    <h4>Color: #00E5A0</h4>
+    <p>Primary green — winner states, your progress, positive actions</p>
+  </div>
+  <div class="legend-item">
+    <h4>Color: #FF6B35</h4>
+    <p>Opponent orange — competitor states, timer urgency</p>
+  </div>
+  <div class="legend-item">
+    <h4>Color: #FFC94A</h4>
+    <p>Gold accent — VS badges, crowns, trophy elements</p>
+  </div>
+  <div class="legend-item">
+    <h4>Syne (Display)</h4>
+    <p>Step counts, headings, scores — high-impact numbers</p>
+  </div>
+  <div class="legend-item">
+    <h4>DM Sans (Body)</h4>
+    <p>Labels, descriptions, navigation — clean readability</p>
+  </div>
+  <div class="legend-item">
+    <h4>Screens Covered</h4>
+    <p>Onboarding, Home, Active Duel, Duel Result — core user journey</p>
+  </div>
+</div>
+
+<script>
+  // Screen switcher
+  function showScreen(id, btn) {
+    document.querySelectorAll('.screen-group').forEach(g => g.classList.remove('visible'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('visible');
+    btn.classList.add('active');
+  }
+
+  // Confetti
+  const confettiEl = document.getElementById('confetti');
+  const colors = ['#00e5a0','#ffc94a','#ff6b35','#38b6ff','#ffffff'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'conf-piece';
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * -20}%;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      width: ${4 + Math.random() * 6}px;
+      height: ${4 + Math.random() * 6}px;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      animation-duration: ${2.5 + Math.random() * 3}s;
+      animation-delay: ${Math.random() * 2}s;
+      opacity: ${0.6 + Math.random() * 0.4};
+    `;
+    confettiEl.appendChild(p);
+  }
+</script>
+</body>
+</html>

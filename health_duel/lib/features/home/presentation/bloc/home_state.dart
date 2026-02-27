@@ -28,7 +28,6 @@ enum HomeStatus {
 /// - [status] - Current loading/error status
 /// - [user] - Authenticated userModel data
 /// - [errorMessage] - Error message to display
-/// - [loadingMessage] - Optional loading message
 ///
 /// ═══════════════════════════════════════════════════════════════════
 /// SIDE-EFFECT TRIGGERS (consumed once, then cleared) - NOT in [props]
@@ -49,21 +48,18 @@ class HomeState extends UiState with EffectClearable<HomeState> {
   /// Error message when status is failure
   final String? errorMessage;
 
-  /// Optional loading message
-  final String? loadingMessage;
-
   // ═══════════════════════════════════════════════════════════════════
   // CONSTRUCTOR
   // ═══════════════════════════════════════════════════════════════════
 
-  const HomeState({this.status = HomeStatus.initial, this.user, this.errorMessage, this.loadingMessage, super.effect});
+  const HomeState({this.status = HomeStatus.initial, this.user, this.errorMessage, super.effect});
 
   // ═══════════════════════════════════════════════════════════════════
   // EQUATABLE - Only renderable data, NOT effect
   // ═══════════════════════════════════════════════════════════════════
 
   @override
-  List<Object?> get props => [status, user, errorMessage, loadingMessage];
+  List<Object?> get props => [status, user, errorMessage];
 
   // ═══════════════════════════════════════════════════════════════════
   // COPY WITH
@@ -73,7 +69,6 @@ class HomeState extends UiState with EffectClearable<HomeState> {
     HomeStatus? status,
     UserModel? user,
     String? errorMessage,
-    String? loadingMessage,
     UiEffect? effect,
     bool clearUser = false,
     bool clearError = false,
@@ -82,7 +77,6 @@ class HomeState extends UiState with EffectClearable<HomeState> {
       status: status ?? this.status,
       user: clearUser ? null : (user ?? this.user),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-      loadingMessage: loadingMessage ?? this.loadingMessage,
       effect: effect,
     );
   }
