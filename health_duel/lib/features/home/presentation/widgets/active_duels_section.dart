@@ -7,9 +7,11 @@ class ActiveDuelsSection extends StatelessWidget {
   const ActiveDuelsSection({
     super.key,
     required this.onTapSeeAll,
+    required this.onTapDuelCard,
   });
 
   final VoidCallback onTapSeeAll;
+  final VoidCallback onTapDuelCard;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +25,10 @@ class ActiveDuelsSection extends StatelessWidget {
         _renderHeader(theme, context, primary),
         const SizedBox(height: AppSpacing.sm),
 
-        // Live Duel Card
-        Container(
+        // Live Duel Card — tappable
+        GestureDetector(
+          onTap: onTapDuelCard,
+          child: Container(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
@@ -58,6 +62,7 @@ class ActiveDuelsSection extends StatelessWidget {
               _renderLiveBadge(primary, theme),
             ],
           ),
+        ),
         ),
       ],
     );

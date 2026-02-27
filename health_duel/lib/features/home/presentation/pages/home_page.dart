@@ -68,15 +68,16 @@ class _HomePageState extends State<HomePage> {
                       GreetingHeaderSection(username: state.user?.name ?? ''),
                       StepsHeroCardSection(onTap: () => context.read<HomeBloc>().add(const HomeNavigateToHealthRequested())),
                       ActiveDuelsSection(
-                        onTapSeeAll: () => context.push(AppRoutes.duels),
+                        onTapSeeAll: () => context.push(AppRoutes.duels, extra: state.user?.id ?? ''),
+                        onTapDuelCard: () => context.push(AppRoutes.duels, extra: state.user?.id ?? ''),
                       ),
                       QuickActionCardSection(
-                        onTapNewDuel: () => context.read<HomeBloc>().add(const HomeNavigateToHealthRequested()),
-                        onTapWeeklyStats: () => context.push(AppRoutes.duels),
+                        onTapNewDuel: () => context.push(AppRoutes.createDuel, extra: state.user?.id ?? ''),
+                        onTapWeeklyStats: () => context.push(AppRoutes.duels, extra: state.user?.id ?? ''),
                       ),
                     ],
                   ),
-                  _ => const LoadingView()
+                  _ => const LoadingView(),
                 },
               ),
             ),

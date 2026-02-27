@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/core/theme/theme.dart';
 
 /// Duel List Screen — Sports-energy dark aesthetic
@@ -48,9 +50,7 @@ class _DuelListScreenState extends State<DuelListScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.add_rounded),
-            onPressed: () {
-              // context.push('/duel/create');
-            },
+            onPressed: () => context.push(AppRoutes.createDuel, extra: widget.currentUserId),
             tooltip: 'New Duel',
           ),
         ],
@@ -97,9 +97,7 @@ class _ActiveDuelsTab extends StatelessWidget {
       title: 'No Active Duels',
       message: 'Start a new duel to compete with friends!',
       actionLabel: 'New Duel',
-      onAction: () {
-        // context.push('/duel/create');
-      },
+      onAction: () => context.push(AppRoutes.createDuel, extra: currentUserId),
     );
 
     // Real implementation:

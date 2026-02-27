@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:health_duel/core/theme/theme.dart';
 
 /// Create Duel Screen — Sports-energy dark aesthetic
@@ -50,7 +51,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
         backgroundColor: context.appColors.success,
       ),
     );
-    Navigator.of(context).pop();
+    context.pop();
   }
 
   @override

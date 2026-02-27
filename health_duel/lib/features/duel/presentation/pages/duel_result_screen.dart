@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 
@@ -51,7 +53,7 @@ class DuelResultScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             _DetailsCard(duel: duel),
             const SizedBox(height: AppSpacing.lg),
-            _ActionButtons(duel: duel),
+            _ActionButtons(currentUserId: currentUserId),
           ],
         ),
       ),
@@ -416,9 +418,9 @@ class _DetailsCard extends StatelessWidget {
 // ─── Action Buttons ───────────────────────────────────────────────────────────
 
 class _ActionButtons extends StatelessWidget {
-  final Duel duel;
+  final String currentUserId;
 
-  const _ActionButtons({required this.duel});
+  const _ActionButtons({required this.currentUserId});
 
   @override
   Widget build(BuildContext context) {
@@ -426,7 +428,7 @@ class _ActionButtons extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         FilledButton.icon(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pushReplacement(AppRoutes.createDuel, extra: currentUserId),
           icon: const Icon(Icons.replay_rounded),
           label: const Text('Challenge Again'),
           style: FilledButton.styleFrom(
