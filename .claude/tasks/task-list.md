@@ -1,77 +1,66 @@
-# Health Duel - Task List
+# Health Duel - Active Tasks
 
-**Last Updated:** 2026-02-17
-
----
-
-## ✅ Phase 1: Documentation (COMPLETED)
-All tasks done. See PROGRESS.md for details.
+**Last Updated:** 2026-02-27
+**Context:** Phase 5 - UI Redesign
 
 ---
 
-## ✅ Phase 2: Project Foundation & Core Port (COMPLETED)
-All tasks done. See PROGRESS.md for details.
+## 🎨 Phase 5: UI Redesign (IN PROGRESS)
 
----
+### Task #10: Redesign Duel Screens 🔄
+**Status:** IN PROGRESS
+**Agent:** TBD (Coder with flutter-expert + ui-ux-pro-max skills)
+**Priority:** HIGH
 
-## ✅ Phase 3: Port Features (COMPLETED)
-All tasks done. See PROGRESS.md for details.
-
----
-
-## ✅ Phase 3.5: Architecture Refinement — AuthCredentials (COMPLETED)
-Rename User → AuthCredentials. See PROGRESS.md for details.
-
----
-
-## ✅ Phase 4: Build Duel Feature (COMPLETED)
-All tasks done (Domain, Data, Presentation, Routing, DI). See PROGRESS.md for details.
-
----
-
-## ✅ Phase 4.5: Auth Cleanup & Optimization (COMPLETED)
-
-### Task #A1: Auth Code Quality Review ✅
-**Status:** COMPLETED
-**Agent:** Explore (reviewer)
-**Result:** 82/100 score, found type safety + convention issues
-
-### Task #A2: Apply Auth Fixes ✅
-**Status:** COMPLETED
-**Agent:** Lead (direct)
-**Changes:**
-- Remove signOut() from AuthRepository (moved to Session)
-- Delete AuthGuard widget
-- Fix AuthStateChanged.user: dynamic → UserModel?
-- Use AppRoutes constants (remove hardcoded route strings)
-- Add deduplication comment to _onAuthStateChanged
-- Refactor LoginLoadingView UI
-**Commit:** `6aee88a`
-
-### Task #A3: QA Verification ✅
-**Status:** COMPLETED
-**Result:** 42/42 tests pass, flutter analyze clean
-
----
-
-## 🔲 Phase 5 (Plan Step 15): Write Duel Tests — NEXT
-
-### Task #15: Write Duel Tests ⏳
-**Status:** PENDING
-**Agent:** Coder (general-purpose)
-**Action:** Write unit tests for Duel domain + BLoC
-**Blocked by:** None
 **Scope:**
-- test/features/duel/domain/ (entity, use case tests)
-- test/features/duel/bloc/ (DuelBloc tests)
+1. Active Duel Screen:
+   - Ambient glow (green + orange gradients)
+   - Arena card with player columns
+   - Battle bar split (player vs opponent)
+   - Stats chips (3-column grid)
+   - Activity feed
 
-### Task #16: Duel Code & Architecture Review ⏳
-**Status:** PENDING
-**Agent:** Reviewer (Explore)
-**Blocked by:** Task #15
+2. Duel Result Screen:
+   - Trophy float animation
+   - Confetti effect (winner)
+   - Winner/loser cards with steps
+   - Stats grid
+   - Rematch + share buttons
 
-### Task #17: Duel QA Verification ⏳
-**Status:** PENDING
-**Agent:** QA (Bash)
-**Action:** flutter analyze, flutter test, flutter build apk
-**Blocked by:** Task #16
+3. Duel List Screen:
+   - Tab redesign (Active/Pending/History)
+   - Live duel card style (matches mockup)
+
+4. Create Duel Screen:
+   - Friend selection redesign
+
+**Reference:** `health-duel-mockup.html`
+**Design Tokens:** Already done in Phase 5 Step 1
+
+**Acceptance Criteria:**
+- ✅ Match mockup aesthetic (sports-energy dark)
+- ✅ Use design tokens from AppTheme
+- ✅ No hardcoded colors/sizes
+- ✅ Responsive layouts (LayoutBuilder where needed)
+- ✅ Maintain BLoC architecture (no business logic in UI)
+
+---
+
+## ✅ Completed Tasks
+
+**Phase 1-4.5:** All tasks completed
+**Phase 5 Steps 1-3:** Design tokens, Auth screens, Home screen
+
+See `.claude/archive/PROGRESS.md` for historical task details.
+
+---
+
+## 📋 Future Tasks (After Phase 5)
+
+- Phase 6: Testing & Bug Fixes
+- Phase 7: Firebase Integration & Testing
+- Phase 8: Production Release Preparation
+
+---
+
+**Note:** This task list tracks only ACTIVE work. For full project history, see `.claude/STATUS.md`

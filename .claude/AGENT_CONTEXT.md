@@ -18,25 +18,26 @@
 ## 📍 Current Status (Quick Reference)
 
 **Phase Progress:**
-- ✅ Phase 1: Documentation (essential docs complete)
-- 🔄 Phase 2: Foundation & Core Port (IN PROGRESS - 50% done)
-  - ✅ Task #1: Analyzer extracted 86 core files
-  - ✅ Task #2: Project scaffolded with git deps
-  - ⏳ Task #3: NEXT - QA validation (flutter pub get)
-  - ⏳ Task #4: Pending - Port core infrastructure
-- ⏳ Phase 3: Port features (Auth, Home, Health)
-- ⏳ Phase 4: Build Duel feature
+- ✅ Phase 1-4.5: COMPLETED (Foundation, Features, Duel, Auth cleanup)
+- 🔄 Phase 5: UI Redesign (IN PROGRESS - Step 4)
+  - ✅ Step 1: Design tokens (AppTheme + Colors)
+  - ✅ Step 2: Auth screens (Login + Register)
+  - ✅ Step 3: Home screen (refactored to widgets)
+  - 🔄 Step 4: CURRENT - Duel screens redesign
+- ⏳ Phase 6-8: Testing, Firebase, Production
 
-**Read full status:** `.claude/PROGRESS.md`
+**Latest Commit:** `39b3d93` - Home refactor
+
+**Read full status:** `.claude/STATUS.md` (git-synced, single source of truth)
 
 ---
 
 ## 📚 Essential Documents (Know Where to Find Info)
 
 ### For ALL Agents:
-1. **`.claude/AGENT_CONTEXT.md`** ← You are here
-2. **`.claude/tasks/task-list.md`** - Your task definition & requirements
-3. **`.claude/PROGRESS.md`** - High-level project status
+1. **`.claude/AGENT_CONTEXT.md`** ← You are here (READ FIRST)
+2. **`.claude/STATUS.md`** - Current project state (SINGLE SOURCE OF TRUTH)
+3. **`.claude/tasks/task-list.md`** - Your task definition & requirements
 4. **`health_duel/docs/00-foundation/PROJECT_GLOSSARY.md`** - Naming conventions
 
 ### For Implementation (Coder, Reviewer, Fixer):
@@ -105,17 +106,16 @@
 
 | Need to Know | Document Location |
 |--------------|-------------------|
+| **Current status** | `.claude/STATUS.md` ← **START HERE** |
 | My task definition | `.claude/tasks/task-list.md` |
 | My task briefing | `.claude/agents/task-{N}-{role}-brief.md` |
-| Project status | `.claude/PROGRESS.md` |
-| Full plan | `.claude/plans/execution-plan.md` |
+| Full plan | `.claude/plans/execution-plan.md` (use STATUS.md instead) |
 | Architecture patterns | `health_duel/docs/02-architecture/ARCHITECTURE_OVERVIEW.md` |
 | EffectBloc pattern | `health_duel/docs/02-architecture/adr/0004-registry-based-ui-effect-flow-architecture.md` |
 | Error handling | `health_duel/docs/02-architecture/adr/0002-exception-isolation-strategy.md` |
 | Git deps strategy | `health_duel/docs/02-architecture/adr/0007-git-dependency-strategy.md` |
 | Naming conventions | `health_duel/docs/00-foundation/PROJECT_GLOSSARY.md` |
 | Reference code | `reference_project/fintrack_lite/lib/` |
-| Analyzer findings | Task #1 output (ask lead if needed) |
 
 ---
 
@@ -124,15 +124,18 @@
 ```
 new-health-duel/
 ├── .claude/                      ← All agent context & progress
+│   ├── CLAUDE.md                ← User/Lead entry point + reading protocol
 │   ├── AGENT_CONTEXT.md         ← YOU ARE HERE (read first)
-│   ├── agents/                   ← Task briefings
-│   ├── tasks/task-list.md       ← Task definitions
-│   ├── PROGRESS.md              ← Project status
-│   └── plans/execution-plan.md  ← Full implementation plan
+│   ├── STATUS.md                ← SINGLE SOURCE OF TRUTH (git-synced)
+│   ├── tasks/task-list.md       ← Active tasks
+│   ├── agents/                   ← Task briefings (some archived)
+│   ├── plans/execution-plan.md  ← Full plan (use STATUS.md instead)
+│   ├── archive/                  ← Old tracking (PROGRESS, CHECKPOINT, NEXT_SESSION)
+│   └── TRACKING_CONVENTION.md   ← How to update STATUS.md
 ├── health_duel/                  ← Target Flutter project
-│   ├── docs/                     ← Architecture docs
-│   ├── lib/                      ← Source code (scaffolded, mostly empty)
-│   ├── android/, ios/, web/      ← Platform configs (copied)
+│   ├── docs/                     ← Architecture docs (ADRs, PRD, etc.)
+│   ├── lib/                      ← Source code (164 Dart files)
+│   ├── android/, ios/, web/      ← Platform configs
 │   └── pubspec.yaml              ← Dependencies (git deps configured)
 └── reference_project/
     └── fintrack_lite/            ← Reference implementation (READ ONLY)
@@ -142,12 +145,13 @@ new-health-duel/
 
 ## 🎯 Your Next Steps
 
-1. ✅ You've read this master context
-2. 📖 Read `.claude/tasks/task-list.md` to find your task
-3. 📋 Read your task briefing: `.claude/agents/task-{N}-{role}-brief.md`
-4. 📚 Read required architecture docs (listed in your briefing)
-5. 🚀 Execute your task following the briefing instructions
-6. ✅ Report completion or issues to lead agent
+1. ✅ You've read this master context (AGENT_CONTEXT.md)
+2. 📊 Read `.claude/STATUS.md` to know current project state
+3. 📖 Read `.claude/tasks/task-list.md` to find your task
+4. 📋 Read your task briefing: `.claude/agents/task-{N}-{role}-brief.md` (if exists)
+5. 📚 Read required architecture docs (based on your role - see CLAUDE.md Tier 2)
+6. 🚀 Execute your task following the briefing instructions
+7. ✅ Report completion or issues to lead agent
 
 ---
 
