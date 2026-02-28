@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_duel/core/presentation/widgets/widgets.dart';
 import 'package:health_duel/core/theme/theme.dart';
+import 'package:health_duel/data/session/data/models/user_model.dart';
+import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dart';
+import 'package:health_duel/features/duel/presentation/bloc/create_duel_event.dart';
+import 'package:health_duel/features/duel/presentation/bloc/create_duel_state.dart';
 
 /// Create Duel Screen — Sports-energy dark aesthetic
 ///
 /// Visual layout:
 /// - "How Duels Work" info card with step icons
 /// - "Select Opponent" section header
-/// - Friend list: gradient avatar + name + selection state (green border)
+/// - Opponent list from Firestore: gradient avatar + name + selection state
 /// - Bottom CTA: "SEND CHALLENGE" full-width FilledButton
 class CreateDuelScreen extends StatefulWidget {
   final String currentUserId;
@@ -22,108 +28,152 @@ class CreateDuelScreen extends StatefulWidget {
 }
 
 class _CreateDuelScreenState extends State<CreateDuelScreen> {
-  String? _selectedFriendId;
+  String? _selectedOpponentId;
+  String? _selectedOpponentName;
 
-  void _createDuel() {
-    if (_selectedFriendId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Select a friend to challenge first'),
-          backgroundColor: context.appColors.warning,
-        ),
-      );
-      return;
-    }
-
-    // TODO: Dispatch CreateDuelRequested via BLoC
-    /*
+  @override
+  void initState() {
+    super.initState();
     context.read<CreateDuelBloc>().add(
-      CreateDuelRequested(
-        challengerId: widget.currentUserId,
-        challengedId: _selectedFriendId!,
-      ),
-    );
-    */
+          CreateDuelOpponentsRequested(widget.currentUserId),
+        );
+  }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Challenge sent!'),
-        backgroundColor: context.appColors.success,
-      ),
-    );
-    context.pop();
+  void _submitDuel() {
+    if (_selectedOpponentId == null || _selectedOpponentName == null) return;
+
+    context.read<CreateDuelBloc>().add(
+          CreateDuelSubmitted(
+            challengerId: widget.currentUserId,
+            challengedId: _selectedOpponentId!,
+            challengedName: _selectedOpponentName!,
+          ),
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('New Challenge')),
-      body: Column(
-        children: [
-          // How it works card
-          const Padding(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.md,
-              0,
-            ),
-            child: _HowItWorksCard(),
-          ),
+    return EffectListener<CreateDuelBloc, CreateDuelState>(
+      child: BlocListener<CreateDuelBloc, CreateDuelState>(
+        listenWhen: (_, current) => current is CreateDuelSuccess,
+        listener: (_, __) => context.pop(),
+        child: BlocBuilder<CreateDuelBloc, CreateDuelState>(
+          builder: (context, state) {
+            final isSubmitting = state is CreateDuelSubmitting;
+            final hasSelection = _selectedOpponentId != null;
 
-          const SizedBox(height: AppSpacing.md),
-
-          // Section header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            child: Row(
-              children: [
-                Text(
-                  'Select Opponent',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: AppSpacing.sm),
-
-          // Friend list
-          Expanded(child: _buildFriendList()),
-
-          // CTA button
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: _selectedFriendId != null ? _createDuel : null,
-                  icon: const Icon(Icons.bolt_rounded),
-                  label: const Text('Send Challenge'),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            return Scaffold(
+              appBar: AppBar(title: const Text('New Challenge')),
+              body: Column(
+                children: [
+                  // How it works card
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      0,
+                    ),
+                    child: _HowItWorksCard(),
                   ),
-                ),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Section header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Select Opponent',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // Opponent list
+                  Expanded(child: _buildOpponentList(state)),
+
+                  // CTA button
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: (hasSelection && !isSubmitting)
+                              ? _submitDuel
+                              : null,
+                          icon: isSubmitting
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2),
+                                )
+                              : const Icon(Icons.bolt_rounded),
+                          label: Text(
+                              isSubmitting ? 'Sending...' : 'Send Challenge'),
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: AppSpacing.md),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildFriendList() {
-    // TODO: Replace with BlocBuilder for real friend data
-    const mockFriends = [
-      _Friend(id: 'friend1', name: 'John Doe', initials: 'JD'),
-      _Friend(id: 'friend2', name: 'Jane Smith', initials: 'JS'),
-      _Friend(id: 'friend3', name: 'Bob Johnson', initials: 'BJ'),
-      _Friend(id: 'friend4', name: 'Alice Williams', initials: 'AW'),
-    ];
+  Widget _buildOpponentList(CreateDuelState state) {
+    if (state is CreateDuelLoadingOpponents || state is CreateDuelInitial) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-    if (mockFriends.isEmpty) {
-      return const _NoFriendsState();
+    if (state is CreateDuelFailure) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline_rounded,
+                  size: 48, color: Theme.of(context).colorScheme.error),
+              const SizedBox(height: AppSpacing.md),
+              Text(state.message,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: AppSpacing.md),
+              TextButton(
+                onPressed: () => context.read<CreateDuelBloc>().add(
+                      CreateDuelOpponentsRequested(widget.currentUserId),
+                    ),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final opponents = switch (state) {
+      CreateDuelReady(:final opponents) => opponents,
+      CreateDuelSubmitting(:final opponents) => opponents,
+      _ => <UserModel>[],
+    };
+
+    if (opponents.isEmpty) {
+      return const _NoOpponentsState();
     }
 
     return ListView.builder(
@@ -131,14 +181,17 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
         horizontal: AppSpacing.md,
         vertical: AppSpacing.xs,
       ),
-      itemCount: mockFriends.length,
+      itemCount: opponents.length,
       itemBuilder: (context, index) {
-        final friend = mockFriends[index];
-        final isSelected = _selectedFriendId == friend.id;
-        return _FriendCard(
-          friend: friend,
+        final opponent = opponents[index];
+        final isSelected = _selectedOpponentId == opponent.id;
+        return _OpponentCard(
+          opponent: opponent,
           isSelected: isSelected,
-          onTap: () => setState(() => _selectedFriendId = friend.id),
+          onTap: () => setState(() {
+            _selectedOpponentId = opponent.id;
+            _selectedOpponentName = opponent.name;
+          }),
         );
       },
     );
@@ -182,10 +235,7 @@ class _HowItWorksCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    step.$1,
-                    style: const TextStyle(fontSize: 14),
-                  ),
+                  Text(step.$1, style: const TextStyle(fontSize: 14)),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
@@ -205,24 +255,34 @@ class _HowItWorksCard extends StatelessWidget {
   }
 
   static const _steps = [
-    ('👟', 'Challenge a friend to a 24-hour step competition'),
+    ('👟', 'Challenge someone to a 24-hour step competition'),
     ('⚡', 'Once accepted, the duel starts immediately'),
     ('🏆', 'Whoever walks the most steps in 24h wins'),
   ];
 }
 
-// ─── Friend Card ──────────────────────────────────────────────────────────────
+// ─── Opponent Card ────────────────────────────────────────────────────────────
 
-class _FriendCard extends StatelessWidget {
-  final _Friend friend;
+class _OpponentCard extends StatelessWidget {
+  final UserModel opponent;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _FriendCard({
-    required this.friend,
+  const _OpponentCard({
+    required this.opponent,
     required this.isSelected,
     required this.onTap,
   });
+
+  String get _initials {
+    final parts = opponent.name.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+    }
+    return opponent.name.isNotEmpty
+        ? opponent.name[0].toUpperCase()
+        : '?';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +306,7 @@ class _FriendCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Avatar with gradient
+            // Avatar
             Container(
               width: 44,
               height: 44,
@@ -265,9 +325,11 @@ class _FriendCard extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  friend.initials,
+                  _initials,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    color: isSelected ? primary : theme.colorScheme.onSurfaceVariant,
+                    color: isSelected
+                        ? primary
+                        : theme.colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -281,7 +343,7 @@ class _FriendCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(friend.name, style: theme.textTheme.titleSmall),
+                  Text(opponent.name, style: theme.textTheme.titleSmall),
                   Text(
                     isSelected ? 'Selected ✓' : 'Tap to challenge',
                     style: theme.textTheme.bodySmall?.copyWith(
@@ -308,11 +370,8 @@ class _FriendCard extends StatelessWidget {
                 ),
               ),
               child: isSelected
-                  ? Icon(
-                      Icons.check_rounded,
-                      size: 14,
-                      color: theme.colorScheme.onPrimary,
-                    )
+                  ? Icon(Icons.check_rounded,
+                      size: 14, color: theme.colorScheme.onPrimary)
                   : null,
             ),
           ],
@@ -322,10 +381,10 @@ class _FriendCard extends StatelessWidget {
   }
 }
 
-// ─── No Friends State ─────────────────────────────────────────────────────────
+// ─── No Opponents State ───────────────────────────────────────────────────────
 
-class _NoFriendsState extends StatelessWidget {
-  const _NoFriendsState();
+class _NoOpponentsState extends StatelessWidget {
+  const _NoOpponentsState();
 
   @override
   Widget build(BuildContext context) {
@@ -350,10 +409,10 @@ class _NoFriendsState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text('No Friends Yet', style: theme.textTheme.titleLarge),
+            Text('No Other Users Yet', style: theme.textTheme.titleLarge),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Add friends to challenge them to duels!',
+              'Invite friends to join Health Duel so you can challenge them!',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -364,18 +423,4 @@ class _NoFriendsState extends StatelessWidget {
       ),
     );
   }
-}
-
-// ─── Models ───────────────────────────────────────────────────────────────────
-
-class _Friend {
-  final String id;
-  final String name;
-  final String initials;
-
-  const _Friend({
-    required this.id,
-    required this.name,
-    required this.initials,
-  });
 }

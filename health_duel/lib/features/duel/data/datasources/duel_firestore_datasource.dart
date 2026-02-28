@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:health_duel/data/session/data/models/user_model.dart';
 import 'package:health_duel/features/duel/data/models/duel_dto.dart';
 import 'package:health_duel/features/duel/domain/value_objects/duel_status.dart';
 
@@ -10,9 +11,11 @@ class DuelFirestoreDataSource {
 
   const DuelFirestoreDataSource(this._firestore);
 
-  /// Firestore collection reference
   CollectionReference<Map<String, dynamic>> get _duelsCollection =>
       _firestore.collection('duels');
+
+  CollectionReference<Map<String, dynamic>> get _usersCollection =>
+      _firestore.collection('users');
 
   /// Create a new duel
   ///
@@ -196,6 +199,19 @@ class DuelFirestoreDataSource {
       }
       return DuelDto.fromFirestore(doc);
     });
+  }
+
+  /// Get all users except the current user (potential opponents)
+  ///
+  /// Used for opponent selection in duel creation.
+  /// Ordered alphabetically by name.
+  Future<List<UserModel>> getOpponents(String excludeUserId) async {
+    final query = await _usersCollection.orderBy('name').get();
+
+    return query.docs
+        .map((doc) => UserModel.fromFirestore(doc))
+        .where((user) => user.id != excludeUserId)
+        .toList();
   }
 
   /// Watch real-time active duels for user

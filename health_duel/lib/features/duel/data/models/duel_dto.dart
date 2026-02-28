@@ -104,6 +104,8 @@ class DuelDto {
       id: id,
       challengerId: challengerId,
       challengedId: challengedId,
+      challengerName: challengerName,
+      challengedName: challengedName,
       challengerSteps: StepCount(challengerSteps),
       challengedSteps: StepCount(challengedSteps),
       status: DuelStatus.values.byName(status),

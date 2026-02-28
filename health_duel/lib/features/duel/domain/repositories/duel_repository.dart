@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/data/session/data/models/user_model.dart';
 import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/value_objects/step_count.dart';
 
@@ -12,11 +13,14 @@ abstract class DuelRepository {
   ///
   /// Creates a pending duel between challenger and challenged user.
   /// Duel starts when challenged user accepts.
+  /// Names are denormalized into the Firestore document for display.
   ///
   /// Returns created [Duel] or [Failure].
   Future<Either<Failure, Duel>> createDuel({
     required String challengerId,
     required String challengedId,
+    required String challengerName,
+    required String challengedName,
   });
 
   /// Accept a pending duel
@@ -100,4 +104,9 @@ abstract class DuelRepository {
   /// Returns stream that emits whenever user's active duels change.
   /// Useful for home screen duel list.
   Stream<Either<Failure, List<Duel>>> watchActiveDuels(String userId);
+
+  /// Get all users except current user (potential opponents)
+  ///
+  /// Returns list of [UserModel] sorted alphabetically by name.
+  Future<Either<Failure, List<UserModel>>> getOpponents(String excludeUserId);
 }

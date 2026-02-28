@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_duel/core/presentation/widgets/widgets.dart';
 import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/core/theme/theme.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_list_state.dart';
+import 'package:health_duel/features/duel/presentation/widgets/duel_card.dart';
 
 /// Duel List Screen — Sports-energy dark aesthetic
 ///
@@ -31,6 +37,9 @@ class _DuelListScreenState extends State<DuelListScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    context.read<DuelListBloc>().add(
+          DuelListLoadRequested(widget.currentUserId),
+        );
   }
 
   @override
@@ -44,38 +53,40 @@ class _DuelListScreenState extends State<DuelListScreen>
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Duels'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_rounded),
-            onPressed: () => context.push(AppRoutes.createDuel, extra: widget.currentUserId),
-            tooltip: 'New Duel',
+    return EffectListener<DuelListBloc, DuelListState>(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('My Duels'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add_rounded),
+              onPressed: () => context.push(AppRoutes.createDuel, extra: widget.currentUserId),
+              tooltip: 'New Duel',
+            ),
+          ],
+          bottom: TabBar(
+            controller: _tabController,
+            indicatorColor: primary,
+            indicatorWeight: 2,
+            labelColor: primary,
+            unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+            labelStyle: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+            unselectedLabelStyle: theme.textTheme.labelLarge,
+            tabs: const [
+              Tab(text: 'Active'),
+              Tab(text: 'Pending'),
+              Tab(text: 'History'),
+            ],
           ),
-        ],
-        bottom: TabBar(
+        ),
+        body: TabBarView(
           controller: _tabController,
-          indicatorColor: primary,
-          indicatorWeight: 2,
-          labelColor: primary,
-          unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-          labelStyle: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-          unselectedLabelStyle: theme.textTheme.labelLarge,
-          tabs: const [
-            Tab(text: 'Active'),
-            Tab(text: 'Pending'),
-            Tab(text: 'History'),
+          children: [
+            _ActiveDuelsTab(currentUserId: widget.currentUserId),
+            _PendingDuelsTab(currentUserId: widget.currentUserId),
+            _HistoryTab(currentUserId: widget.currentUserId),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _ActiveDuelsTab(currentUserId: widget.currentUserId),
-          _PendingDuelsTab(currentUserId: widget.currentUserId),
-          _HistoryTab(currentUserId: widget.currentUserId),
-        ],
       ),
     );
   }
@@ -90,43 +101,52 @@ class _ActiveDuelsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Replace with BlocBuilder for real data
-    return _EmptyState(
-      icon: Icons.bolt_rounded,
-      iconColor: Theme.of(context).colorScheme.primary,
-      title: 'No Active Duels',
-      message: 'Start a new duel to compete with friends!',
-      actionLabel: 'New Duel',
-      onAction: () => context.push(AppRoutes.createDuel, extra: currentUserId),
-    );
-
-    // Real implementation:
-    /*
     return BlocBuilder<DuelListBloc, DuelListState>(
       builder: (context, state) {
-        if (state is DuelListLoading) {
+        if (state is DuelListLoading || state is DuelListInitial) {
           return const Center(child: CircularProgressIndicator());
         }
         if (state is DuelListError) {
-          return _EmptyState(icon: Icons.error_outline_rounded, ...);
+          return _EmptyState(
+            icon: Icons.error_outline_rounded,
+            iconColor: Theme.of(context).colorScheme.error,
+            title: 'Something went wrong',
+            message: state.message,
+            actionLabel: 'Retry',
+            onAction: () => context
+                .read<DuelListBloc>()
+                .add(DuelListLoadRequested(currentUserId)),
+          );
         }
         if (state is DuelListLoaded) {
           final duels = state.activeDuels;
-          if (duels.isEmpty) return _EmptyState(...);
+          if (duels.isEmpty) {
+            return _EmptyState(
+              icon: Icons.bolt_rounded,
+              iconColor: Theme.of(context).colorScheme.primary,
+              title: 'No Active Duels',
+              message: 'Start a new duel to compete with friends!',
+              actionLabel: 'New Duel',
+              onAction: () =>
+                  context.push(AppRoutes.createDuel, extra: currentUserId),
+            );
+          }
           return ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
             itemCount: duels.length,
             itemBuilder: (context, index) => DuelCard(
               duel: duels[index],
               currentUserId: currentUserId,
-              onTap: () => context.push('/duel/active/${duels[index].id}'),
+              onTap: () => context.push(
+                AppRoutes.duelPath(duels[index].id),
+                extra: currentUserId,
+              ),
             ),
           );
         }
         return const SizedBox.shrink();
       },
     );
-    */
   }
 }
 
@@ -139,21 +159,21 @@ class _PendingDuelsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Replace with BlocBuilder for real data
-    return _EmptyState(
-      icon: Icons.hourglass_empty_rounded,
-      iconColor: context.appColors.warning,
-      title: 'No Pending Invitations',
-      message: 'You have no pending duel invitations.',
-    );
-
-    // Real implementation:
-    /*
     return BlocBuilder<DuelListBloc, DuelListState>(
       builder: (context, state) {
+        if (state is DuelListLoading || state is DuelListInitial) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (state is DuelListLoaded) {
           final duels = state.pendingDuels;
-          if (duels.isEmpty) return _EmptyState(...);
+          if (duels.isEmpty) {
+            return _EmptyState(
+              icon: Icons.hourglass_empty_rounded,
+              iconColor: context.appColors.warning,
+              title: 'No Pending Invitations',
+              message: 'You have no pending duel invitations.',
+            );
+          }
           return ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
             itemCount: duels.length,
@@ -163,12 +183,15 @@ class _PendingDuelsTab extends StatelessWidget {
               return DuelCard(
                 duel: duel,
                 currentUserId: currentUserId,
-                onTap: () => context.push('/duel/pending/${duel.id}'),
                 onAccept: !isChallenger
-                    ? () => context.read<DuelListBloc>().add(DuelAcceptRequested(duel.id))
+                    ? () => context
+                        .read<DuelListBloc>()
+                        .add(DuelAcceptRequested(duel.id))
                     : null,
                 onDecline: !isChallenger
-                    ? () => context.read<DuelListBloc>().add(DuelDeclineRequested(duel.id))
+                    ? () => context
+                        .read<DuelListBloc>()
+                        .add(DuelDeclineRequested(duel.id))
                     : null,
               );
             },
@@ -177,7 +200,6 @@ class _PendingDuelsTab extends StatelessWidget {
         return const SizedBox.shrink();
       },
     );
-    */
   }
 }
 
@@ -190,35 +212,40 @@ class _HistoryTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Replace with BlocBuilder for real data
-    return _EmptyState(
-      icon: Icons.history_rounded,
-      iconColor: context.appColors.opponent,
-      title: 'No Duel History',
-      message: 'Complete your first duel to see your history here.',
-    );
-
-    // Real implementation:
-    /*
     return BlocBuilder<DuelListBloc, DuelListState>(
       builder: (context, state) {
+        if (state is DuelListLoading || state is DuelListInitial) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (state is DuelListLoaded) {
           final duels = state.historyDuels;
-          if (duels.isEmpty) return _EmptyState(...);
+          if (duels.isEmpty) {
+            return _EmptyState(
+              icon: Icons.history_rounded,
+              iconColor: context.appColors.opponent,
+              title: 'No Duel History',
+              message: 'Complete your first duel to see your history here.',
+            );
+          }
           return ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
             itemCount: duels.length,
             itemBuilder: (context, index) => DuelCard(
               duel: duels[index],
               currentUserId: currentUserId,
-              onTap: () => context.push('/duel/result/${duels[index].id}'),
+              onTap: () => context.push(
+                AppRoutes.duelResultPath(duels[index].id),
+                extra: {
+                  'duel': duels[index],
+                  'currentUserId': currentUserId,
+                },
+              ),
             ),
           );
         }
         return const SizedBox.shrink();
       },
     );
-    */
   }
 }
 

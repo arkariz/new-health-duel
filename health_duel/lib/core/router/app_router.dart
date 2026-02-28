@@ -6,7 +6,9 @@ import 'package:health_duel/core/di/injection.dart';
 import 'package:health_duel/core/router/go_router_refresh.dart';
 import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/features/auth/auth.dart';
+import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
 import 'package:health_duel/features/duel/presentation/pages/active_duel_screen.dart';
 import 'package:health_duel/features/duel/presentation/pages/create_duel_screen.dart';
 import 'package:health_duel/features/duel/presentation/pages/duel_list_screen.dart';
@@ -65,7 +67,7 @@ GoRouter createAppRouter(AuthBloc authBloc) {
         builder: (context, state) {
           final currentUserId = state.extra as String?;
           return BlocProvider(
-            create: (_) => getIt<DuelBloc>(),
+            create: (_) => getIt<DuelListBloc>(),
             child: DuelListScreen(currentUserId: currentUserId ?? ''),
           );
         },
@@ -78,7 +80,7 @@ GoRouter createAppRouter(AuthBloc authBloc) {
         builder: (context, state) {
           final currentUserId = state.extra as String?;
           return BlocProvider(
-            create: (_) => getIt<DuelBloc>(),
+            create: (_) => getIt<CreateDuelBloc>(),
             child: CreateDuelScreen(currentUserId: currentUserId ?? ''),
           );
         },

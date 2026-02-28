@@ -3,7 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:health_duel/data/session/domain/repositories/session_repository.dart';
 import 'package:health_duel/features/duel/data/data.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
+import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
 import 'package:health_duel/features/health/domain/repositories/health_repository.dart';
 
 /// Duel Module Dependency Injection
@@ -46,6 +48,7 @@ void registerDuelModule() {
   getIt.registerFactory(() => GetActiveDuels(getIt<DuelRepository>()));
   getIt.registerFactory(() => GetPendingDuels(getIt<DuelRepository>()));
   getIt.registerFactory(() => GetDuelHistory(getIt<DuelRepository>()));
+  getIt.registerFactory(() => GetOpponents(getIt<DuelRepository>()));
 
   // Real-time & Sync
   getIt.registerFactory(() => WatchDuel(getIt<DuelRepository>()));
@@ -65,6 +68,24 @@ void registerDuelModule() {
     () => DuelBloc(
       watchDuel: getIt<WatchDuel>(),
       syncHealthData: getIt<SyncHealthData>(),
+      sessionRepository: getIt<SessionRepository>(),
+    ),
+  );
+
+  getIt.registerFactory(
+    () => DuelListBloc(
+      getActiveDuels: getIt<GetActiveDuels>(),
+      getPendingDuels: getIt<GetPendingDuels>(),
+      getDuelHistory: getIt<GetDuelHistory>(),
+      acceptDuel: getIt<AcceptDuel>(),
+      declineDuel: getIt<DeclineDuel>(),
+    ),
+  );
+
+  getIt.registerFactory(
+    () => CreateDuelBloc(
+      getOpponents: getIt<GetOpponents>(),
+      createDuel: getIt<CreateDuel>(),
       sessionRepository: getIt<SessionRepository>(),
     ),
   );

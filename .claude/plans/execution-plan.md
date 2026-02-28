@@ -1,5 +1,8 @@
 # Health Duel — Recreate & Continue Plan
 
+> **Last reviewed:** 2026-02-28
+> **Legend:** ✅ Done · ⚠️ Partial · ❌ Not started
+
 ## Context
 
 **Health Duel** is a Flutter mobile app for social 24-hour step-count competitions. A reference implementation exists at `reference_project/fintrack_lite/` with completed auth, home, and health features (Phases 1-4). The directory is named `fintrack_lite` but all Dart source already uses `package:health_duel` (verified: 223 occurrences, 0 of `fintrack_lite`). We need to recreate the project properly branded as `health_duel/` and continue with the Duel feature (Phase 5).
@@ -34,47 +37,47 @@ Analyzer → Planner → Coder(s) → Reviewer → QA → Fixer (if issues) → 
 
 ## Execution Plan
 
-### Phase 1: Analyze & Enhance Documentation (Documentation-First)
+### ✅ Phase 1: Analyze & Enhance Documentation (Documentation-First)
 
 Documentation drives everything. Before writing any code, we analyze the reference project and create proper, enhanced documentation.
 
-**Step 1 — Analyzer: Deep-Dive Reference Project**
+**✅ Step 1 — Analyzer: Deep-Dive Reference Project**
 - Read all existing docs (ADRs, PRD, planning, research, cheatsheet)
 - Read core architecture code to understand patterns and decisions
 - Read all feature implementations (auth, home, health)
 - Identify gaps, inconsistencies, and areas needing documentation
 - Document findings for the Planner
 
-**Step 2 — Planner: Design Enhanced Documentation**
+**✅ Step 2 — Planner: Design Enhanced Documentation**
 - Plan improved documentation structure
 - Define what each document should cover
 - Plan new ADRs needed (e.g., Duel feature, git dependency strategy)
 - Plan updated roadmap reflecting recreated project + next phases
 
-**Step 3 — Coder: Write Enhanced Documentation**
-- Create `docs/` directory in new project root
-- Write enhanced ADRs (port existing + add new ones)
+**✅ Step 3 — Coder: Write Enhanced Documentation**
+- Create `docs/` directory in new project root → `health_duel/docs/` (12 dirs)
+- Write enhanced ADRs (port existing + add new ones) → ADR 0000–0008 tersedia
 - Write enhanced PRD
 - Write updated roadmap and active tasks
 - Write updated technical specs
 - Update all references from `fintrack_lite` → `health_duel`
 
-**Step 4 — Reviewer: Review Documentation**
+**✅ Step 4 — Reviewer: Review Documentation**
 - Verify docs accurately reflect the architecture
 - Verify consistency across all documents
 - Verify nothing critical from reference is missing
 - Verify new content adds real value over reference docs
 
-### Phase 2: Project Foundation & Core Port
+### ✅ Phase 2: Project Foundation & Core Port
 
 With documentation as our guide, scaffold the project and port core infrastructure.
 
-**Step 5 — Analyzer: Extract Core Implementation Details**
+**✅ Step 5 — Analyzer: Extract Core Implementation Details**
 - Read all `core/` files from reference to extract exact code
 - Map import chains and cross-references
 - Identify platform config changes needed for rebranding
 
-**Step 6 — Coder: Scaffold Project**
+**✅ Step 6 — Coder: Scaffold Project**
 - `flutter create --org com.healthduel health_duel`
 - Replace generated `pubspec.yaml` with reference version
 - Update pubspec: change `flutter-package-core` path deps → git deps from `https://github.com/arkariz/flutter-package-core`
@@ -82,10 +85,10 @@ With documentation as our guide, scaffold the project and port core infrastructu
 - Rebrand: Android `applicationId`, iOS `bundleIdentifier`
 - Copy `env/` directory for environment config
 
-**Step 7 — QA: Validate Foundation**
+**✅ Step 7 — QA: Validate Foundation**
 - `flutter pub get` succeeds with git dependencies
 
-**Step 8 — Coder: Port Core Infrastructure (~40 files)**
+**✅ Step 8 — Coder: Port Core Infrastructure (~40 files)**
 - Port `lib/core/bloc/` — EffectBloc, effects, observer
 - Port `lib/core/config/` — AppConfig, env, firebase_options, storage_keys
 - Port `lib/core/di/` — injection.dart, core_module.dart
@@ -95,9 +98,9 @@ With documentation as our guide, scaffold the project and port core infrastructu
 - Port `lib/core/utils/` — all extensions
 - Port `lib/core/presentation/widgets/` — all shared widgets
 
-### Phase 3: Port Features
+### ✅ Phase 3: Port Features
 
-**Step 9 — Coder: Port Features (parallel agents)**
+**✅ Step 9 — Coder: Port Features (parallel agents)**
 
 *Agent A — Session & Auth + Entry Points:*
 - Port `lib/data/session/` (User entity, SessionRepo, UserModel, DataSource, DI)
@@ -108,59 +111,132 @@ With documentation as our guide, scaffold the project and port core infrastructu
 - Port `lib/features/home/` (HomeBloc, HomePage, DI)
 - Port `lib/features/health/` (entities, repo, HealthBloc, pages, widgets, DI)
 
-**Step 10 — Coder: Port Tests**
-- Port `test/helpers/` (mocks, fixtures, pump_app)
-- Port all existing test files
+**⚠️ Step 10 — Coder: Port Tests**
+- ✅ Port `test/helpers/` (mocks, fixtures, pump_app)
+- ✅ Port auth tests (`test/features/auth/` — 2 test files, 42 tests total)
+- ❌ Port home tests — belum ada
+- ❌ Port health tests — belum ada
 
-**Step 11 — Reviewer: Code & Architecture Review**
+**✅ Step 11 — Reviewer: Code & Architecture Review**
 - Verify Clean Architecture boundaries (no Flutter imports in domain)
 - Verify import paths use `package:health_duel/...` consistently
 - Verify DI module registration follows correct order
 - Verify EffectBloc pattern adherence in all BLoCs
 - Verify Either<Failure, T> pattern in all repositories
 
-**Step 12 — QA: Full Verification**
-- `flutter pub get`
-- `flutter analyze` — zero issues
-- `flutter test` — all tests pass
-- `flutter build apk --debug` — compiles successfully
+**✅ Step 12 — QA: Full Verification**
+- `flutter pub get` ✅
+- `flutter analyze` — 0 issues ✅
+- `flutter test` — 42/42 tests pass ✅
+- `flutter build apk --debug` — compiles successfully ✅
 
 **Step 12a — Fixer (if needed): Resolve Issues**
-- Fix any build errors, test failures, lint warnings
-- Re-run Reviewer + QA cycle
+- ✅ Dijalankan — semua isu terselesaikan (commit `71d41ae`)
 
-### Phase 4: Build Duel Feature
+### ⚠️ Phase 4: Build Duel Feature
 
-**Step 13 — Planner: Design Duel Architecture**
-- Design entities, repository contract, use cases
+**✅ Step 13 — Planner: Design Duel Architecture**
+- Design entities, repository contract, use cases → `.claude/designs/phase-4-duel-architecture.md`
 - Design Firestore schema
 - Design DuelBloc states/events/effects
 - Design UI pages and widget tree
 - Output: detailed implementation spec for Coder
 
-**Step 14 — Coder: Implement Duel Feature**
-- Implement domain layer (entities, repository interface, use cases)
-- Implement data layer (models, data sources, repository impl, DI)
-- Implement presentation layer (BLoC, pages, widgets)
-- Update `injection.dart`, `app_router.dart`, `home_page.dart`
+**⚠️ Step 14 — Coder: Implement Duel Feature**
+- ✅ Implement domain layer (entities, repository interface, use cases) — 9 use cases
+- ✅ Implement data layer (models, data sources, repository impl, DI)
+- ✅ Implement `DuelBloc` (active duel real-time watch, health sync, countdown)
+- ✅ Implement UI screens — 4 screens, 4 widgets (sports-energy redesign included)
+- ✅ Update `injection.dart`, `app_router.dart`, `home_page.dart`
+- ✅ **`DuelListBloc`** — dibuat di Phase 6
+- ✅ **`create_duel_screen.dart`**: BLoC dispatch, real opponent data dari Firestore — dibuat di Phase 6
+- ✅ **`duel_list_screen.dart`**: 3 tab (Active/Pending/History) wire ke `DuelListBloc` — dibuat di Phase 6
+- ✅ **`duel_repository_impl.dart`**: `createDuel` fetch challenger name dari `SessionRepository` — dibuat di Phase 6
+- ✅ **`duel_side_effect.dart`**: leader name resolve dari `Duel.challengerName`/`challengedName` — dibuat di Phase 6
 
-**Step 15 — Coder: Write Duel Tests**
-- Unit tests for entities and use cases
-- BLoC tests for DuelBloc
-- Widget tests for key pages
+**❌ Step 15 — Coder: Write Duel Tests**
+- Unit tests untuk use cases — belum ada
+- BLoC tests untuk `DuelBloc` dan `DuelListBloc` — belum ada
+- Widget tests untuk key pages — belum ada
 
-**Step 16 — Reviewer: Duel Code & Architecture Review**
+**✅ Step 16 — Reviewer: Duel Code & Architecture Review**
 - Verify entities follow same patterns as StepCount/User
 - Verify repository maps exceptions → failures correctly
 - Verify BLoC follows EffectBloc pattern with proper stream lifecycle
 - Verify Clean Architecture boundary: no Firestore imports in domain
 
-**Step 17 — QA: Duel Verification**
-- `flutter analyze` — clean
-- `flutter test` — all new + existing tests pass
-- `flutter build apk --debug` — compiles
+**⚠️ Step 17 — QA: Duel Verification**
+- `flutter analyze` — 0 issues ✅
+- `flutter test` — 42/42 pass ✅ *(hanya auth tests — duel belum ditest)*
+- `flutter build apk --debug` — compiles ✅
 
 **Step 17a — Fixer (if needed): Resolve Issues**
+- ✅ Dijalankan — semua analyzer issues terselesaikan (commit `71d41ae`)
+
+---
+
+### ✅ Phase 6: Complete Duel Feature (Rework Step 14) — DONE 2026-02-28
+
+Gap yang ditemukan saat review: `DuelListBloc` tidak pernah dibuat, menyebabkan
+semua list screen tidak functional. Perlu diselesaikan sebelum testing.
+
+**✅ Step 6.1 — Coder: Buat `DuelListBloc`**
+- Events: `DuelListLoadRequested`, `DuelAcceptRequested`, `DuelDeclineRequested`
+- States: `DuelListInitial`, `DuelListLoading`, `DuelListLoaded`, `DuelListError`
+- `DuelListLoaded` berisi `activeDuels`, `pendingDuels`, `historyDuels`
+- Side effects: `ShowSnackBarEffect` untuk accept/decline success/fail
+- Gunakan use cases: `GetActiveDuels`, `GetPendingDuels`, `GetDuelHistory`, `AcceptDuel`, `DeclineDuel`
+- Register di `duel_module.dart`
+
+**✅ Step 6.2 — Coder: Wire `DuelListBloc` ke screens**
+- `duel_list_screen.dart`: ganti `_EmptyState` statis dengan `BlocBuilder<DuelListBloc, DuelListState>`
+  di ketiga tab (Active, Pending, History) — gunakan commented code yang sudah ada sebagai guide
+- Provide `DuelListBloc` via `BlocProvider` di screen atau di router
+
+**✅ Step 6.3 — Coder: Buat & wire `CreateDuelBloc` di `create_duel_screen.dart`**
+- Pilihan A dipilih: `CreateDuelBloc` tersendiri dengan event `CreateDuelSubmitted`
+- Fetches challenger name dari `SessionRepository` sebelum submit
+- Friend list awalnya mock — diselesaikan di Step 6.6
+
+**✅ Step 6.4 — Coder: Resolve user name di data layer**
+- `duel_repository_impl.dart` `createDuel`: inject `SessionRepository`, fetch `getCurrentUser()`,
+  gunakan `displayName` untuk `challengerName` sebelum call datasource
+- `duel_side_effect.dart`: resolve leader name dari `Duel` entity (gunakan field `challengerName`/`challengedName` yang sudah ada di entity)
+
+**✅ Step 6.5 — QA: Verifikasi ulang**
+- `flutter analyze` — 0 issues ✅
+- `flutter test` — 42/42 pass ✅
+- `flutter build apk --debug` — belum dijalankan session ini
+
+**✅ Step 6.6 — Coder: Real opponent data di `create_duel_screen.dart`**
+- Buat `GetOpponents` use case — query `users` Firestore collection, exclude current user
+- Tambah `getOpponents(excludeUserId)` ke `DuelFirestoreDataSource`, `DuelRepository`, `DuelRepositoryImpl`
+- Update `CreateDuelEvent` dengan `CreateDuelOpponentsRequested(currentUserId)`
+- Update `CreateDuelState` dengan `CreateDuelLoadingOpponents`, `CreateDuelReady(opponents)`, `CreateDuelSubmitting(opponents)`
+- Update `CreateDuelBloc` handle opponent loading
+- Tulis ulang `create_duel_screen.dart`: hapus mock `_Friend`, gunakan `UserModel` real
+- Daftarkan `GetOpponents` di `duel_module.dart`
+- Buat `firestore.indexes.json` dengan 3 composite index untuk query Firestore yang butuh index
+- `flutter analyze` — 0 issues ✅
+
+---
+
+### ✅ Phase 5: UI Redesign — Sports-Energy Aesthetic *(bonus, di luar plan original)*
+
+**✅ Step UI-1 — Design Tokens**
+- Update color palette, typography, spacing ke sports-energy dark theme
+
+**✅ Step UI-2 — Auth Screens Redesign**
+- Redesign login & register screens
+
+**✅ Step UI-3 — Home Screen Redesign**
+- Redesign home dashboard, widget extraction per section
+
+**✅ Step UI-4 — Duel Screens Redesign**
+- Redesign Active, List, Create, Result screens
+
+**✅ Step UI-5 — Navigation Wiring**
+- Wire semua duel screens ke app navigation flow
 
 ---
 
@@ -177,9 +253,12 @@ With documentation as our guide, scaffold the project and port core infrastructu
 
 ## Verification Checkpoints
 
-1. **After Phase 1**: Documentation is complete and enhanced
-2. **After Phase 2-3**: `flutter analyze` clean, `flutter test` passes, `flutter build apk --debug` compiles
-3. **After Phase 4**: Duel feature builds, tests pass, full flow works
+1. ✅ **After Phase 1**: Documentation is complete and enhanced
+2. ✅ **After Phase 2-3**: `flutter analyze` clean, `flutter test` passes, `flutter build apk --debug` compiles
+3. ⚠️ **After Phase 4**: Duel feature builds and analyze clean ✅ — `DuelListBloc` belum ada, screens tidak functional ❌, tests belum ditulis ❌
+4. ✅ **After Phase 6**: Duel feature fully functional — semua screens wire ke BLoC, real opponent data dari Firestore, 0 TODO/commented code (analyze clean ✅, tests pass ✅)
+   - Pending: `firebase deploy --only firestore:indexes` untuk deploy composite indexes
+   - Pending: duel tests belum ditulis (Step 15)
 
 ---
 

@@ -9,12 +9,9 @@ extension DuelSideEffect on DuelBloc {
   /// Lead changed notification
   ShowSnackBarEffect _effectLeadChanged(Duel duel) {
     final leader = duel.currentLeader;
-
-    // Get leader name from denormalized data
-    // (In full implementation, this would come from UserModel)
     final leaderName = leader == duel.challengerId
-      ? 'Challenger' // TODO: Replace with actual user name when available
-      : 'Challenged'; // TODO: Replace with actual user name when available
+        ? duel.challengerName
+        : duel.challengedName;
 
     return ShowSnackBarEffect(
       message: '$leaderName is winning by ${duel.stepDifference} steps!',

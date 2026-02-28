@@ -18,6 +18,7 @@ export 'usecases/create_duel.dart';
 export 'usecases/decline_duel.dart';
 export 'usecases/get_active_duels.dart';
 export 'usecases/get_duel_history.dart';
+export 'usecases/get_opponents.dart';
 export 'usecases/get_pending_duels.dart';
 export 'usecases/sync_health_data.dart';
 export 'usecases/update_step_count.dart';

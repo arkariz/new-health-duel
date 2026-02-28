@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/data/session/data/models/user_model.dart';
 import 'package:health_duel/features/duel/data/datasources/duel_firestore_datasource.dart';
 import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/repositories/duel_repository.dart';
@@ -18,15 +19,15 @@ class DuelRepositoryImpl implements DuelRepository {
   Future<Either<Failure, Duel>> createDuel({
     required String challengerId,
     required String challengedId,
+    required String challengerName,
+    required String challengedName,
   }) async {
     try {
-      // TODO: Fetch user data from UserRepository when available
-      // For now, use placeholder names (will be updated when duel is accepted)
       final duelDto = await _dataSource.createDuel(
         challengerId: challengerId,
         challengedId: challengedId,
-        challengerName: 'User', // Placeholder
-        challengedName: 'User', // Placeholder
+        challengerName: challengerName,
+        challengedName: challengedName,
         challengerPhotoUrl: null,
         challengedPhotoUrl: null,
       );
@@ -146,6 +147,16 @@ class DuelRepositoryImpl implements DuelRepository {
       return Stream.value(
         Left(ServerFailure(message: 'Failed to watch duel: $e')),
       );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<UserModel>>> getOpponents(String excludeUserId) async {
+    try {
+      final users = await _dataSource.getOpponents(excludeUserId);
+      return Right(users);
+    } catch (e) {
+      return Left(ServerFailure(message: 'Failed to load opponents: $e'));
     }
   }
 

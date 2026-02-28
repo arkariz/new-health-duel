@@ -16,6 +16,8 @@ class Duel extends Equatable {
   final String id;
   final String challengerId;
   final String challengedId;
+  final String challengerName;
+  final String challengedName;
   final StepCount challengerSteps;
   final StepCount challengedSteps;
   final DateTime startTime;
@@ -29,6 +31,8 @@ class Duel extends Equatable {
     required this.id,
     required this.challengerId,
     required this.challengedId,
+    required this.challengerName,
+    required this.challengedName,
     required this.challengerSteps,
     required this.challengedSteps,
     required this.startTime,
@@ -213,6 +217,8 @@ class Duel extends Equatable {
     id,
     challengerId,
     challengedId,
+    challengerName,
+    challengedName,
     challengerSteps,
     challengedSteps,
     startTime,

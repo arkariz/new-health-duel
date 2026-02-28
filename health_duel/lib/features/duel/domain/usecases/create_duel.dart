@@ -21,6 +21,8 @@ class CreateDuel {
   Future<Either<Failure, Duel>> call({
     required String challengerId,
     required String challengedId,
+    required String challengerName,
+    required String challengedName,
   }) async {
     // Validation: Cannot challenge yourself
     if (challengerId == challengedId) {
@@ -39,6 +41,8 @@ class CreateDuel {
         return _repository.createDuel(
           challengerId: challengerId,
           challengedId: challengedId,
+          challengerName: challengerName,
+          challengedName: challengedName,
         );
       },
       (duel) {
@@ -52,6 +56,8 @@ class CreateDuel {
         return _repository.createDuel(
           challengerId: challengerId,
           challengedId: challengedId,
+          challengerName: challengerName,
+          challengedName: challengedName,
         );
       },
     );
