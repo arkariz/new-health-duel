@@ -43,7 +43,7 @@ void main() {
 
     test('emits multiple sequential duel updates', () async {
       final duel1 = tActiveDuel;
-      final duel2 = tActiveDuel;
+      final duel2 = tCompletedDuel; // distinct duel with different steps/status
       final stream = Stream.fromIterable([
         Right<Failure, dynamic>(duel1),
         Right<Failure, dynamic>(duel2),

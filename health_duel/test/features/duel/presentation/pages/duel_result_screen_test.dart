@@ -65,7 +65,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text("Tie!"), findsOneWidget);
+      expect(find.text('Tie!'), findsOneWidget);
     });
 
     testWidgets('shows step counts for both players', (tester) async {
