@@ -7,6 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_state.dart';
+import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
 
 /// Pumps a widget with required providers for testing
 ///
@@ -27,6 +30,51 @@ extension PumpApp on WidgetTester {
       MaterialApp(
         home: BlocProvider<AuthBloc>.value(
           value: authBloc,
+          child: widget,
+        ),
+      ),
+    );
+  }
+
+  /// Pumps a widget with [DuelListBloc] provided
+  Future<void> pumpDuelListApp(
+    Widget widget, {
+    required DuelListBloc duelListBloc,
+  }) async {
+    await pumpWidget(
+      MaterialApp(
+        home: BlocProvider<DuelListBloc>.value(
+          value: duelListBloc,
+          child: widget,
+        ),
+      ),
+    );
+  }
+
+  /// Pumps a widget with [CreateDuelBloc] provided
+  Future<void> pumpCreateDuelApp(
+    Widget widget, {
+    required CreateDuelBloc createDuelBloc,
+  }) async {
+    await pumpWidget(
+      MaterialApp(
+        home: BlocProvider<CreateDuelBloc>.value(
+          value: createDuelBloc,
+          child: widget,
+        ),
+      ),
+    );
+  }
+
+  /// Pumps a widget with [DuelBloc] provided
+  Future<void> pumpDuelApp(
+    Widget widget, {
+    required DuelBloc duelBloc,
+  }) async {
+    await pumpWidget(
+      MaterialApp(
+        home: BlocProvider<DuelBloc>.value(
+          value: duelBloc,
           child: widget,
         ),
       ),
