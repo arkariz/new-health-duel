@@ -3,10 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
 import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/sync_health_data.dart';
-import 'package:health_duel/features/duel/domain/value_objects/duel_status.dart';
 import 'package:health_duel/features/duel/domain/value_objects/step_count.dart'
     as duel;
-import 'package:health_duel/features/health/domain/repositories/health_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/helpers.dart';
@@ -26,16 +24,7 @@ void main() {
 
   group('SyncHealthData', () {
     const userId = 'test-user-123';
-    const steps = 2500;
-
-    // Helper to build a fake StepDataRaw record
-    StepDataRaw tStepDataRaw() => (
-          value: steps,
-          startTime: tDuelStartTime,
-          endTime: tDuelEndTime,
-          sourceDevice: null,
-          hasManualEntries: false,
-        );
+    const steps = 2500; // same value as tSyncedSteps
 
     group('validation', () {
       test('returns ValidationFailure when duel is not active', () async {
