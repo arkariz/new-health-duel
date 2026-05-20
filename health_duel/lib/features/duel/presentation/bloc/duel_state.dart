@@ -26,6 +26,9 @@ class DuelInitial extends DuelState {
   List<Object?> get props => [];
 
   @override
+  DuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
+
+  @override
   DuelState _copyWithEffect(UiEffect? effect) => DuelInitial(effect: effect);
 }
 
@@ -37,6 +40,9 @@ class DuelLoading extends DuelState {
 
   @override
   List<Object?> get props => [message];
+
+  @override
+  DuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
 
   @override
   DuelState _copyWithEffect(UiEffect? effect) => DuelLoading(message: message, effect: effect);
@@ -90,6 +96,9 @@ class DuelError extends DuelState {
 
   @override
   List<Object?> get props => [message];
+
+  @override
+  DuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
 
   @override
   DuelState _copyWithEffect(UiEffect? effect) => DuelError(message, effect: effect);
