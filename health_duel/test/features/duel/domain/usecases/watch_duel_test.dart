@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/watch_duel.dart';
 
 import '../../../../helpers/helpers.dart';
@@ -44,11 +45,11 @@ void main() {
     test('emits multiple sequential duel updates', () async {
       final duel1 = tActiveDuel;
       final duel2 = tCompletedDuel; // distinct duel with different steps/status
-      final stream = Stream.fromIterable([
-        Right<Failure, dynamic>(duel1),
-        Right<Failure, dynamic>(duel2),
+      final stream = Stream<Either<Failure, Duel>>.fromIterable([
+        Right(duel1),
+        Right(duel2),
       ]);
-      mockRepository.setupWatchDuel(tDuelId, stream.cast());
+      mockRepository.setupWatchDuel(tDuelId, stream);
 
       final resultStream = watchDuel(tDuelId);
 

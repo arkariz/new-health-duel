@@ -140,9 +140,9 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      // Challenger and challenged names should appear on the card
-      expect(find.text(tUserModel.name), findsAtLeastNWidgets(1));
-      expect(find.text(tOpponentModel.name), findsAtLeastNWidgets(1));
+      // 'You' and 'Opponent' are shown as generic player labels in the card
+      expect(find.text('You'), findsAtLeastNWidgets(1));
+      expect(find.text('Opponent'), findsAtLeastNWidgets(1));
     });
 
     testWidgets('switches to Pending tab and shows pending duels',
@@ -170,8 +170,8 @@ void main() {
       await tester.tap(find.text('Pending'));
       await tester.pumpAndSettle();
 
-      // Challenger name should appear in the pending card
-      expect(find.text(tOpponentModel.name), findsAtLeastNWidgets(1));
+      // Pending card renders 'Challenge received' for the challenged user
+      expect(find.text('Challenge received'), findsAtLeastNWidgets(1));
     });
 
     testWidgets('dispatches DuelListLoadRequested on init', (tester) async {

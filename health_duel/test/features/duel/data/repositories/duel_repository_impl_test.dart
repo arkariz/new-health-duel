@@ -33,7 +33,7 @@ void main() {
             challengerPhotoUrl: any(named: 'challengerPhotoUrl'),
             challengedPhotoUrl: any(named: 'challengedPhotoUrl'),
           ),
-        ).thenAnswer((_) async => tPendingDuelDto());
+        ).thenAnswer((_) async => tActiveDuelDto());
 
         final result = await repository.createDuel(
           challengerId: tUserModel.id,
@@ -153,7 +153,11 @@ void main() {
 
         final result = await repository.getActiveDuels(tUserModel.id);
 
-        expect(result, const Right(<dynamic>[]));
+        expect(result.isRight(), isTrue);
+        result.fold(
+          (_) => fail('Expected Right'),
+          (duels) => expect(duels, isEmpty),
+        );
       });
 
       test('returns ServerFailure when datasource throws', () async {

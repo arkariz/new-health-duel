@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
@@ -43,7 +44,7 @@ void main() {
             .thenAnswer((_) async => const Right(null));
 
         final bloc = buildBloc();
-        bloc.add(DuelLoadRequested(tDuelId));
+        bloc.add(const DuelLoadRequested(tDuelId));
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(bloc.state, isA<DuelError>());
@@ -52,12 +53,10 @@ void main() {
 
       test('emits DuelLoading then subscribes to duel stream on load',
           () async {
-        final streamController =
-            StreamController<Either<Failure, dynamic>>.broadcast();
+        final streamController = StreamController<Either<Failure, Duel>>.broadcast();
 
         mockSessionRepository.setupGetCurrentUserDuel(tUserModel);
-        when(() => mockWatchDuel(tDuelId))
-            .thenAnswer((_) => streamController.stream.cast());
+        when(() => mockWatchDuel(tDuelId)).thenAnswer((_) => streamController.stream);
         mockSyncHealthData.setupSuccess(
           duelId: tDuelId,
           userId: tUserModel.id,
@@ -65,7 +64,7 @@ void main() {
         );
 
         final bloc = buildBloc();
-        bloc.add(DuelLoadRequested(tDuelId));
+        bloc.add(const DuelLoadRequested(tDuelId));
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(bloc.state, isA<DuelLoading>());
@@ -109,8 +108,8 @@ void main() {
         'emits DuelError when real-time update fails',
         build: buildBloc,
         act: (bloc) => bloc.add(
-          DuelUpdateFailed(
-            const ServerFailure(message: tDuelErrorMessage),
+          const DuelUpdateFailed(
+            ServerFailure(message: tDuelErrorMessage),
           ),
         ),
         expect: () => [
@@ -134,7 +133,7 @@ void main() {
         final states = <DuelState>[];
         bloc.stream.listen(states.add);
 
-        bloc.add(DuelHealthSyncTriggered(tDuelId));
+        bloc.add(const DuelHealthSyncTriggered(tDuelId));
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
         // No state change expected because userId is null
@@ -146,11 +145,11 @@ void main() {
           'updates lastSyncTime after full DuelLoadRequested flow when sync succeeds',
           () async {
         final streamController =
-            StreamController<Either<Failure, dynamic>>.broadcast();
+            StreamController<Either<Failure, Duel>>.broadcast();
 
         mockSessionRepository.setupGetCurrentUserDuel(tUserModel);
         when(() => mockWatchDuel(tDuelId))
-            .thenAnswer((_) => streamController.stream.cast());
+            .thenAnswer((_) => streamController.stream);
         mockSyncHealthData.setupSuccess(
           duelId: tDuelId,
           userId: tUserModel.id,
@@ -158,12 +157,12 @@ void main() {
         );
 
         final bloc = buildBloc();
-        bloc.add(DuelLoadRequested(tDuelId));
+        bloc.add(const DuelLoadRequested(tDuelId));
         // Wait for session + subscription setup
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
         // Trigger a manual sync now that _currentUserId is set
-        bloc.add(DuelHealthSyncTriggered(tDuelId));
+        bloc.add(const DuelHealthSyncTriggered(tDuelId));
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
         // No error thrown and bloc is still operational
@@ -178,11 +177,11 @@ void main() {
     group('lifecycle', () {
       test('cancels subscriptions on close', () async {
         final streamController =
-            StreamController<Either<Failure, dynamic>>.broadcast();
+            StreamController<Either<Failure, Duel>>.broadcast();
 
         mockSessionRepository.setupGetCurrentUserDuel(tUserModel);
         when(() => mockWatchDuel(tDuelId))
-            .thenAnswer((_) => streamController.stream.cast());
+            .thenAnswer((_) => streamController.stream);
         mockSyncHealthData.setupSuccess(
           duelId: tDuelId,
           userId: tUserModel.id,
@@ -190,7 +189,7 @@ void main() {
         );
 
         final bloc = buildBloc();
-        bloc.add(DuelLoadRequested(tDuelId));
+        bloc.add(const DuelLoadRequested(tDuelId));
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
         await bloc.close();
