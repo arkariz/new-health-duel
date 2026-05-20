@@ -6,6 +6,7 @@ import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart'
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_state.dart';
 import 'package:health_duel/features/duel/presentation/pages/duel_list_screen.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/helpers.dart';
 
@@ -44,13 +45,13 @@ void main() {
       whenListen(
         mockDuelListBloc,
         Stream<DuelListState>.fromIterable([
-          DuelListLoaded(
+          const DuelListLoaded(
             activeDuels: [],
             pendingDuels: [],
             historyDuels: [],
           ),
         ]),
-        initialState: DuelListLoaded(
+        initialState: const DuelListLoaded(
           activeDuels: [],
           pendingDuels: [],
           historyDuels: [],
@@ -83,13 +84,13 @@ void main() {
       whenListen(
         mockDuelListBloc,
         Stream<DuelListState>.fromIterable([
-          DuelListLoaded(
+          const DuelListLoaded(
             activeDuels: [],
             pendingDuels: [],
             historyDuels: [],
           ),
         ]),
-        initialState: DuelListLoaded(
+        initialState: const DuelListLoaded(
           activeDuels: [],
           pendingDuels: [],
           historyDuels: [],
@@ -108,9 +109,9 @@ void main() {
       whenListen(
         mockDuelListBloc,
         Stream<DuelListState>.fromIterable([
-          DuelListError(tDuelErrorMessage),
+          const DuelListError(tDuelErrorMessage),
         ]),
-        initialState: DuelListError(tDuelErrorMessage),
+        initialState: const DuelListError(tDuelErrorMessage),
       );
 
       await tester.pumpWidget(buildSubject());

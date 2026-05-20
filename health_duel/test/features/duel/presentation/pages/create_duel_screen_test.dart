@@ -6,6 +6,7 @@ import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dar
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_state.dart';
 import 'package:health_duel/features/duel/presentation/pages/create_duel_screen.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/helpers.dart';
 
@@ -168,9 +169,9 @@ void main() {
       whenListen(
         mockCreateDuelBloc,
         Stream<CreateDuelState>.fromIterable([
-          CreateDuelFailure(tDuelErrorMessage),
+          const CreateDuelFailure(tDuelErrorMessage),
         ]),
-        initialState: CreateDuelFailure(tDuelErrorMessage),
+        initialState: const CreateDuelFailure(tDuelErrorMessage),
       );
 
       await tester.pumpWidget(buildSubject());

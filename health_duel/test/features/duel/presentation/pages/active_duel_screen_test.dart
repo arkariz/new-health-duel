@@ -6,6 +6,7 @@ import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
 import 'package:health_duel/features/duel/presentation/pages/active_duel_screen.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/helpers.dart';
 
@@ -60,8 +61,8 @@ void main() {
     testWidgets('shows error state with message on DuelError', (tester) async {
       whenListen(
         mockDuelBloc,
-        Stream<DuelState>.fromIterable([DuelError(tDuelErrorMessage)]),
-        initialState: DuelError(tDuelErrorMessage),
+        Stream<DuelState>.fromIterable([const DuelError(tDuelErrorMessage)]),
+        initialState: const DuelError(tDuelErrorMessage),
       );
 
       await tester.pumpWidget(buildSubject());
@@ -139,7 +140,7 @@ void main() {
       await tester.pump();
 
       verify(
-        () => mockDuelBloc.add(DuelManualRefreshRequested(tDuelId)),
+        () => mockDuelBloc.add(const DuelManualRefreshRequested(tDuelId)),
       ).called(1);
     });
 
@@ -154,7 +155,7 @@ void main() {
       await tester.pump(); // trigger postFrameCallback
 
       verify(
-        () => mockDuelBloc.add(DuelLoadRequested(tDuelId)),
+        () => mockDuelBloc.add(const DuelLoadRequested(tDuelId)),
       ).called(1);
     });
   });
