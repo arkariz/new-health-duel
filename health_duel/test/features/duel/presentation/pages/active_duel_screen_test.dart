@@ -91,8 +91,8 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pump();
 
-      expect(find.text(tUserModel.name), findsAtLeastNWidgets(1));
-      expect(find.text(tOpponentModel.name), findsAtLeastNWidgets(1));
+      expect(find.text('You'), findsAtLeastNWidgets(1));
+      expect(find.text('Opponent'), findsAtLeastNWidgets(1));
     });
 
     testWidgets('shows sync/refresh button when duel is loaded',

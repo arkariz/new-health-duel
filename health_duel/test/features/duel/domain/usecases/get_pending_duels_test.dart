@@ -25,7 +25,14 @@ void main() {
 
       final result = await getPendingDuels(userId);
 
-      expect(result, Right([pendingDuel]));
+      expect(result.isRight(), isTrue);
+      result.fold(
+        (_) => fail('Expected Right'),
+        (duels) {
+          expect(duels, hasLength(1));
+          expect(duels.first.id, pendingDuel.id);
+        },
+      );
     });
 
     test('returns empty list when user has no pending duels', () async {
@@ -33,7 +40,11 @@ void main() {
 
       final result = await getPendingDuels(userId);
 
-      expect(result, const Right(<dynamic>[]));
+      expect(result.isRight(), isTrue);
+      result.fold(
+        (_) => fail('Expected Right'),
+        (duels) => expect(duels, isEmpty),
+      );
     });
 
     test('propagates Failure from repository', () async {

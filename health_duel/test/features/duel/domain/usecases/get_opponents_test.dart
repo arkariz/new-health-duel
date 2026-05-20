@@ -25,7 +25,14 @@ void main() {
 
       final result = await getOpponents(currentUserId);
 
-      expect(result, Right(opponents));
+      expect(result.isRight(), isTrue);
+      result.fold(
+        (_) => fail('Expected Right'),
+        (users) {
+          expect(users, hasLength(2));
+          expect(users.first.id, tOpponentModel.id);
+        },
+      );
     });
 
     test('returns empty list when no other users exist', () async {
@@ -33,7 +40,11 @@ void main() {
 
       final result = await getOpponents(currentUserId);
 
-      expect(result, const Right(<dynamic>[]));
+      expect(result.isRight(), isTrue);
+      result.fold(
+        (_) => fail('Expected Right'),
+        (users) => expect(users, isEmpty),
+      );
     });
 
     test('propagates Failure from repository', () async {
