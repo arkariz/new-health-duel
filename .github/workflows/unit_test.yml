@@ -31,6 +31,46 @@ jobs:
         working-directory: health_duel
         run: flutter pub get
 
+      - name: Create stub files for gitignored generated code
+        working-directory: health_duel
+        run: |
+          mkdir -p lib/core/config/env
+
+          cat > lib/core/config/firebase_options.dart << 'DART'
+          import 'package:firebase_core/firebase_core.dart';
+          abstract class DefaultFirebaseOptions {
+            static const FirebaseOptions currentPlatform = FirebaseOptions(
+              apiKey: 'test',
+              appId: '1:000000000000:android:0000000000000000',
+              messagingSenderId: '000000000000',
+              projectId: 'test-project',
+              storageBucket: 'test-project.appspot.com',
+            );
+          }
+          DART
+
+          cat > lib/core/config/env/env_variables.dart << 'DART'
+          abstract class EnvVariables {
+            String get appName;
+            bool get isDebug;
+            String get aesKeyPlatform;
+          }
+          class EnvDev implements EnvVariables {
+            @override String get appName => 'Health Duel Dev';
+            @override bool get isDebug => true;
+            @override String get aesKeyPlatform => 'dummy-key-32-chars-padding-here!';
+          }
+          class Env implements EnvVariables {
+            @override String get appName => 'Health Duel';
+            @override bool get isDebug => false;
+            @override String get aesKeyPlatform => 'dummy-key-32-chars-padding-here!';
+          }
+          DART
+
+          cat > lib/core/config/env/flavors.dart << 'DART'
+          // Flavor configuration — stub for CI
+          DART
+
       - name: Run unit tests
         working-directory: health_duel
         run: flutter test --reporter=expanded
