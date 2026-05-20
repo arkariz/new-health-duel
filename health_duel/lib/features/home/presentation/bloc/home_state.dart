@@ -64,7 +64,7 @@ class HomeState extends UiState with EffectClearable<HomeState> {
   // ═══════════════════════════════════════════════════════════════════
   // COPY WITH
   // ═══════════════════════════════════════════════════════════════════
-
+  @override
   HomeState copyWith({
     HomeStatus? status,
     UserModel? user,

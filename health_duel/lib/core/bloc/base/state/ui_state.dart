@@ -37,6 +37,8 @@ abstract class UiState extends Equatable {
 
   @override
   int get hashCode => Object.hash(super.hashCode, effect);
+
+  UiState copyWith({UiEffect? effect});
 }
 
 /// Mixin for effect manipulation in copyWith

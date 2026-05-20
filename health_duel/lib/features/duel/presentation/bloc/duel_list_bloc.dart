@@ -92,9 +92,11 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     result.fold(
       (failure) {
         if (state is DuelListLoaded) {
-          emit((state as DuelListLoaded).copyWith(
-            effect: _effectError(failure.message),
-          ));
+          emitWithEffect(
+            emit,
+            state,
+            _effectError(failure.message),
+          );
         }
       },
       (duel) {
