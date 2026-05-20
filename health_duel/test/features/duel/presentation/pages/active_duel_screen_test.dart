@@ -7,7 +7,7 @@ import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
 import 'package:health_duel/features/duel/presentation/pages/active_duel_screen.dart';
 
-import '../../../helpers/helpers.dart';
+import '../../../../helpers/helpers.dart';
 
 void main() {
   late MockDuelBloc mockDuelBloc;
