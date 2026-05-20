@@ -7,7 +7,7 @@ import 'package:health_duel/features/duel/presentation/bloc/create_duel_event.da
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_state.dart';
 import 'package:health_duel/features/duel/presentation/pages/create_duel_screen.dart';
 
-import '../../../helpers/helpers.dart';
+import '../../../../helpers/helpers.dart';
 
 void main() {
   late MockCreateDuelBloc mockCreateDuelBloc;

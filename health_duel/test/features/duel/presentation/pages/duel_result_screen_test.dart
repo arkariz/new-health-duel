@@ -6,7 +6,7 @@ import 'package:health_duel/features/duel/domain/value_objects/step_count.dart'
     as duel;
 import 'package:health_duel/features/duel/presentation/pages/duel_result_screen.dart';
 
-import '../../../helpers/helpers.dart';
+import '../../../../helpers/helpers.dart';
 
 void main() {
   Widget buildSubject({required Duel duel, String userId = 'test-user-123'}) {
