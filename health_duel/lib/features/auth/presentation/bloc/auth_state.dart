@@ -26,6 +26,9 @@ class AuthInitial extends AuthState {
   List<Object?> get props => [];
 
   @override
+  AuthState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
+
+  @override
   AuthState _copyWithEffect(UiEffect? effect) => AuthInitial(effect: effect);
 }
 
@@ -38,6 +41,9 @@ class AuthLoading extends AuthState {
 
   @override
   List<Object?> get props => [message];
+
+  @override
+  AuthState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
 
   @override
   AuthState _copyWithEffect(UiEffect? effect) => AuthLoading(message: message, effect: effect);
@@ -53,6 +59,9 @@ class AuthAuthenticated extends AuthState {
   List<Object?> get props => [user];
 
   @override
+  AuthState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
+
+  @override
   AuthState _copyWithEffect(UiEffect? effect) => AuthAuthenticated(user, effect: effect);
 }
 
@@ -62,6 +71,9 @@ class AuthUnauthenticated extends AuthState {
 
   @override
   List<Object?> get props => [];
+
+  @override
+  AuthState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
 
   @override
   AuthState _copyWithEffect(UiEffect? effect) => AuthUnauthenticated(effect: effect);

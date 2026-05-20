@@ -24,6 +24,9 @@ class CreateDuelInitial extends CreateDuelState {
   List<Object?> get props => [];
 
   @override
+  CreateDuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
+
+  @override
   CreateDuelState _copyWithEffect(UiEffect? effect) =>
       CreateDuelInitial(effect: effect);
 }
@@ -34,6 +37,9 @@ class CreateDuelLoadingOpponents extends CreateDuelState {
 
   @override
   List<Object?> get props => [];
+
+  @override
+  CreateDuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
 
   @override
   CreateDuelState _copyWithEffect(UiEffect? effect) =>
@@ -67,6 +73,9 @@ class CreateDuelSubmitting extends CreateDuelState {
   List<Object?> get props => [opponents];
 
   @override
+  CreateDuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
+
+  @override
   CreateDuelState _copyWithEffect(UiEffect? effect) =>
       CreateDuelSubmitting(opponents: opponents, effect: effect);
 }
@@ -81,6 +90,9 @@ class CreateDuelSuccess extends CreateDuelState {
   List<Object?> get props => [duel];
 
   @override
+  CreateDuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
+
+  @override
   CreateDuelState _copyWithEffect(UiEffect? effect) =>
       CreateDuelSuccess(duel, effect: effect);
 }
@@ -93,6 +105,9 @@ class CreateDuelFailure extends CreateDuelState {
 
   @override
   List<Object?> get props => [message];
+
+  @override
+  CreateDuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
 
   @override
   CreateDuelState _copyWithEffect(UiEffect? effect) =>
