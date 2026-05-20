@@ -1,2 +1,5 @@
 reference_project/
 nul
+
+# FVM Version Cache
+.fvm/
