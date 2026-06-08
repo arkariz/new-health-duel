@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
-import 'package:health_duel/features/duel/data/models/duel_dto.dart';
 import 'package:health_duel/features/duel/data/repositories/duel_repository_impl.dart';
 import 'package:health_duel/features/duel/domain/value_objects/step_count.dart'
     as duel;
