@@ -1,0 +1,6 @@
+{
+  "flavors": [
+    "dev",
+    "prod"
+  ]
+}

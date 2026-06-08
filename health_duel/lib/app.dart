@@ -20,7 +20,7 @@ class HealthDuelApp extends StatelessWidget {
       ],
       child: MaterialApp.router(
         title: AppConfig.env.appName,
-        debugShowCheckedModeBanner: AppConfig.env.isDebug,
+        debugShowCheckedModeBanner: bool.tryParse(AppConfig.env.isDebugMode) ?? false,
 
         // Theme Configuration
         theme: AppTheme.lightTheme,
