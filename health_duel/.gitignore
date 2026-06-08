@@ -52,8 +52,7 @@ Desktop.ini
 *.freezed.dart
 
 # Environment Variables
-env/
-!env/example.env
+.envs
 
 # Firebase Credentials
 google-services.json

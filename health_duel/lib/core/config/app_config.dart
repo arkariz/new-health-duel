@@ -1,5 +1,4 @@
-import 'package:health_duel/core/config/env/env_variables.dart';
-import 'package:health_duel/core/config/env/flavors.dart';
+import 'package:health_duel/env/env.dart';
 
 /// Environment Flavor Enum
 enum Environment { dev, prod }
@@ -25,7 +24,7 @@ enum Environment { dev, prod }
 class AppConfig {
   AppConfig._(); // Private constructor to prevent instantiation
 
-  static late EnvVariables _env;
+  static late Env _env;
   static late Environment _flavor;
   static bool _initialized = false;
 
@@ -41,14 +40,7 @@ class AppConfig {
     }
 
     _flavor = flavor;
-    switch (flavor) {
-      case Environment.dev:
-        _env = EnvDev();
-        break;
-      case Environment.prod:
-        _env = Env();
-        break;
-    }
+    _env = Env();
 
     _initialized = true;
   }
@@ -56,7 +48,7 @@ class AppConfig {
   /// Access to environment-specific variables
   ///
   /// Throws [StateError] if accessed before [init] is called.
-  static EnvVariables get env {
+  static Env get env {
     _ensureInitialized();
     return _env;
   }

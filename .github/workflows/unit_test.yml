@@ -49,26 +49,21 @@ jobs:
           }
           DART
 
-          cat > lib/core/config/env/env_variables.dart << 'DART'
-          abstract class EnvVariables {
-            String get appName;
-            bool get isDebug;
-            String get aesKeyPlatform;
-          }
-          class EnvDev implements EnvVariables {
+          cat > lib/env/env.g.dart << 'DART'
+          part of 'env.dart';
+          
+          class _EnvDev implements Env {
             @override String get appName => 'Health Duel Dev';
-            @override bool get isDebug => true;
+            @override String get isDebugMode => 'true';
             @override String get aesKeyPlatform => 'dummy-key-32-chars-padding-here!';
+            @override String get baseUrl => 'https://dev.api.healthduel.com';
           }
-          class Env implements EnvVariables {
+          class _EnvProd implements Env {
             @override String get appName => 'Health Duel';
-            @override bool get isDebug => false;
+            @override String get isDebugMode => 'false';
             @override String get aesKeyPlatform => 'dummy-key-32-chars-padding-here!';
+            @override String get baseUrl => 'https://api.healthduel.com';
           }
-          DART
-
-          cat > lib/core/config/env/flavors.dart << 'DART'
-          // Flavor configuration — stub for CI
           DART
 
       - name: Run unit tests
