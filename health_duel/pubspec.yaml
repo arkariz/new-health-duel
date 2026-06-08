@@ -15,35 +15,35 @@ dependencies:
   exception:
     git:
       url: https://github.com/arkariz/flutter-package-core
-      ref: main
+      ref: 2.0.0
       path: packages/exception
   network:
     git:
       url: https://github.com/arkariz/flutter-package-core
-      ref: main
+      ref: 2.0.0
       path: packages/network
   storage:
     git:
       url: https://github.com/arkariz/flutter-package-core
-      ref: main
+      ref: 2.0.0
       path: packages/storage
   security:
     git:
       url: https://github.com/arkariz/flutter-package-core
-      ref: main
+      ref: 2.0.0
       path: packages/security
   firestore:
     git:
       url: https://github.com/arkariz/flutter-package-core
-      ref: main
+      ref: 2.0.0
       path: packages/firestore
 
   # External Libraries
   cupertino_icons: ^1.0.8
-  dio: 5.8.0+1
+  dio: ^5.9.2
   envied: ^1.3.5
   flutter_bloc: ^9.1.1
-  get_it: ^8.0.0
+  get_it: ^9.2.1
   dartz: ^0.10.1
   equatable: ^2.0.7
   go_router: ^17.3.0
@@ -55,10 +55,10 @@ dependencies:
   connectivity_plus: ^7.1.1
 
   # Firebase
-  firebase_core: ^3.8.1
-  firebase_auth: ^5.3.4
-  firebase_messaging: ^15.2.7
-  cloud_firestore: ^5.6.0
+  firebase_core: ^4.10.0
+  firebase_auth: ^6.5.2
+  firebase_messaging: ^16.3.0
+  cloud_firestore: ^6.5.0
 
   # Social Auth
   google_sign_in: ^6.2.2
