@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:health_duel/core/error/failures.dart';
 import 'package:health_duel/features/health/data/datasources/datasources.dart';
+import 'package:health_duel/features/health/data/models/models.dart' show StepCountRaw;
+import 'package:health_duel/features/health/data/models/step_count_raw.dart' show StepCountRaw;
 import 'package:health_duel/features/health/domain/entities/entities.dart';
 import 'package:health_duel/features/health/domain/repositories/repositories.dart';
 
@@ -19,9 +21,9 @@ import 'package:health_duel/features/health/domain/repositories/repositories.dar
 /// - Repository converts to [StepDataRaw] record for domain
 /// - Use case creates [StepCount] entity with business validation
 class HealthRepositoryImpl implements HealthRepository {
-  final HealthPlatformDataSource _dataSource;
 
   const HealthRepositoryImpl(this._dataSource);
+  final HealthPlatformDataSource _dataSource;
 
   @override
   Future<Either<Failure, HealthPermissionStatus>> checkPermissions() async {

@@ -9,11 +9,9 @@
 /// - di/ - Dependency injection module
 library;
 
-// Domain Layer
-export 'domain/domain.dart';
-
 // Data Layer
 export 'data/data.dart';
-
 // Dependency Injection
 export 'di/session_module.dart';
+// Domain Layer
+export 'domain/domain.dart';

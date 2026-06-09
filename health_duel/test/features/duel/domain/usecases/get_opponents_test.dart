@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/data/session/data/data.dart';
 import 'package:health_duel/features/duel/domain/usecases/get_opponents.dart';
 
 import '../../../../helpers/helpers.dart';
@@ -53,7 +54,7 @@ void main() {
 
       final result = await getOpponents(currentUserId);
 
-      expect(result, const Left(failure));
+      expect(result, const Left<Failure, List<UserModel>>(failure));
     });
   });
 }

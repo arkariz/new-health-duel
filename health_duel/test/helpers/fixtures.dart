@@ -21,7 +21,7 @@ final tUserModel = UserModel(
   name: 'Test User',
   email: 'test@email.com',
   photoUrl: 'https://example.com/photo.jpg',
-  createdAt: DateTime(2025, 1, 1),
+  createdAt: DateTime(2025),
 );
 
 /// User without photo
@@ -29,8 +29,7 @@ final tUserNoPhoto = UserModel(
   id: 'test-user-456',
   name: 'No Photo User',
   email: 'nophoto@example.com',
-  photoUrl: null,
-  createdAt: DateTime(2025, 1, 1),
+  createdAt: DateTime(2025),
 );
 
 /// User with empty name (fallback to email)
@@ -38,8 +37,7 @@ final tUserNoName = UserModel(
   id: 'test-user-789',
   name: '',
   email: 'noname@example.com',
-  photoUrl: null,
-  createdAt: DateTime(2025, 1, 1),
+  createdAt: DateTime(2025),
 );
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -83,8 +81,7 @@ final tOpponentModel = UserModel(
   id: 'opponent-user-456',
   name: 'Opponent User',
   email: 'opponent@example.com',
-  photoUrl: null,
-  createdAt: DateTime(2025, 1, 1),
+  createdAt: DateTime(2025),
 );
 
 /// Second opponent for opponent list tests
@@ -92,15 +89,14 @@ final tOpponent2Model = UserModel(
   id: 'opponent-user-789',
   name: 'Second Opponent',
   email: 'second@example.com',
-  photoUrl: null,
-  createdAt: DateTime(2025, 1, 1),
+  createdAt: DateTime(2025),
 );
 
 /// Fixed timestamps for deterministic duel tests
-final tDuelStartTime = DateTime(2025, 6, 1, 10, 0);
-final tDuelEndTime = DateTime(2025, 6, 2, 10, 0);
-final tDuelCreatedAt = DateTime(2025, 6, 1, 9, 0);
-final tDuelAcceptedAt = DateTime(2025, 6, 1, 10, 0);
+final tDuelStartTime = DateTime(2025, 6, 1, 10);
+final tDuelEndTime = DateTime(2025, 6, 2, 10);
+final tDuelCreatedAt = DateTime(2025, 6, 1, 9);
+final tDuelAcceptedAt = DateTime(2025, 6, 1, 10);
 final tDuelCompletedAt = DateTime(2025, 6, 2, 10, 5);
 
 /// Time-sensitive timestamps for active/pending duels (evaluated at test runtime)

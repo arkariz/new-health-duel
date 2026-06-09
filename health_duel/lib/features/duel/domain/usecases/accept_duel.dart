@@ -11,9 +11,9 @@ import 'package:health_duel/features/duel/domain/repositories/duel_repository.da
 /// - Only pending duels can be accepted
 /// - Pending invitation must not be expired
 class AcceptDuel {
-  final DuelRepository _repository;
 
   const AcceptDuel(this._repository);
+  final DuelRepository _repository;
 
   /// Execute duel acceptance
   ///
@@ -26,7 +26,7 @@ class AcceptDuel {
     final duelResult = await _repository.getDuelById(duelId);
 
     return duelResult.fold(
-      (failure) => Left(failure),
+      Left.new,
       (duel) async {
         // Validation: Can only accept pending duels
         if (!duel.status.canBeAccepted) {

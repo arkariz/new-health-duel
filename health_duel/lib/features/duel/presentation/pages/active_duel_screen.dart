@@ -22,14 +22,14 @@ import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
 /// - BlocBuilder for loading/error/loaded states
 /// - Nested BlocBuilder (buildWhen: currentTime) for countdown
 class ActiveDuelScreen extends StatefulWidget {
-  final String duelId;
-  final String currentUserId;
 
   const ActiveDuelScreen({
     required this.duelId,
     required this.currentUserId,
     super.key,
   });
+  final String duelId;
+  final String currentUserId;
 
   @override
   State<ActiveDuelScreen> createState() => _ActiveDuelScreenState();
@@ -210,12 +210,6 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
 // ─── Arena Card ──────────────────────────────────────────────────────────────
 
 class _ArenaCard extends StatelessWidget {
-  final Duel duel;
-  final int mySteps;
-  final int opponentSteps;
-  final double myBattle;
-  final double oppBattle;
-  final String duelId;
 
   const _ArenaCard({
     required this.duel,
@@ -225,6 +219,12 @@ class _ArenaCard extends StatelessWidget {
     required this.oppBattle,
     required this.duelId,
   });
+  final Duel duel;
+  final int mySteps;
+  final int opponentSteps;
+  final double myBattle;
+  final double oppBattle;
+  final String duelId;
 
   @override
   Widget build(BuildContext context) {
@@ -356,11 +356,6 @@ class _ArenaCard extends StatelessWidget {
 // ─── Player Tile ─────────────────────────────────────────────────────────────
 
 class _PlayerTile extends StatelessWidget {
-  final String emoji;
-  final String name;
-  final int steps;
-  final Color color;
-  final bool isGreen;
 
   const _PlayerTile({
     required this.emoji,
@@ -369,6 +364,11 @@ class _PlayerTile extends StatelessWidget {
     required this.color,
     required this.isGreen,
   });
+  final String emoji;
+  final String name;
+  final int steps;
+  final Color color;
+  final bool isGreen;
 
   @override
   Widget build(BuildContext context) {
@@ -422,10 +422,6 @@ class _PlayerTile extends StatelessWidget {
 // ─── Battle Bar ──────────────────────────────────────────────────────────────
 
 class _BattleBar extends StatelessWidget {
-  final double myBattle;
-  final double oppBattle;
-  final Color primary;
-  final Color opponent;
 
   const _BattleBar({
     required this.myBattle,
@@ -433,6 +429,10 @@ class _BattleBar extends StatelessWidget {
     required this.primary,
     required this.opponent,
   });
+  final double myBattle;
+  final double oppBattle;
+  final Color primary;
+  final Color opponent;
 
   @override
   Widget build(BuildContext context) {
@@ -489,8 +489,6 @@ class _BattleBar extends StatelessWidget {
                       height: 8,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
                           colors: [const Color(0xFFCC4410), opponent],
                         ),
                       ),
@@ -509,9 +507,9 @@ class _BattleBar extends StatelessWidget {
 // ─── Countdown Card ───────────────────────────────────────────────────────────
 
 class _CountdownCard extends StatelessWidget {
-  final Duration remaining;
 
   const _CountdownCard({required this.remaining});
+  final Duration remaining;
 
   @override
   Widget build(BuildContext context) {
@@ -562,10 +560,6 @@ class _CountdownCard extends StatelessWidget {
 // ─── Stats Row ────────────────────────────────────────────────────────────────
 
 class _StatsRow extends StatelessWidget {
-  final Duel duel;
-  final int mySteps;
-  final int opponentSteps;
-  final String currentUserId;
 
   const _StatsRow({
     required this.duel,
@@ -573,6 +567,10 @@ class _StatsRow extends StatelessWidget {
     required this.opponentSteps,
     required this.currentUserId,
   });
+  final Duel duel;
+  final int mySteps;
+  final int opponentSteps;
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -622,13 +620,13 @@ class _StatsRow extends StatelessWidget {
 // ─── Motivational Banner ──────────────────────────────────────────────────────
 
 class _MotivationalBanner extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
 
   const _MotivationalBanner({
     required this.duel,
     required this.currentUserId,
   });
+  final Duel duel;
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -645,7 +643,7 @@ class _MotivationalBanner extends StatelessWidget {
           )
         : isWinning == true
             ? (
-                'You\'re in the lead! Keep it up!',
+                "You're in the lead! Keep it up!",
                 Icons.emoji_events_rounded,
                 context.appColors.success,
               )
@@ -686,10 +684,6 @@ class _MotivationalBanner extends StatelessWidget {
 // ─── Stat Chip ────────────────────────────────────────────────────────────────
 
 class _StatChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
 
   const _StatChip({
     required this.icon,
@@ -697,6 +691,10 @@ class _StatChip extends StatelessWidget {
     required this.value,
     required this.color,
   });
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {

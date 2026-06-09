@@ -1,4 +1,3 @@
-library;
 
 // Configuration
 export 'config/config.dart';

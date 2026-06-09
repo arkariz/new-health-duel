@@ -8,10 +8,10 @@ import 'package:health_duel/features/health/domain/repositories/repositories.dar
 /// Checks the current permission status without prompting user.
 /// Use this to determine which UI to show (permission prompt vs step counter).
 class CheckHealthPermissions {
-  // TODO: Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
-  final HealthRepository _repository;
 
   const CheckHealthPermissions(this._repository);
+  // TODO(rizky): Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
+  final HealthRepository _repository;
 
   /// Execute the use case
   ///

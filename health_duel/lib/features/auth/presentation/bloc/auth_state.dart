@@ -34,10 +34,10 @@ class AuthInitial extends AuthState {
 
 /// Loading state during authentication operations
 class AuthLoading extends AuthState {
-  /// Optional message to show during loading
-  final String? message;
 
   const AuthLoading({this.message, super.effect});
+  /// Optional message to show during loading
+  final String? message;
 
   @override
   List<Object?> get props => [message];
@@ -51,9 +51,9 @@ class AuthLoading extends AuthState {
 
 /// User is authenticated with valid session
 class AuthAuthenticated extends AuthState {
-  final UserModel user;
 
   const AuthAuthenticated(this.user, {super.effect});
+  final UserModel user;
 
   @override
   List<Object?> get props => [user];

@@ -3,8 +3,7 @@ import 'package:health_duel/core/theme/theme.dart';
 
 class GreetingHeaderSection extends StatelessWidget {
   const GreetingHeaderSection({
-    super.key,
-    required this.username,
+    required this.username, super.key,
   });
 
   final String username;

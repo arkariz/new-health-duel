@@ -35,6 +35,12 @@ enum HomeStatus {
 /// - [effect] - One-shot effects like navigation, snackbars
 ///
 class HomeState extends UiState with EffectClearable<HomeState> {
+
+  // ═══════════════════════════════════════════════════════════════════
+  // CONSTRUCTOR
+  // ═══════════════════════════════════════════════════════════════════
+
+  const HomeState({this.status = HomeStatus.initial, this.user, this.errorMessage, super.effect});
   // ═══════════════════════════════════════════════════════════════════
   // RENDERABLE DATA
   // ═══════════════════════════════════════════════════════════════════
@@ -47,12 +53,6 @@ class HomeState extends UiState with EffectClearable<HomeState> {
 
   /// Error message when status is failure
   final String? errorMessage;
-
-  // ═══════════════════════════════════════════════════════════════════
-  // CONSTRUCTOR
-  // ═══════════════════════════════════════════════════════════════════
-
-  const HomeState({this.status = HomeStatus.initial, this.user, this.errorMessage, super.effect});
 
   // ═══════════════════════════════════════════════════════════════════
   // EQUATABLE - Only renderable data, NOT effect

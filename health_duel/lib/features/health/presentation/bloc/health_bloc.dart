@@ -23,9 +23,6 @@ part 'health_side_effect.dart';
 /// - isLoading/isRefreshing for loading states
 /// - todaySteps retained during refresh for smooth UX
 class HealthBloc extends EffectBloc<HealthEvent, HealthState> {
-  final CheckHealthPermissions _checkHealthPermissions;
-  final RequestHealthPermissions _requestHealthPermissions;
-  final GetTodaySteps _getTodaySteps;
 
   HealthBloc({
     required CheckHealthPermissions checkHealthPermissions,
@@ -41,6 +38,9 @@ class HealthBloc extends EffectBloc<HealthEvent, HealthState> {
     on<HealthRefreshRequested>(_onHealthRefreshRequested);
     on<HealthRevokeRequested>(_onHealthRevokeRequested);
   }
+  final CheckHealthPermissions _checkHealthPermissions;
+  final RequestHealthPermissions _requestHealthPermissions;
+  final GetTodaySteps _getTodaySteps;
 
   /// Initialize health feature
   ///
@@ -67,10 +67,10 @@ class HealthBloc extends EffectBloc<HealthEvent, HealthState> {
 
     result.fold((failure) => _handleFailure(emit, failure), (granted) {
       if (granted) {
-        emit(state.setAuthorization(true));
+        emit(state.setAuthorization(authorized: true));
         add(const HealthRefreshRequested());
       } else {
-        emit(state.setAuthorization(false).withEffect(_effectPermissionDeniedSnackbar));
+        emit(state.setAuthorization(authorized: false).withEffect(_effectPermissionDeniedSnackbar));
       }
     });
   }
@@ -115,11 +115,11 @@ class HealthBloc extends EffectBloc<HealthEvent, HealthState> {
   void _handlePermissionStatus(Emitter<HealthState> emit, HealthPermissionStatus status) {
     switch (status) {
       case HealthPermissionStatus.authorized:
-        emit(state.setAuthorization(true));
+        emit(state.setAuthorization(authorized: true));
         add(const HealthRefreshRequested());
 
       case HealthPermissionStatus.notDetermined:
-        emit(state.setAuthorization(false));
+        emit(state.setAuthorization(authorized: false));
 
       case HealthPermissionStatus.unavailable:
         emit(state.withEffect(_effectUnavailableDialog));

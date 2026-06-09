@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/get_active_duels.dart';
 
 import '../../../../helpers/helpers.dart';
@@ -53,7 +54,7 @@ void main() {
 
       final result = await getActiveDuels(userId);
 
-      expect(result, const Left(failure));
+      expect(result, const Left<Failure, List<Duel>>(failure));
     });
   });
 }

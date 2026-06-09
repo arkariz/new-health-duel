@@ -7,12 +7,7 @@ import 'package:health_duel/core/theme/theme.dart';
 /// Login form with validation
 class LoginForm extends StatelessWidget {
   const LoginForm({
-    super.key,
-    required this.formKey,
-    required this.emailController,
-    required this.passwordController,
-    required this.onSignIn,
-    required this.onSignInWithGoogle,
+    required this.formKey, required this.emailController, required this.passwordController, required this.onSignIn, required this.onSignInWithGoogle, super.key,
   });
 
   final GlobalKey<FormState> formKey;
@@ -40,9 +35,9 @@ class LoginForm extends StatelessWidget {
             children: [
               SizedBox(
                 height: context.responsiveValue(
-                  phone: 40.0,
-                  tablet: 60.0,
-                  desktop: 80.0,
+                  phone: 40,
+                  tablet: 60,
+                  desktop: 80,
                 ),
               ),
 
@@ -50,9 +45,9 @@ class LoginForm extends StatelessWidget {
               _LoginHeader(theme: theme),
               SizedBox(
                 height: context.responsiveValue(
-                  phone: 48.0,
-                  tablet: 56.0,
-                  desktop: 64.0,
+                  phone: 48,
+                  tablet: 56,
+                  desktop: 64,
                 ),
               ),
 
@@ -71,10 +66,9 @@ class LoginForm extends StatelessWidget {
               // Password field with visibility toggle
               PasswordTextField(
                 controller: passwordController,
-                label: 'Password',
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => onSignIn(),
-                validator: (value) => FormValidators.password(value),
+                validator: FormValidators.password,
               ),
               const SizedBox(height: AppSpacing.xl),
 

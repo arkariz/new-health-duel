@@ -148,7 +148,7 @@ class PlatformBuilder extends StatelessWidget {
 /// ```
 class PlatformValue<T> {
   const PlatformValue({
-    this.ios,
+    required this.fallback, this.ios,
     this.android,
     this.web,
     this.macos,
@@ -156,7 +156,6 @@ class PlatformValue<T> {
     this.linux,
     this.mobile,
     this.desktop,
-    required this.fallback,
   });
 
   final T? ios;
@@ -208,7 +207,7 @@ extension PlatformContext on BuildContext {
   bool get isApplePlatform => PlatformInfo.isApple;
 
   /// Get platform-adaptive value
-  T platformValue<T>({T? ios, T? android, T? web, T? mobile, T? desktop, required T fallback}) {
+  T platformValue<T>({required T fallback, T? ios, T? android, T? web, T? mobile, T? desktop}) {
     return PlatformValue<T>(
       ios: ios,
       android: android,

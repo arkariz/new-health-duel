@@ -7,9 +7,9 @@ import 'package:health_duel/features/duel/domain/repositories/duel_repository.da
 ///
 /// Retrieve completed duels for a user.
 class GetDuelHistory {
-  final DuelRepository _repository;
 
   const GetDuelHistory(this._repository);
+  final DuelRepository _repository;
 
   /// Execute query
   ///

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:exception/exception.dart';
 import 'package:health_duel/core/core.dart';
@@ -20,15 +22,7 @@ Future<void> registerCoreModule() async {
   await provideStorageModule(
     appPreferenceName: StorageKeys.appPreferences,
     keySecureStorage: StorageKeys.secureKeyStorage,
-    openPreference: ({
-      required call,
-      required function,
-      required module,
-    }) => openBox(
-      module: module,
-      function: function,
-      call: call,
-    ),
+    openPreference: openBox,
   );
 
   // 2. Initialize Network Module (Dio)
@@ -43,7 +37,11 @@ Future<void> registerCoreModule() async {
 
   // 5. Register Connectivity Cubit
   getIt.registerLazySingleton<ConnectivityCubit>(
-    () => ConnectivityCubit(Connectivity())..init(),
+    () {
+      final connectivityCubit = ConnectivityCubit(Connectivity());
+      unawaited(connectivityCubit.init());
+      return connectivityCubit;
+    } ,
   );
 
   // Note: NetworkFlavor is abstract and should be implemented per feature.

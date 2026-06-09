@@ -34,9 +34,9 @@ class DuelInitial extends DuelState {
 
 /// Loading state during async operations
 class DuelLoading extends DuelState {
-  final String? message;
 
   const DuelLoading({this.message, super.effect});
+  final String? message;
 
   @override
   List<Object?> get props => [message];
@@ -50,9 +50,6 @@ class DuelLoading extends DuelState {
 
 /// Duel loaded and being watched in real-time
 class DuelLoaded extends DuelState {
-  final Duel duel;
-  final DateTime lastSyncTime;
-  final DateTime currentTime;
 
   const DuelLoaded({
     required this.duel,
@@ -60,6 +57,9 @@ class DuelLoaded extends DuelState {
     required this.currentTime,
     super.effect,
   });
+  final Duel duel;
+  final DateTime lastSyncTime;
+  final DateTime currentTime;
 
   @override
   List<Object?> get props => [duel, lastSyncTime, currentTime];
@@ -73,6 +73,7 @@ class DuelLoaded extends DuelState {
   );
 
   /// Copy with new values
+  @override
   DuelLoaded copyWith({
     Duel? duel,
     DateTime? lastSyncTime,
@@ -90,9 +91,9 @@ class DuelLoaded extends DuelState {
 
 /// Error state when duel loading/watching fails
 class DuelError extends DuelState {
-  final String message;
 
   const DuelError(this.message, {super.effect});
+  final String message;
 
   @override
   List<Object?> get props => [message];

@@ -43,8 +43,8 @@ void main() {
         when(() => mockSessionRepository.getCurrentUser())
             .thenAnswer((_) async => const Right(null));
 
-        final bloc = buildBloc();
-        bloc.add(const DuelLoadRequested(tDuelId));
+        final bloc = buildBloc()
+          ..add(const DuelLoadRequested(tDuelId));
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(bloc.state, isA<DuelError>());
@@ -63,8 +63,8 @@ void main() {
           result: tActiveDuel,
         );
 
-        final bloc = buildBloc();
-        bloc.add(const DuelLoadRequested(tDuelId));
+        final bloc = buildBloc()
+        ..add(const DuelLoadRequested(tDuelId));
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(bloc.state, isA<DuelLoading>());
@@ -156,8 +156,8 @@ void main() {
           result: tActiveDuel,
         );
 
-        final bloc = buildBloc();
-        bloc.add(const DuelLoadRequested(tDuelId));
+        final bloc = buildBloc()
+        ..add(const DuelLoadRequested(tDuelId));
         // Wait for session + subscription setup
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
@@ -188,8 +188,8 @@ void main() {
           result: tActiveDuel,
         );
 
-        final bloc = buildBloc();
-        bloc.add(const DuelLoadRequested(tDuelId));
+        final bloc = buildBloc()
+        ..add(const DuelLoadRequested(tDuelId));
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
         await bloc.close();

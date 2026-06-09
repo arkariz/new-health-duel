@@ -10,9 +10,8 @@ import 'package:health_duel/core/theme/theme.dart';
 
 /// Register handlers for navigation, feedback, and dialog effects
 void setupEffectHandlers({EffectRegistry? registry}) {
-  final effectRegistry = registry ?? globalEffectRegistry;
+    registry ?? globalEffectRegistry
 
-  effectRegistry
     // Navigation effects
     ..register<NavigateGoEffect>((context, effect) {
       context.go(
@@ -69,7 +68,6 @@ void _showSnackBar(BuildContext context, String message, FeedbackSeverity severi
         ),
         backgroundColor: bg,
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 4),
         action: SnackBarAction(
           label: 'Dismiss',
           textColor: fg,

@@ -7,10 +7,10 @@ import 'package:health_duel/features/health/domain/repositories/repositories.dar
 /// Opens the system permission dialog to request step data access.
 /// Should be called when user taps "Grant Permission" button.
 class RequestHealthPermissions {
-  // TODO: Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
-  final HealthRepository _repository;
 
   const RequestHealthPermissions(this._repository);
+  // TODO(rizky): Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
+  final HealthRepository _repository;
 
   /// Execute the use case
   ///

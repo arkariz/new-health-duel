@@ -52,12 +52,13 @@ void main() {
     group('success', () {
       test('cancels a valid pending duel and returns void', () async {
         final pendingDuel = tPendingDuel;
-        mockRepository.setupGetDuelById(tPendingDuelId, pendingDuel);
-        mockRepository.setupCancelDuel(tPendingDuelId);
+        mockRepository
+          ..setupGetDuelById(tPendingDuelId, pendingDuel)
+          ..setupCancelDuel(tPendingDuelId);
 
         final result = await declineDuel(tPendingDuelId);
 
-        expect(result, const Right(null));
+        expect(result, const Right<Failure, void>(null));
       });
     });
 
@@ -68,18 +69,19 @@ void main() {
 
         final result = await declineDuel(tDuelId);
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, void>(failure));
         verifyNever(() => mockRepository.cancelDuel(any()));
       });
 
       test('propagates failure from cancelDuel repository call', () async {
         const failure = ServerFailure(message: 'Failed to cancel duel');
-        mockRepository.setupGetDuelById(tPendingDuelId, tPendingDuel);
-        mockRepository.setupCancelDuelFailure(tPendingDuelId, failure);
+        mockRepository
+          ..setupGetDuelById(tPendingDuelId, tPendingDuel)
+          ..setupCancelDuelFailure(tPendingDuelId, failure);
 
         final result = await declineDuel(tPendingDuelId);
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, void>(failure));
       });
     });
   });

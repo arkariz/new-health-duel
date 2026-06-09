@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/sync_health_data.dart';
 import 'package:health_duel/features/duel/domain/value_objects/step_count.dart'
     as duel;
@@ -69,7 +70,7 @@ void main() {
 
         final result = await syncHealthData(duelId: tDuelId, userId: userId);
 
-        expect(result, Right(activeDuel));
+        expect(result, Right<Failure, Duel>(activeDuel));
       });
     });
 
@@ -80,7 +81,7 @@ void main() {
 
         final result = await syncHealthData(duelId: tDuelId, userId: userId);
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, Duel>(failure));
         verifyNever(() => mockHealthRepository.getStepCount(
               startTime: any(named: 'startTime'),
               endTime: any(named: 'endTime'),
@@ -99,7 +100,7 @@ void main() {
 
         final result = await syncHealthData(duelId: tDuelId, userId: userId);
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, Duel>(failure));
       });
 
       test('propagates failure from updateStepCount', () async {
@@ -120,7 +121,7 @@ void main() {
 
         final result = await syncHealthData(duelId: tDuelId, userId: userId);
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, Duel>(failure));
       });
     });
   });

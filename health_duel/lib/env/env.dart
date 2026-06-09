@@ -4,9 +4,9 @@ part 'env.g.dart';
 @Envied(path: '.envs/dev.env', name: 'EnvDev', obfuscate: true)
 @Envied(path: '.envs/prod.env', name: 'EnvProd', obfuscate: true)
 final class Env {
-  static const String flavor = String.fromEnvironment('FLAVOR');
 
   factory Env() => _instance;
+  static const String flavor = String.fromEnvironment('FLAVOR');
 
   static final Env _instance = switch (flavor) {
     'dev' => _EnvDev(),

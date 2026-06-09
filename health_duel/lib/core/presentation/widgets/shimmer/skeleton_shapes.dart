@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'shimmer_effect.dart';
+import 'package:health_duel/core/presentation/widgets/shimmer/shimmer_effect.dart';
 
 /// Rectangular skeleton placeholder box
 ///

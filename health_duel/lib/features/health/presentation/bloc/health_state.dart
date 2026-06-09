@@ -14,17 +14,6 @@ import 'package:health_duel/features/health/domain/entities/entities.dart';
 /// - [todaySteps] - Data (retained during refresh)
 class HealthState extends UiState with EffectClearable<HealthState> {
 
-  /// Today's step count (nullable until first successful fetch)
-  final StepCount? todaySteps;
-
-  /// Whether initial load is in progress
-  final bool isLoading;
-
-  final bool isAuthorized;
-
-  /// Whether this is a background refresh (keep showing previous data)
-  final bool isRefreshing;
-
   const HealthState({
     this.todaySteps,
     this.isLoading = true,
@@ -36,6 +25,17 @@ class HealthState extends UiState with EffectClearable<HealthState> {
   /// Initial state factory
   factory HealthState.initial() => const HealthState();
 
+  /// Today's step count (nullable until first successful fetch)
+  final StepCount? todaySteps;
+
+  /// Whether initial load is in progress
+  final bool isLoading;
+
+  final bool isAuthorized;
+
+  /// Whether this is a background refresh (keep showing previous data)
+  final bool isRefreshing;
+
   @override
   List<Object?> get props => [
     todaySteps,
@@ -46,6 +46,7 @@ class HealthState extends UiState with EffectClearable<HealthState> {
   ];
 
   /// CopyWith for state updates
+  @override
   HealthState copyWith({
     StepCount? todaySteps,
     bool? isLoading,
@@ -63,7 +64,7 @@ class HealthState extends UiState with EffectClearable<HealthState> {
   }
 
   @override
-  HealthState clearEffect() => copyWith(effect: null);
+  HealthState clearEffect() => copyWith();
 
   @override
   HealthState withEffect(UiEffect? effect) => copyWith(effect: effect);
@@ -82,7 +83,7 @@ class HealthState extends UiState with EffectClearable<HealthState> {
   HealthState stopLoading() => copyWith(isLoading: false, isRefreshing: false);
 
   /// Update permission status
-  HealthState setAuthorization(bool authorized) => copyWith(isAuthorized: authorized, isLoading: false);
+  HealthState setAuthorization({required bool authorized}) => copyWith(isAuthorized: authorized, isLoading: false);
 
   /// Transition to ready state with step data
   HealthState toReady(StepCount stepCount) => copyWith(

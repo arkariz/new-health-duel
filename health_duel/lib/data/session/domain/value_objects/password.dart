@@ -1,18 +1,16 @@
 import 'package:equatable/equatable.dart';
+import 'package:health_duel/core/error/error.dart';
 
 /// Password value object with built-in validation.
 ///
 /// Ensures password meets security requirements when created.
-/// Throws [ArgumentError] if validation fails - use cases should catch
+/// Throws [ValidationFailure] if validation fails - use cases should catch
 /// and convert to Failure.
 class Password extends Equatable {
-  final String value;
-
-  const Password._(this.value);
 
   /// Creates a Password value object.
   ///
-  /// Throws [ArgumentError] if:
+  /// Throws [ValidationFailure] if:
   /// - Password is empty
   /// - Password is shorter than minimum length (6 characters)
   ///
@@ -24,16 +22,16 @@ class Password extends Equatable {
   /// - Maximum length (e.g., 128 chars to prevent DoS)
   factory Password(String value) {
     if (value.isEmpty) {
-      throw ArgumentError('Password cannot be empty');
+      throw const ValidationFailure(message:'Password cannot be empty');
     }
 
     if (value.length < 6) {
-      throw ArgumentError('Password must be at least 6 characters');
+      throw const ValidationFailure(message:'Password must be at least 6 characters');
     }
 
     // Optional: Add maximum length to prevent DoS attacks
     if (value.length > 128) {
-      throw ArgumentError('Password cannot exceed 128 characters');
+      throw const ValidationFailure(message:'Password cannot exceed 128 characters');
     }
 
     return Password._(value);
@@ -52,51 +50,54 @@ class Password extends Equatable {
   /// Use default factory for login (less strict).
   factory Password.strong(String value) {
     if (value.isEmpty) {
-      throw ArgumentError('Password cannot be empty');
+      throw const ValidationFailure(message:'Password cannot be empty');
     }
 
     if (value.length < 8) {
-      throw ArgumentError('Password must be at least 8 characters');
+      throw const ValidationFailure(message:'Password must be at least 8 characters');
     }
 
     if (value.length > 128) {
-      throw ArgumentError('Password cannot exceed 128 characters');
+      throw const ValidationFailure(message:'Password cannot exceed 128 characters');
     }
 
     if (!_hasUppercase(value)) {
-      throw ArgumentError('Password must contain at least one uppercase letter');
+      throw const ValidationFailure(message:'Password must contain at least one uppercase letter');
     }
 
     if (!_hasLowercase(value)) {
-      throw ArgumentError('Password must contain at least one lowercase letter');
+      throw const ValidationFailure(message:'Password must contain at least one lowercase letter');
     }
 
     if (!_hasNumber(value)) {
-      throw ArgumentError('Password must contain at least one number');
+      throw const ValidationFailure(message:'Password must contain at least one number');
     }
 
     if (!_hasSpecialChar(value)) {
-      throw ArgumentError(
-        'Password must contain at least one special character (!@#\$%^&*)',
+      throw const ValidationFailure(message:
+        r'Password must contain at least one special character (!@#$%^&*)',
       );
     }
 
     return Password._(value);
   }
+  
+  const Password._(this.value);
+  final String value;
 
   /// Check if password contains uppercase letter
   static bool _hasUppercase(String password) {
-    return RegExp(r'[A-Z]').hasMatch(password);
+    return RegExp('[A-Z]').hasMatch(password);
   }
 
   /// Check if password contains lowercase letter
   static bool _hasLowercase(String password) {
-    return RegExp(r'[a-z]').hasMatch(password);
+    return RegExp('[a-z]').hasMatch(password);
   }
 
   /// Check if password contains number
   static bool _hasNumber(String password) {
-    return RegExp(r'[0-9]').hasMatch(password);
+    return RegExp('[0-9]').hasMatch(password);
   }
 
   /// Check if password contains special character

@@ -6,16 +6,11 @@ import 'package:health_duel/features/duel/domain/domain.dart';
 ///
 /// Displays duel summary in list views.
 ///
-/// Variants (driven by [duel.status]):
+/// Variants (driven by [Duel.status]):
 /// - **Active**: dark gradient arena card + LIVE badge + mini battle bar
 /// - **Pending**: invitation card + accept / decline buttons (opponent only)
 /// - **Completed**: result card + W/L badge
 class DuelCard extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
-  final VoidCallback? onTap;
-  final VoidCallback? onAccept;
-  final VoidCallback? onDecline;
 
   const DuelCard({
     required this.duel,
@@ -25,6 +20,11 @@ class DuelCard extends StatelessWidget {
     this.onDecline,
     super.key,
   });
+  final Duel duel;
+  final String currentUserId;
+  final VoidCallback? onTap;
+  final VoidCallback? onAccept;
+  final VoidCallback? onDecline;
 
   @override
   Widget build(BuildContext context) {
@@ -53,15 +53,15 @@ class DuelCard extends StatelessWidget {
 // ─── Active Duel Card ─────────────────────────────────────────────────────────
 
 class _ActiveDuelCard extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
-  final VoidCallback? onTap;
 
   const _ActiveDuelCard({
     required this.duel,
     required this.currentUserId,
     this.onTap,
   });
+  final Duel duel;
+  final String currentUserId;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -183,8 +183,6 @@ class _ActiveDuelCard extends StatelessWidget {
                                     height: 5,
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
                                         colors: [const Color(0xFFCC4410), opponent],
                                       ),
                                     ),
@@ -256,11 +254,6 @@ class _ActiveDuelCard extends StatelessWidget {
 // ─── Pending Duel Card ────────────────────────────────────────────────────────
 
 class _PendingDuelCard extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
-  final VoidCallback? onTap;
-  final VoidCallback? onAccept;
-  final VoidCallback? onDecline;
 
   const _PendingDuelCard({
     required this.duel,
@@ -269,6 +262,11 @@ class _PendingDuelCard extends StatelessWidget {
     this.onAccept,
     this.onDecline,
   });
+  final Duel duel;
+  final String currentUserId;
+  final VoidCallback? onTap;
+  final VoidCallback? onAccept;
+  final VoidCallback? onDecline;
 
   @override
   Widget build(BuildContext context) {
@@ -392,15 +390,15 @@ class _PendingDuelCard extends StatelessWidget {
 // ─── History Duel Card ────────────────────────────────────────────────────────
 
 class _HistoryDuelCard extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
-  final VoidCallback? onTap;
 
   const _HistoryDuelCard({
     required this.duel,
     required this.currentUserId,
     this.onTap,
   });
+  final Duel duel;
+  final String currentUserId;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -509,11 +507,6 @@ class _HistoryDuelCard extends StatelessWidget {
 // ─── Mini Player Tile ─────────────────────────────────────────────────────────
 
 class _MiniPlayerTile extends StatelessWidget {
-  final String initials;
-  final String name;
-  final int steps;
-  final Color color;
-  final bool isGreen;
 
   const _MiniPlayerTile({
     required this.initials,
@@ -522,6 +515,11 @@ class _MiniPlayerTile extends StatelessWidget {
     required this.color,
     required this.isGreen,
   });
+  final String initials;
+  final String name;
+  final int steps;
+  final Color color;
+  final bool isGreen;
 
   @override
   Widget build(BuildContext context) {

@@ -7,10 +7,10 @@ import 'package:health_duel/features/health/domain/repositories/repositories.dar
 /// Checks if Health Connect app is installed on Android.
 /// On iOS, HealthKit is always available (built-in).
 class CheckHealthConnectAvailable {
-  // TODO: Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
-  final HealthRepository _repository;
 
   const CheckHealthConnectAvailable(this._repository);
+  // TODO(rizky): Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
+  final HealthRepository _repository;
 
   /// Execute the use case
   ///

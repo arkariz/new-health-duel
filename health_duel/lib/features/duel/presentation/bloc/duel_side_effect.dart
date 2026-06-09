@@ -15,7 +15,6 @@ extension DuelSideEffect on DuelBloc {
 
     return ShowSnackBarEffect(
       message: '$leaderName is winning by ${duel.stepDifference} steps!',
-      severity: FeedbackSeverity.info,
     );
   }
 

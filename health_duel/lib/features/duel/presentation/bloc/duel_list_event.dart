@@ -10,9 +10,9 @@ sealed class DuelListEvent extends Equatable {
 
 /// Load all duel lists for the current user
 class DuelListLoadRequested extends DuelListEvent {
-  final String userId;
 
   const DuelListLoadRequested(this.userId);
+  final String userId;
 
   @override
   List<Object?> get props => [userId];
@@ -20,9 +20,9 @@ class DuelListLoadRequested extends DuelListEvent {
 
 /// Accept a pending duel invitation
 class DuelAcceptRequested extends DuelListEvent {
-  final String duelId;
 
   const DuelAcceptRequested(this.duelId);
+  final String duelId;
 
   @override
   List<Object?> get props => [duelId];
@@ -30,9 +30,9 @@ class DuelAcceptRequested extends DuelListEvent {
 
 /// Decline a pending duel invitation
 class DuelDeclineRequested extends DuelListEvent {
-  final String duelId;
 
   const DuelDeclineRequested(this.duelId);
+  final String duelId;
 
   @override
   List<Object?> get props => [duelId];

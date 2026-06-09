@@ -1,21 +1,14 @@
 /// Dialog-related effects
 library;
 
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/presentation/widgets/dialog/dialog.dart';
 
 /// Show dialog with intent-based actions (no callbacks)
 final class ShowDialogEffect extends UiEffect implements InteractiveEffect {
-  @override
-  final String intentId;
-
-  final String title;
-  final String message;
-  final List<DialogActionConfig> actions;
-  final bool isDismissible;
-  final bool isFullScreen;
-  final DialogIcon? icon;
 
   ShowDialogEffect({
     required this.intentId,
@@ -57,31 +50,39 @@ final class ShowDialogEffect extends UiEffect implements InteractiveEffect {
       message: message,
       actions: actions,
       isDismissible: isDismissible,
-      isFullScreen: false,
       icon: icon,
     );
   }
+  @override
+  final String intentId;
+
+  final String title;
+  final String message;
+  final List<DialogActionConfig> actions;
+  final bool isDismissible;
+  final bool isFullScreen;
+  final DialogIcon? icon;
 
   @override
   void onShow(BuildContext context) {
     if (isFullScreen) {
-      AppDialogs.showFullscreen(
+      unawaited(AppDialogs.showFullscreen(
         context: context,
         title: title,
         message: message,
         actions: actions,
         icon: icon,
         isDismissible: isDismissible,
-      );
+      ));
     } else {
-      AppDialogs.showAlert(
+      unawaited(AppDialogs.showAlert(
         context: context,
         title: title,
         message: message,
         actions: actions,
         icon: icon,
         isDismissible: isDismissible,
-      );
+      ));
     }
   }
 

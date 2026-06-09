@@ -30,9 +30,9 @@ class EffectRegistry {
 
 /// Thrown when no handler registered for effect type
 class UnregisteredEffectError extends Error {
-  final UiEffect effect;
 
   UnregisteredEffectError(this.effect);
+  final UiEffect effect;
 
   @override
   String toString() =>

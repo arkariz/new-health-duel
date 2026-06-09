@@ -3,13 +3,6 @@ import 'package:health_duel/core/bloc/bloc.dart';
 enum FeedbackSeverity { info, success, warning, error }
 
 final class ShowSnackBarEffect extends FeedbackEffect {
-  final String message;
-  final FeedbackSeverity severity;
-  final String? actionLabel;
-  final String? actionIntentId;
-
-  @override
-  final Duration autoDismissDuration;
 
   ShowSnackBarEffect({
     required this.message,
@@ -21,6 +14,13 @@ final class ShowSnackBarEffect extends FeedbackEffect {
     actionLabel == null || actionIntentId != null,
     'actionIntentId required when actionLabel provided',
   );
+  final String message;
+  final FeedbackSeverity severity;
+  final String? actionLabel;
+  final String? actionIntentId;
+
+  @override
+  final Duration autoDismissDuration;
 
   @override
   List<Object?> get props => [

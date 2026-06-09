@@ -133,7 +133,7 @@ void main() {
             DuelLoaded(duel: tActiveDuel, lastSyncTime: now, currentTime: now),
       );
 
-      await tester.pumpWidget(buildSubject(duelId: tDuelId));
+      await tester.pumpWidget(buildSubject());
       await tester.pump();
 
       await tester.tap(find.byIcon(Icons.refresh_rounded));
@@ -151,7 +151,7 @@ void main() {
         initialState: const DuelInitial(),
       );
 
-      await tester.pumpWidget(buildSubject(duelId: tDuelId));
+      await tester.pumpWidget(buildSubject());
       await tester.pump(); // trigger postFrameCallback
 
       verify(

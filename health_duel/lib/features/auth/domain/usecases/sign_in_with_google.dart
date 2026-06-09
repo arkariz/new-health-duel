@@ -7,10 +7,10 @@ import 'package:health_duel/features/auth/domain/repositories/auth_repository.da
 ///
 /// Business logic for Google OAuth authentication.
 class SignInWithGoogle {
-  // TODO: Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
-  final AuthRepository repository;
 
   const SignInWithGoogle(this.repository);
+  // TODO(rizky): Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
+  final AuthRepository repository;
 
   /// Execute Google sign in flow
   ///

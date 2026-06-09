@@ -50,7 +50,7 @@ abstract final class AppRoutes {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /// Routes that don't require authentication
-  static const publicRoutes = {login, register};
+  static const Set<String> publicRoutes = {login, register};
 
   /// Check if route is public
   static bool isPublicRoute(String path) {

@@ -6,18 +6,12 @@ import 'package:equatable/equatable.dart';
 /// Handles serialization between Firestore documents and domain entities.
 /// This model is used across features for user data.
 class UserModel extends Equatable {
-  final String id;
-  final String name;
-  final String email;
-  final String? photoUrl;
-  final DateTime createdAt;
 
   const UserModel({
     required this.id,
     required this.name,
     required this.email,
-    this.photoUrl,
-    required this.createdAt,
+    required this.createdAt, this.photoUrl,
   });
 
   /// Create from Firestore document snapshot
@@ -45,6 +39,19 @@ class UserModel extends Equatable {
     );
   }
 
+  /// Create empty model
+  factory UserModel.empty() => UserModel(
+    id: '',
+    name: '',
+    email: '',
+    createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+  );
+  final String id;
+  final String name;
+  final String email;
+  final String? photoUrl;
+  final DateTime createdAt;
+
   /// Convert to Firestore document data
   ///
   /// Note: ID is not included as it's the document ID, not a field.
@@ -54,14 +61,6 @@ class UserModel extends Equatable {
     'photoUrl': photoUrl,
     'createdAt': Timestamp.fromDate(createdAt),
   };
-
-  /// Create empty model
-  factory UserModel.empty() => UserModel(
-    id: '',
-    name: '',
-    email: '',
-    createdAt: DateTime.fromMillisecondsSinceEpoch(0),
-  );
 
   @override
   List<Object?> get props => [id, name, email, photoUrl, createdAt];

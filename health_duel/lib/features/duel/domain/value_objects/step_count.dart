@@ -6,19 +6,19 @@ import 'package:equatable/equatable.dart';
 /// Validates that step counts cannot be negative.
 /// Implements comparison operators for easy comparison.
 class StepCount extends Equatable implements Comparable<StepCount> {
-  final int value;
 
   /// Create step count with validation
   ///
-  /// Throws [ArgumentError] if value is negative.
+  /// Throws [Exception] if value is negative.
   StepCount(this.value) {
     if (value < 0) {
-      throw ArgumentError('Step count cannot be negative: $value');
+      throw Exception('Step count cannot be negative: $value');
     }
   }
 
   /// Create zero step count
   const StepCount.zero() : value = 0;
+  final int value;
 
   /// Add steps (immutable - returns new instance)
   StepCount operator +(StepCount other) {

@@ -63,7 +63,7 @@ class _HealthPageState extends State<HealthPage> {
                     p.isLoading != c.isLoading ||
                     p.todaySteps != c.todaySteps ||
                     p.isRefreshing != c.isRefreshing,
-                  builder: (context, state) => _buildContent(context, state),
+                  builder: _buildContent,
                 ),
               ),
             ],
@@ -106,5 +106,3 @@ class _LoadingView extends StatelessWidget {
     );
   }
 }
-
-

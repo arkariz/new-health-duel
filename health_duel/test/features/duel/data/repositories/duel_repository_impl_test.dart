@@ -111,7 +111,7 @@ void main() {
 
         final result = await repository.cancelDuel(tPendingDuelId);
 
-        expect(result, const Right(null));
+        expect(result, const Right<Failure, void>(null));
       });
 
       test('returns ServerFailure when datasource throws', () async {

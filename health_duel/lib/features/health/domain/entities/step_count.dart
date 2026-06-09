@@ -1,16 +1,10 @@
 import 'package:equatable/equatable.dart';
+import 'package:health_duel/core/error/error.dart';
 
 /// Step count value object from HealthKit/Health Connect.
 ///
 /// Immutable with invariants: value >= 0, startTime <= endTime.
 class StepCount extends Equatable {
-  final int value;
-  final DateTime startTime;
-  final DateTime endTime;
-  final String? sourceDevice;
-
-  /// Manual entries allowed in MVP, flag for future anti-cheat.
-  final bool hasManualEntries;
 
   const StepCount._({
     required this.value,
@@ -20,7 +14,7 @@ class StepCount extends Equatable {
     this.hasManualEntries = false,
   });
 
-  /// Creates with validation (throws [ArgumentError] if invalid).
+  /// Creates with validation (throws [ValidationFailure] if invalid).
   factory StepCount.create({
     required int value,
     required DateTime startTime,
@@ -29,10 +23,10 @@ class StepCount extends Equatable {
     bool hasManualEntries = false,
   }) {
     if (value < 0) {
-      throw ArgumentError.value(value, 'value', 'Step count cannot be negative');
+      throw ValidationFailure(message: 'Step count cannot be negative: $value');
     }
     if (startTime.isAfter(endTime)) {
-      throw ArgumentError('startTime must be before or equal to endTime');
+      throw const ValidationFailure(message: 'startTime must be before or equal to endTime');
     }
 
     return StepCount._(
@@ -55,6 +49,13 @@ class StepCount extends Equatable {
     final midnight = DateTime(now.year, now.month, now.day);
     return StepCount.zero(startTime: midnight, endTime: now);
   }
+  final int value;
+  final DateTime startTime;
+  final DateTime endTime;
+  final String? sourceDevice;
+
+  /// Manual entries allowed in MVP, flag for future anti-cheat.
+  final bool hasManualEntries;
 
   bool get isToday {
     final now = DateTime.now();

@@ -10,14 +10,14 @@ import 'package:health_duel/features/duel/domain/domain.dart';
 /// - Lead indicator
 /// - Percentage progress
 class StepProgressBar extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
 
   const StepProgressBar({
     required this.duel,
     required this.currentUserId,
     super.key,
   });
+  final Duel duel;
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {

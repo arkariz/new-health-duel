@@ -15,7 +15,7 @@ import 'package:health_duel/features/auth/presentation/pages/login/widgets/widge
 /// - [PasswordTextField] with visibility toggle
 /// - [ConstrainedContent] for responsive layout
 /// - [Shimmer] skeleton loading
-/// - [context.responsiveValue] for adaptive sizing
+/// - context.responsiveValue for adaptive sizing
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 

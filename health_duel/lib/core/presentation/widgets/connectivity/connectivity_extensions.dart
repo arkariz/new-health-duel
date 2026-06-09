@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'connectivity_cubit.dart';
-import 'connectivity_state.dart';
+import 'package:health_duel/core/presentation/widgets/connectivity/connectivity_cubit.dart';
+import 'package:health_duel/core/presentation/widgets/connectivity/connectivity_state.dart';
 
 /// Extension to easily check connectivity from BuildContext
 ///

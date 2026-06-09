@@ -8,12 +8,12 @@ import 'package:health_duel/core/theme/theme.dart';
 /// - Warning color when < 1 hour remaining
 /// - Large readable format
 class CountdownTimer extends StatelessWidget {
-  final Duration remaining;
 
   const CountdownTimer({
     required this.remaining,
     super.key,
   });
+  final Duration remaining;
 
   @override
   Widget build(BuildContext context) {

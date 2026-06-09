@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:health_duel/core/di/core_module.dart';
 import 'package:health_duel/data/session/data/data.dart';
 import 'package:health_duel/data/session/domain/domain.dart';
 import 'package:health_duel/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -42,44 +43,44 @@ void registerAuthModule() {
   }
 
   if (!getIt.isRegistered<GoogleSignIn>()) {
-    getIt.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn());
+    getIt.registerLazySingleton<GoogleSignIn>(GoogleSignIn.new);
   }
 
   // ========================
   // Data Sources
   // ========================
 
-  getIt.registerLazySingleton<AuthRemoteDataSource>(
+  getIt..registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(
       firebaseAuth: getIt<FirebaseAuth>(),
       firestore: getIt<FirebaseFirestore>(),
       googleSignIn: getIt<GoogleSignIn>(),
     ),
-  );
+  )
 
   // Register as SessionDataSource for global session module
   // AuthRemoteDataSource implements SessionDataSource
-  getIt.registerLazySingleton<SessionDataSource>(
-    () => getIt<AuthRemoteDataSource>(),
-  );
+  ..registerLazySingleton<SessionDataSource>(
+    getIt.call,
+  )
 
   // ========================
   // Repositories
   // ========================
 
-  getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: getIt<AuthRemoteDataSource>()));
+  ..registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: getIt<AuthRemoteDataSource>()))
 
   // ========================
   // Use Cases
   // ========================
 
-  getIt.registerFactory<SignInWithEmail>(() => SignInWithEmail(getIt<AuthRepository>()));
+  ..registerFactory<SignInWithEmail>(() => SignInWithEmail(getIt<AuthRepository>()))
 
-  getIt.registerFactory<SignInWithGoogle>(() => SignInWithGoogle(getIt<AuthRepository>()));
+  ..registerFactory<SignInWithGoogle>(() => SignInWithGoogle(getIt<AuthRepository>()))
 
-  getIt.registerFactory<SignInWithApple>(() => SignInWithApple(getIt<AuthRepository>()));
+  ..registerFactory<SignInWithApple>(() => SignInWithApple(getIt<AuthRepository>()))
 
-  getIt.registerFactory<RegisterWithEmail>(() => RegisterWithEmail(getIt<AuthRepository>()));
+  ..registerFactory<RegisterWithEmail>(() => RegisterWithEmail(getIt<AuthRepository>()))
 
   // NOTE: GetCurrentUser and SignOut are registered by session_module
   // using global SessionRepository, not AuthRepository
@@ -91,7 +92,7 @@ void registerAuthModule() {
   // IMPORTANT: LazySingleton ensures single AuthBloc instance across app
   // - Router uses it for redirect logic
   // - BlocProvider.value provides same instance to widget tree
-  getIt.registerLazySingleton<AuthBloc>(
+  ..registerLazySingleton<AuthBloc>(
     () => AuthBloc(
       authRepository: getIt<AuthRepository>(),
       sessionRepository: getIt<SessionRepository>(),

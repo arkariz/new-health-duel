@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:exception/exception.dart';
-import 'package:health_duel/core/error/error.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:health_duel/core/error/error.dart';
 
 void main() {
   group('Failure Classes Tests', () {

@@ -14,10 +14,10 @@ import 'package:health_duel/features/auth/domain/repositories/auth_repository.da
 /// - Mapping [CoreException] to [Failure] types via [ExceptionMapper] (ADR-002)
 /// - Returning [UserModel] DTO (entity creation happens in use case layer per ADR-006)
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource _remoteDataSource;
 
   AuthRepositoryImpl({required AuthRemoteDataSource remoteDataSource})
     : _remoteDataSource = remoteDataSource;
+  final AuthRemoteDataSource _remoteDataSource;
 
   @override
   Future<Either<Failure, UserModel>> signInWithEmail({

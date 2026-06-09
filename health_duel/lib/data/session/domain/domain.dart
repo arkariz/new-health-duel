@@ -6,6 +6,9 @@
 /// - [SignOut] use case
 library;
 
+import 'package:health_duel/data/session/domain/domain.dart' show AuthCredentials, SessionRepository, SignOut;
+import 'package:health_duel/data/session/session.dart' show AuthCredentials, SessionRepository, SignOut;
+
 // Entities
 export 'entities/auth_credentials.dart';
 

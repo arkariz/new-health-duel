@@ -3,9 +3,7 @@ import 'package:health_duel/core/theme/theme.dart';
 
 class QuickActionCardSection extends StatelessWidget {
   const QuickActionCardSection({
-    super.key,
-    required this.onTapNewDuel,
-    required this.onTapWeeklyStats,
+    required this.onTapNewDuel, required this.onTapWeeklyStats, super.key,
   });
 
   final VoidCallback onTapNewDuel;

@@ -6,7 +6,7 @@ import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_event.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_state.dart';
 
-import 'widgets/widgets.dart';
+import 'package:health_duel/features/auth/presentation/pages/register/widgets/widgets.dart';
 
 /// Register Page with Phase 3.5 patterns
 ///
@@ -17,7 +17,7 @@ import 'widgets/widgets.dart';
 /// - [PasswordTextField] with visibility toggle
 /// - [ConstrainedContent] for responsive layout
 /// - [Shimmer] skeleton loading
-/// - [context.responsiveValue] for adaptive sizing
+/// - context.responsiveValue for adaptive sizing
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -64,7 +64,6 @@ class _RegisterPageState extends State<RegisterPage> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => context.pop(),
         ),
-        title: null,
       ),
       body: Stack(
         children: [

@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:health_duel/core/theme/theme.dart';
+//
+// ignore_for_file: avoid_returning_this
 
-import 'skeleton_layouts.dart';
-import 'skeleton_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:health_duel/core/presentation/widgets/shimmer/skeleton_layouts.dart';
+import 'package:health_duel/core/presentation/widgets/shimmer/skeleton_shapes.dart';
+import 'package:health_duel/core/theme/theme.dart';
 
 /// Builder class for creating custom skeleton layouts
 ///
@@ -143,7 +145,7 @@ class SkeletonFactory {
           const SizedBox(height: AppSpacing.md),
           const SkeletonText(widthFactor: 0.4, height: 20),
           const SizedBox(height: AppSpacing.sm),
-          const SkeletonText(widthFactor: 0.6, height: 14),
+          const SkeletonText(widthFactor: 0.6),
           const SizedBox(height: AppSpacing.lg),
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: List.generate(3, (_) => const Column(children: [SkeletonBox(width: 40, height: 20), SizedBox(height: AppSpacing.xs), SkeletonBox(width: 60, height: 12)]))),
         ],
@@ -163,9 +165,9 @@ class SkeletonFactory {
           if (hasImage) ...[const SkeletonBox(height: 200, borderRadius: 12), const SizedBox(height: AppSpacing.md)],
           const SkeletonText(widthFactor: 0.8, height: 24),
           const SizedBox(height: AppSpacing.sm),
-          const SkeletonText(widthFactor: 0.5, height: 14),
+          const SkeletonText(widthFactor: 0.5),
           const SizedBox(height: AppSpacing.lg),
-          for (int i = 0; i < paragraphCount; i++) ...[const SkeletonText(height: 14), const SizedBox(height: AppSpacing.xs), const SkeletonText(height: 14), const SizedBox(height: AppSpacing.xs), const SkeletonText(widthFactor: 0.7, height: 14), const SizedBox(height: AppSpacing.md)],
+          for (int i = 0; i < paragraphCount; i++) ...[const SkeletonText(), const SizedBox(height: AppSpacing.xs), const SkeletonText(), const SizedBox(height: AppSpacing.xs), const SkeletonText(widthFactor: 0.7), const SizedBox(height: AppSpacing.md)],
         ],
       ),
     );
@@ -173,7 +175,7 @@ class SkeletonFactory {
 
   /// Creates a list skeleton with repeated items
   static Widget list({int itemCount = 5, bool hasLeading = true, bool hasTrailing = false, EdgeInsets padding = EdgeInsets.zero}) {
-    return ListView.builder(padding: padding, physics: const NeverScrollableScrollPhysics(), shrinkWrap: true, itemCount: itemCount, itemBuilder: (_, __) => SkeletonListTile(hasLeading: hasLeading, hasTrailing: hasTrailing));
+    return ListView.builder(padding: padding, physics: const NeverScrollableScrollPhysics(), shrinkWrap: true, itemCount: itemCount, itemBuilder: (_, _) => SkeletonListTile(hasLeading: hasLeading, hasTrailing: hasTrailing));
   }
 
   /// Creates a grid skeleton
@@ -188,7 +190,7 @@ class SkeletonFactory {
 
   /// Creates a settings/menu list skeleton
   static Widget settings({int itemCount = 6, EdgeInsets padding = EdgeInsets.zero}) {
-    return ListView.separated(padding: padding, physics: const NeverScrollableScrollPhysics(), shrinkWrap: true, itemCount: itemCount, separatorBuilder: (_, __) => const Divider(height: 1), itemBuilder: (_, __) => const Padding(padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md), child: Row(children: [SkeletonCircle(size: 24), SizedBox(width: AppSpacing.md), Expanded(child: SkeletonText(widthFactor: 0.5, height: 16)), SkeletonBox(width: 24, height: 24, borderRadius: 4)])));
+    return ListView.separated(padding: padding, physics: const NeverScrollableScrollPhysics(), shrinkWrap: true, itemCount: itemCount, separatorBuilder: (_, _) => const Divider(height: 1), itemBuilder: (_, _) => const Padding(padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md), child: Row(children: [SkeletonCircle(size: 24), SizedBox(width: AppSpacing.md), Expanded(child: SkeletonText(widthFactor: 0.5, height: 16)), SkeletonBox(width: 24, height: 24)])));
   }
 
   /// Creates a dashboard/stats skeleton

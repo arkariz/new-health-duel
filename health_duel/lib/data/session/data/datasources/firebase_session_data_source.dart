@@ -18,12 +18,6 @@ import 'package:health_duel/data/session/data/models/user_model.dart';
 ///
 /// Uses processFireauthCall and processFirestoreCall for exception handling.
 class FirebaseSessionDataSource implements SessionDataSource {
-  final firebase_auth.FirebaseAuth firebaseAuth;
-  final FirebaseFirestore firestore;
-  final GoogleSignIn googleSignIn;
-
-  /// Storage key for users collection (ADR-003 compliant)
-  static const String usersCollection = 'users';
 
   FirebaseSessionDataSource({
     firebase_auth.FirebaseAuth? firebaseAuth,
@@ -32,6 +26,12 @@ class FirebaseSessionDataSource implements SessionDataSource {
   }) :  firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
         firestore = firestore ?? FirebaseFirestore.instance,
         googleSignIn = googleSignIn ?? GoogleSignIn();
+  final firebase_auth.FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
+  final GoogleSignIn googleSignIn;
+
+  /// Storage key for users collection (ADR-003 compliant)
+  static const String usersCollection = 'users';
 
   @override
   Future<void> signOut() async {

@@ -25,7 +25,6 @@ class HealthDuelApp extends StatelessWidget {
         // Theme Configuration
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system, // Follow system theme
         routerConfig: getIt<GoRouter>(),
       ),
     );

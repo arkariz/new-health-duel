@@ -6,13 +6,7 @@ import 'package:health_duel/core/theme/theme.dart';
 /// Register form with validation
 class RegisterForm extends StatelessWidget {
   const RegisterForm({
-    super.key,
-    required this.formKey,
-    required this.nameController,
-    required this.emailController,
-    required this.passwordController,
-    required this.confirmPasswordController,
-    required this.onRegister,
+    required this.formKey, required this.nameController, required this.emailController, required this.passwordController, required this.confirmPasswordController, required this.onRegister, super.key,
   });
 
   final GlobalKey<FormState> formKey;
@@ -39,9 +33,9 @@ class RegisterForm extends StatelessWidget {
             children: [
               SizedBox(
                 height: context.responsiveValue(
-                  phone: 24.0,
-                  tablet: 40.0,
-                  desktop: 56.0,
+                  phone: 24,
+                  tablet: 40,
+                  desktop: 56,
                 ),
               ),
 
@@ -49,9 +43,9 @@ class RegisterForm extends StatelessWidget {
               const _RegisterHeader(),
               SizedBox(
                 height: context.responsiveValue(
-                  phone: 32.0,
-                  tablet: 40.0,
-                  desktop: 48.0,
+                  phone: 32,
+                  tablet: 40,
+                  desktop: 48,
                 ),
               ),
 
@@ -82,7 +76,6 @@ class RegisterForm extends StatelessWidget {
               // Password field with visibility toggle
               PasswordTextField(
                 controller: passwordController,
-                label: 'Password',
                 textInputAction: TextInputAction.next,
                 validator: FormValidators.strongPassword,
               ),

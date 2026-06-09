@@ -14,17 +14,17 @@ void registerSessionModule(GetIt getIt) {
   // Repository
   // ═══════════════════════════════════════════════════════════════════════════
   
-  getIt.registerLazySingleton<SessionRepository>(
+  getIt..registerLazySingleton<SessionRepository>(
     () => SessionRepositoryImpl(
       sessionDataSource: getIt<SessionDataSource>(),
     ),
-  );
+  )
 
   // ═══════════════════════════════════════════════════════════════════════════
   // Use Cases
   // ═══════════════════════════════════════════════════════════════════════════
 
-  getIt.registerFactory<SignOut>(
+  ..registerFactory<SignOut>(
     () => SignOut(getIt<SessionRepository>()),
   );
 }

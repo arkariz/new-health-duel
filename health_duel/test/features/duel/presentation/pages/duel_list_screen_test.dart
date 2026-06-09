@@ -127,14 +127,14 @@ void main() {
         Stream<DuelListState>.fromIterable([
           DuelListLoaded(
             activeDuels: [tActiveDuel],
-            pendingDuels: [],
-            historyDuels: [],
+            pendingDuels: const [],
+            historyDuels: const [],
           ),
         ]),
         initialState: DuelListLoaded(
           activeDuels: [tActiveDuel],
-          pendingDuels: [],
-          historyDuels: [],
+          pendingDuels: const [],
+          historyDuels: const [],
         ),
       );
 
@@ -152,15 +152,15 @@ void main() {
         mockDuelListBloc,
         Stream<DuelListState>.fromIterable([
           DuelListLoaded(
-            activeDuels: [],
+            activeDuels: const [],
             pendingDuels: [tPendingDuel],
-            historyDuels: [],
+            historyDuels: const [],
           ),
         ]),
         initialState: DuelListLoaded(
-          activeDuels: [],
+          activeDuels: const [],
           pendingDuels: [tPendingDuel],
-          historyDuels: [],
+          historyDuels: const [],
         ),
       );
 

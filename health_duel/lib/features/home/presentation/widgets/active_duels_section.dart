@@ -5,9 +5,7 @@ import 'package:health_duel/features/home/home.dart';
 
 class ActiveDuelsSection extends StatelessWidget {
   const ActiveDuelsSection({
-    super.key,
-    required this.onTapSeeAll,
-    required this.onTapDuelCard,
+    required this.onTapSeeAll, required this.onTapDuelCard, super.key,
   });
 
   final VoidCallback onTapSeeAll;
@@ -181,8 +179,6 @@ class ActiveDuelsSection extends StatelessWidget {
                       height: 8,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
                           colors: [
                             const Color(0xFFCC4410),
                             context.appColors.opponent,
@@ -220,7 +216,7 @@ class ActiveDuelsSection extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: 'You\'re winning by ',
+                text: "You're winning by ",
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

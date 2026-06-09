@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'debouncer.dart';
+import 'package:health_duel/core/presentation/widgets/form/debouncer.dart';
 
 /// Text field with built-in debounced validation feedback
 ///

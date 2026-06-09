@@ -7,16 +7,16 @@ import 'package:health_duel/features/auth/domain/repositories/auth_repository.da
 ///
 /// Business logic for creating new user account with email/password.
 class RegisterWithEmail {
-  final AuthRepository repository;
 
   const RegisterWithEmail(this.repository);
+  final AuthRepository repository;
 
   /// Execute registration with email, password, and display name
   ///
   /// Creates Firebase Auth account and Firestore user document.
   ///
   /// Validation is performed by AuthCredentials value objects (Email, DisplayName).
-  /// This use case catches [ArgumentError] and converts to [ValidationFailure].
+  /// This use case catches [Exception] and converts to [ValidationFailure].
   ///
   /// Returns [UserModel] on success or [Failure] on error.
   ///
@@ -32,7 +32,7 @@ class RegisterWithEmail {
   }) async {
     try {
       // Create auth credentials - validation happens here via value objects
-      // Throws ArgumentError if validation fails
+      // Throws Exception if validation fails
       final credentials = AuthCredentials.forRegister(
         email: email,
         password: password,
@@ -48,9 +48,9 @@ class RegisterWithEmail {
 
       // Manual entity creation from DTO (ADR-006)
       return result;
-    } on ArgumentError catch (e) {
+    } on Exception catch (e) {
       // Convert domain validation exception to Failure
-      return Left(ValidationFailure(message: e.message));
+      return Left(ValidationFailure(message: e.toString()));
     }
   }
 }

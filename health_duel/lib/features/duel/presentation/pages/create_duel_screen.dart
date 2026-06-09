@@ -16,12 +16,12 @@ import 'package:health_duel/features/duel/presentation/bloc/create_duel_state.da
 /// - Opponent list from Firestore: gradient avatar + name + selection state
 /// - Bottom CTA: "SEND CHALLENGE" full-width FilledButton
 class CreateDuelScreen extends StatefulWidget {
-  final String currentUserId;
 
   const CreateDuelScreen({
     required this.currentUserId,
     super.key,
   });
+  final String currentUserId;
 
   @override
   State<CreateDuelScreen> createState() => _CreateDuelScreenState();
@@ -56,7 +56,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
     return EffectListener<CreateDuelBloc, CreateDuelState>(
       child: BlocListener<CreateDuelBloc, CreateDuelState>(
         listenWhen: (_, current) => current is CreateDuelSuccess,
-        listener: (_, __) => context.pop(),
+        listener: (_, _) => context.pop(),
         child: BlocBuilder<CreateDuelBloc, CreateDuelState>(
           builder: (context, state) {
             final isSubmitting = state is CreateDuelSubmitting;
@@ -264,15 +264,15 @@ class _HowItWorksCard extends StatelessWidget {
 // ─── Opponent Card ────────────────────────────────────────────────────────────
 
 class _OpponentCard extends StatelessWidget {
-  final UserModel opponent;
-  final bool isSelected;
-  final VoidCallback onTap;
 
   const _OpponentCard({
     required this.opponent,
     required this.isSelected,
     required this.onTap,
   });
+  final UserModel opponent;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   String get _initials {
     final parts = opponent.name.trim().split(' ');

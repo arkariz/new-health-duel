@@ -291,7 +291,7 @@ class SignInWithEmail {
         credentials.email.value,
         credentials.password.value,
       );
-    } on ArgumentError catch (e) {
+    } on Exception catch (e) {
       return Left(ValidationFailure(e.message));
     }
   }

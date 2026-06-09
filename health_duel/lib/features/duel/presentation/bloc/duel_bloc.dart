@@ -24,20 +24,6 @@ part 'duel_side_effect.dart';
 /// - [DuelLoaded] → Duel loaded with real-time updates
 /// - [DuelError] → Error loading/watching duel
 class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
-  final WatchDuel _watchDuel;
-  final SyncHealthData _syncHealthData;
-  final SessionRepository _sessionRepository;
-
-  // Three subscriptions as per design
-  StreamSubscription<dynamic>? _duelStreamSubscription;
-  Timer? _healthSyncTimer;
-  Timer? _countdownTimer;
-
-  // Track previous leader for lead change detection
-  String? _previousLeaderId;
-
-  // Current user ID cached from session
-  String? _currentUserId;
 
   DuelBloc({
     required WatchDuel watchDuel,
@@ -56,6 +42,20 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
     on<DuelCompletionDetected>(_onCompletionDetected);
     on<DuelManualRefreshRequested>(_onManualRefreshRequested);
   }
+  final WatchDuel _watchDuel;
+  final SyncHealthData _syncHealthData;
+  final SessionRepository _sessionRepository;
+
+  // Three subscriptions as per design
+  StreamSubscription<dynamic>? _duelStreamSubscription;
+  Timer? _healthSyncTimer;
+  Timer? _countdownTimer;
+
+  // Track previous leader for lead change detection
+  String? _previousLeaderId;
+
+  // Current user ID cached from session
+  String? _currentUserId;
 
   /// Load and start watching a duel
   Future<void> _onLoadRequested(
@@ -247,7 +247,7 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
 
   @override
   Future<void> close() {
-    _cancelSubscriptions();
+    unawaited(_cancelSubscriptions());
     return super.close();
   }
 }

@@ -2,8 +2,8 @@
 library;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'effect/ui_effect.dart';
-import 'state/ui_state.dart';
+import 'package:health_duel/core/bloc/base/effect/ui_effect.dart';
+import 'package:health_duel/core/bloc/base/state/ui_state.dart';
 
 /// Bloc that supports one-shot side effects
 abstract class EffectBloc<E, S extends UiState> extends Bloc<E, S> {

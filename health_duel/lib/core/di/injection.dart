@@ -1,18 +1,20 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_duel/core/config/firebase_options.dart';
 import 'package:health_duel/core/di/core_module.dart';
 import 'package:health_duel/core/router/app_router.dart';
 import 'package:health_duel/data/session/di/session_module.dart';
 import 'package:health_duel/features/auth/di/auth_module.dart';
-import 'package:health_duel/core/config/firebase_options.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/duel/di/duel_module.dart';
 import 'package:health_duel/features/health/di/health_module.dart';
 import 'package:health_duel/features/home/di/home_module.dart';
 
 /// GetIt instance - Service Locator for Dependency Injection
-final getIt = GetIt.instance;
+final GetIt getIt = GetIt.instance;
 
 /// Initialize all application dependencies
 ///
@@ -63,7 +65,7 @@ Future<void> initializeDependencies() async {
   // 3. Register Router (needs AuthBloc for redirect logic)
   _registerRouter();
 
-  // TODO: Future phases - Register additional feature modules
+  // TODO(rizky): Future phases - Register additional feature modules
   // registerProfileModule();
 }
 
@@ -78,5 +80,5 @@ void _registerRouter() {
 ///
 /// WARNING: Only use this in test files. Never call in production code.
 void resetDependencies() {
-  getIt.reset();
+  unawaited(getIt.reset());
 }

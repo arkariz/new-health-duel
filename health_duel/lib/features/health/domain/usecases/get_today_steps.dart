@@ -10,9 +10,9 @@ import 'package:health_duel/features/health/domain/repositories/repositories.dar
 /// - Validates data is from today
 /// - Future: freshness check
 class GetTodaySteps {
-  final HealthRepository _repository;
 
   const GetTodaySteps(this._repository);
+  final HealthRepository _repository;
 
   Future<Either<Failure, StepCount>> call() async {
     final result = await _repository.getTodaySteps();
@@ -28,7 +28,7 @@ class GetTodaySteps {
           hasManualEntries: raw.hasManualEntries,
         );
 
-        // TODO(Phase 5): Warn if data is stale (> 1 hour)
+        // TODO(rizky): Phase 5 - Warn if data is stale (> 1 hour)
 
         // Verify it's actually today's data
         if (!stepCount.isToday) {
@@ -36,8 +36,8 @@ class GetTodaySteps {
         }
 
         return Right(stepCount);
-      } on ArgumentError catch (e) {
-        return Left(ValidationFailure(message: e.message.toString(), errorCode: 'invalid_step_data'));
+      } on ValidationFailure catch (e) {
+        return Left(ValidationFailure(message: e.message, errorCode: 'invalid_step_data'));
       }
     });
   }

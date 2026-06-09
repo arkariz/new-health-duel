@@ -10,14 +10,14 @@ import 'package:health_duel/core/bloc/effect/effect_registry.dart';
 
 /// Listens to state changes and dispatches effects to handlers
 class EffectListener<B extends BlocBase<S>, S extends UiState> extends StatelessWidget {
-  final Widget child;
-  final EffectRegistry? registry;
 
   const EffectListener({
     required this.child,
     this.registry,
     super.key,
   });
+  final Widget child;
+  final EffectRegistry? registry;
 
   @override
   Widget build(BuildContext context) {

@@ -9,9 +9,9 @@ import 'package:health_duel/features/duel/domain/repositories/duel_repository.da
 ///
 /// Returns stream that emits whenever duel data changes in Firestore.
 class WatchDuel {
-  final DuelRepository _repository;
 
   const WatchDuel(this._repository);
+  final DuelRepository _repository;
 
   /// Execute real-time subscription
   ///

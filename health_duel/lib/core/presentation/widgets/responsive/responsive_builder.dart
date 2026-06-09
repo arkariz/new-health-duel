@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import 'breakpoints.dart';
+import 'package:health_duel/core/presentation/widgets/responsive/breakpoints.dart';
 
 /// Builder widget for responsive layouts
 ///

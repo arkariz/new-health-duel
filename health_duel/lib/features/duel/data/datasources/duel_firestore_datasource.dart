@@ -7,9 +7,9 @@ import 'package:health_duel/features/duel/domain/value_objects/duel_status.dart'
 ///
 /// Handles all Firestore operations for duels.
 class DuelFirestoreDataSource {
-  final FirebaseFirestore _firestore;
 
   const DuelFirestoreDataSource(this._firestore);
+  final FirebaseFirestore _firestore;
 
   CollectionReference<Map<String, dynamic>> get _duelsCollection =>
       _firestore.collection('duels');
@@ -110,7 +110,7 @@ class DuelFirestoreDataSource {
         .orderBy('startTime', descending: true)
         .get();
 
-    return query.docs.map((doc) => DuelDto.fromFirestore(doc)).toList();
+    return query.docs.map(DuelDto.fromFirestore).toList();
   }
 
   /// Get pending duel invitations for a user
@@ -126,7 +126,7 @@ class DuelFirestoreDataSource {
         .orderBy('createdAt', descending: true)
         .get();
 
-    return query.docs.map((doc) => DuelDto.fromFirestore(doc)).toList();
+    return query.docs.map(DuelDto.fromFirestore).toList();
   }
 
   /// Get duel history (completed duels) for a user
@@ -139,7 +139,7 @@ class DuelFirestoreDataSource {
         .orderBy('completedAt', descending: true)
         .get();
 
-    return query.docs.map((doc) => DuelDto.fromFirestore(doc)).toList();
+    return query.docs.map(DuelDto.fromFirestore).toList();
   }
 
   /// Check if active duel exists between two users
@@ -157,7 +157,7 @@ class DuelFirestoreDataSource {
 
     // Filter results to find duel with user2
     final duels = query.docs
-        .map((doc) => DuelDto.fromFirestore(doc))
+        .map(DuelDto.fromFirestore)
         .where((duel) =>
             duel.participants.contains(userId2) &&
             duel.participants.contains(userId1))
@@ -209,7 +209,7 @@ class DuelFirestoreDataSource {
     final query = await _usersCollection.orderBy('name').get();
 
     return query.docs
-        .map((doc) => UserModel.fromFirestore(doc))
+        .map(UserModel.fromFirestore)
         .where((user) => user.id != excludeUserId)
         .toList();
   }
@@ -224,6 +224,6 @@ class DuelFirestoreDataSource {
         .orderBy('startTime', descending: true)
         .snapshots()
         .map((query) =>
-            query.docs.map((doc) => DuelDto.fromFirestore(doc)).toList());
+            query.docs.map(DuelDto.fromFirestore).toList());
   }
 }

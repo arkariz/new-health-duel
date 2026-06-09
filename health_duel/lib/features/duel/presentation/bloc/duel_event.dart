@@ -12,9 +12,9 @@ sealed class DuelEvent extends Equatable {
 
 /// Load and start watching a specific duel
 class DuelLoadRequested extends DuelEvent {
-  final String duelId;
 
   const DuelLoadRequested(this.duelId);
+  final String duelId;
 
   @override
   List<Object?> get props => [duelId];
@@ -22,9 +22,9 @@ class DuelLoadRequested extends DuelEvent {
 
 /// Real-time duel update succeeded
 class DuelUpdateSucceeded extends DuelEvent {
-  final Duel duel;
 
   const DuelUpdateSucceeded(this.duel);
+  final Duel duel;
 
   @override
   List<Object?> get props => [duel];
@@ -32,9 +32,9 @@ class DuelUpdateSucceeded extends DuelEvent {
 
 /// Real-time duel update failed
 class DuelUpdateFailed extends DuelEvent {
-  final Failure failure;
 
   const DuelUpdateFailed(this.failure);
+  final Failure failure;
 
   @override
   List<Object?> get props => [failure];
@@ -42,9 +42,9 @@ class DuelUpdateFailed extends DuelEvent {
 
 /// Periodic health sync triggered (every 5 minutes)
 class DuelHealthSyncTriggered extends DuelEvent {
-  final String duelId;
 
   const DuelHealthSyncTriggered(this.duelId);
+  final String duelId;
 
   @override
   List<Object?> get props => [duelId];
@@ -57,9 +57,9 @@ class DuelCountdownTick extends DuelEvent {
 
 /// Duel completion detected (24-hour window expired)
 class DuelCompletionDetected extends DuelEvent {
-  final String duelId;
 
   const DuelCompletionDetected(this.duelId);
+  final String duelId;
 
   @override
   List<Object?> get props => [duelId];
@@ -67,9 +67,9 @@ class DuelCompletionDetected extends DuelEvent {
 
 /// Manual refresh requested by user
 class DuelManualRefreshRequested extends DuelEvent {
-  final String duelId;
 
   const DuelManualRefreshRequested(this.duelId);
+  final String duelId;
 
   @override
   List<Object?> get props => [duelId];

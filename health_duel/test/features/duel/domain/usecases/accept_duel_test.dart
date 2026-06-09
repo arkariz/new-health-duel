@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/accept_duel.dart';
 import 'package:health_duel/features/duel/domain/value_objects/duel_status.dart';
 import 'package:health_duel/features/duel/domain/value_objects/step_count.dart';
-import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/helpers.dart';
@@ -74,12 +74,13 @@ void main() {
       test('accepts a valid pending duel and returns updated duel', () async {
         final pendingDuel = tPendingDuel;
         final activeDuel = tActiveDuel;
-        mockRepository.setupGetDuelById(tPendingDuelId, pendingDuel);
-        mockRepository.setupAcceptDuel(tPendingDuelId, activeDuel);
+        mockRepository
+          ..setupGetDuelById(tPendingDuelId, pendingDuel)
+          ..setupAcceptDuel(tPendingDuelId, activeDuel);
 
         final result = await acceptDuel(tPendingDuelId);
 
-        expect(result, Right(activeDuel));
+        expect(result, Right<Failure, Duel>(activeDuel));
       });
     });
 
@@ -90,18 +91,19 @@ void main() {
 
         final result = await acceptDuel(tDuelId);
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, Duel>(failure));
         verifyNever(() => mockRepository.acceptDuel(any()));
       });
 
       test('propagates failure from acceptDuel repository call', () async {
         const failure = ServerFailure(message: 'Failed to accept duel');
-        mockRepository.setupGetDuelById(tPendingDuelId, tPendingDuel);
-        mockRepository.setupAcceptDuelFailure(tPendingDuelId, failure);
+        mockRepository
+          ..setupGetDuelById(tPendingDuelId, tPendingDuel)
+          ..setupAcceptDuelFailure(tPendingDuelId, failure);
 
         final result = await acceptDuel(tPendingDuelId);
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, Duel>(failure));
       });
     });
   });

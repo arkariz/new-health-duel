@@ -3,9 +3,7 @@ import 'package:health_duel/core/theme/theme.dart';
 
 class AuthenticatedView extends StatelessWidget {
   const AuthenticatedView({
-    super.key, 
-    required this.children,
-    required this.onRefresh,
+    required this.children, required this.onRefresh, super.key,
   });
 
   final List<Widget> children;

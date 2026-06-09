@@ -125,7 +125,7 @@ class _StepCounterRing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = context.responsiveValue(phone: 200.0, tablet: 250.0, desktop: 280.0);
+    final size = context.responsiveValue<double>(phone: 200, tablet: 250, desktop: 280);
 
     return SizedBox(
       width: size,
@@ -138,7 +138,7 @@ class _StepCounterRing extends StatelessWidget {
             width: size,
             height: size,
             child: CircularProgressIndicator(
-              value: 1.0,
+              value: 1,
               strokeWidth: 12,
               backgroundColor: theme.colorScheme.surfaceContainerHighest,
               valueColor: AlwaysStoppedAnimation(

@@ -4,9 +4,7 @@ import 'package:health_duel/core/theme/theme.dart';
 
 class ErrorView extends StatelessWidget {
   const ErrorView({
-    super.key, 
-    required this.message, 
-    required this.onRetry,
+    required this.message, required this.onRetry, super.key,
   });
 
   final String message;

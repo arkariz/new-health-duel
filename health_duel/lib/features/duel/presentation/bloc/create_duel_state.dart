@@ -48,9 +48,9 @@ class CreateDuelLoadingOpponents extends CreateDuelState {
 
 /// Opponents loaded — form is ready
 class CreateDuelReady extends CreateDuelState {
-  final List<UserModel> opponents;
 
   const CreateDuelReady({required this.opponents, super.effect});
+  final List<UserModel> opponents;
 
   @override
   List<Object?> get props => [opponents];
@@ -59,15 +59,16 @@ class CreateDuelReady extends CreateDuelState {
   CreateDuelState _copyWithEffect(UiEffect? effect) =>
       CreateDuelReady(opponents: opponents, effect: effect);
 
+  @override
   CreateDuelReady copyWith({List<UserModel>? opponents, UiEffect? effect}) =>
       CreateDuelReady(opponents: opponents ?? this.opponents, effect: effect);
 }
 
 /// Submitting duel to Firestore
 class CreateDuelSubmitting extends CreateDuelState {
-  final List<UserModel> opponents;
 
   const CreateDuelSubmitting({required this.opponents, super.effect});
+  final List<UserModel> opponents;
 
   @override
   List<Object?> get props => [opponents];
@@ -82,9 +83,9 @@ class CreateDuelSubmitting extends CreateDuelState {
 
 /// Duel created successfully
 class CreateDuelSuccess extends CreateDuelState {
-  final Duel duel;
 
   const CreateDuelSuccess(this.duel, {super.effect});
+  final Duel duel;
 
   @override
   List<Object?> get props => [duel];
@@ -99,9 +100,9 @@ class CreateDuelSuccess extends CreateDuelState {
 
 /// Failed to load opponents or create duel
 class CreateDuelFailure extends CreateDuelState {
-  final String message;
 
   const CreateDuelFailure(this.message, {super.effect});
+  final String message;
 
   @override
   List<Object?> get props => [message];

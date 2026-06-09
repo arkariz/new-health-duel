@@ -7,9 +7,9 @@ import 'package:health_duel/features/duel/domain/repositories/duel_repository.da
 ///
 /// Retrieve all pending duel invitations for a user.
 class GetPendingDuels {
-  final DuelRepository _repository;
 
   const GetPendingDuels(this._repository);
+  final DuelRepository _repository;
 
   /// Execute query
   ///

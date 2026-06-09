@@ -11,9 +11,9 @@ import 'package:health_duel/features/duel/domain/repositories/duel_repository.da
 /// - Cannot challenge yourself
 /// - Cannot have active duel with same user
 class CreateDuel {
-  final DuelRepository _repository;
 
   const CreateDuel(this._repository);
+  final DuelRepository _repository;
 
   /// Execute duel creation
   ///

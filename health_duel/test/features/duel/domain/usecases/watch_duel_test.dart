@@ -27,7 +27,7 @@ void main() {
 
       final resultStream = watchDuel(tDuelId);
 
-      await expectLater(resultStream, emits(Right(activeDuel)));
+      await expectLater(resultStream, emits(Right<Failure, Duel>(activeDuel)));
     });
 
     test('forwards errors emitted by repository stream', () async {
@@ -39,7 +39,7 @@ void main() {
 
       final resultStream = watchDuel(tDuelId);
 
-      await expectLater(resultStream, emits(const Left(failure)));
+      await expectLater(resultStream, emits(const Left<Failure, Duel>(failure)));
     });
 
     test('emits multiple sequential duel updates', () async {
@@ -55,7 +55,10 @@ void main() {
 
       await expectLater(
         resultStream,
-        emitsInOrder([Right(duel1), Right(duel2)]),
+        emitsInOrder([
+          Right<Failure, Duel>(duel1),
+          Right<Failure, Duel>(duel2),
+        ]),
       );
     });
   });

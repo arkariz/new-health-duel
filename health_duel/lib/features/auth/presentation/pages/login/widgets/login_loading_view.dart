@@ -13,15 +13,15 @@ class LoginLoadingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final iconSize = context.responsiveValue(
-      phone: 64.0,
-      tablet: 80.0,
-      desktop: 96.0,
+    final iconSize = context.responsiveValue<double>(
+      phone: 64,
+      tablet: 80,
+      desktop: 96,
     );
-    final headerGap = context.responsiveValue(
-      phone: 32.0,
-      tablet: 40.0,
-      desktop: 48.0,
+    final headerGap = context.responsiveValue<double>(
+      phone: 32,
+      tablet: 40,
+      desktop: 48,
     );
 
     return Center(

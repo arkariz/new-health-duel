@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:health_duel/core/theme/theme.dart';
 
@@ -51,7 +53,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
     _controller = AnimationController(vsync: this, duration: widget.duration);
 
     if (widget.enabled) {
-      _controller.repeat();
+      unawaited(_controller.repeat());
     }
 
     _animation = Tween<double>(begin: -2, end: 2).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine));
@@ -62,7 +64,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
     super.didUpdateWidget(oldWidget);
     if (widget.enabled != oldWidget.enabled) {
       if (widget.enabled) {
-        _controller.repeat();
+        unawaited(_controller.repeat());
       } else {
         _controller.stop();
       }

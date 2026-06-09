@@ -7,25 +7,6 @@ import 'package:health_duel/features/duel/domain/value_objects/step_count.dart';
 ///
 /// Handles serialization between Firestore documents and domain entities.
 class DuelDto {
-  final String id;
-  final String challengerId;
-  final String challengedId;
-  final int challengerSteps;
-  final int challengedSteps;
-  final String status;
-  final int startTimestamp;
-  final int endTimestamp;
-  final int createdAtTimestamp;
-  final int? acceptedAtTimestamp;
-  final int? completedAtTimestamp;
-  final List<String> participants;
-  final String? winnerId;
-
-  // Denormalized user data for UI (avoid n+1 queries)
-  final String challengerName;
-  final String challengedName;
-  final String? challengerPhotoUrl;
-  final String? challengedPhotoUrl;
 
   const DuelDto({
     required this.id,
@@ -37,12 +18,9 @@ class DuelDto {
     required this.startTimestamp,
     required this.endTimestamp,
     required this.createdAtTimestamp,
-    this.acceptedAtTimestamp,
+    required this.participants, required this.challengerName, required this.challengedName, this.acceptedAtTimestamp,
     this.completedAtTimestamp,
-    required this.participants,
     this.winnerId,
-    required this.challengerName,
-    required this.challengedName,
     this.challengerPhotoUrl,
     this.challengedPhotoUrl,
   });
@@ -73,6 +51,56 @@ class DuelDto {
       challengedPhotoUrl: data['challengedPhotoUrl'] as String?,
     );
   }
+
+  /// Create DTO from Domain Entity
+  ///
+  /// Note: Denormalized user data (names, photos) must be provided separately.
+  factory DuelDto.fromEntity(
+    Duel duel, {
+    required String challengerName,
+    required String challengedName,
+    String? challengerPhotoUrl,
+    String? challengedPhotoUrl,
+  }) {
+    return DuelDto(
+      id: duel.id,
+      challengerId: duel.challengerId,
+      challengedId: duel.challengedId,
+      challengerSteps: duel.challengerSteps.value,
+      challengedSteps: duel.challengedSteps.value,
+      status: duel.status.name,
+      startTimestamp: duel.startTime.millisecondsSinceEpoch,
+      endTimestamp: duel.endTime.millisecondsSinceEpoch,
+      createdAtTimestamp: duel.createdAt.millisecondsSinceEpoch,
+      acceptedAtTimestamp: duel.acceptedAt?.millisecondsSinceEpoch,
+      completedAtTimestamp: duel.completedAt?.millisecondsSinceEpoch,
+      participants: [duel.challengerId, duel.challengedId],
+      winnerId: duel.isCompleted ? duel.currentLeader : null,
+      challengerName: challengerName,
+      challengedName: challengedName,
+      challengerPhotoUrl: challengerPhotoUrl,
+      challengedPhotoUrl: challengedPhotoUrl,
+    );
+  }
+  final String id;
+  final String challengerId;
+  final String challengedId;
+  final int challengerSteps;
+  final int challengedSteps;
+  final String status;
+  final int startTimestamp;
+  final int endTimestamp;
+  final int createdAtTimestamp;
+  final int? acceptedAtTimestamp;
+  final int? completedAtTimestamp;
+  final List<String> participants;
+  final String? winnerId;
+
+  // Denormalized user data for UI (avoid n+1 queries)
+  final String challengerName;
+  final String challengedName;
+  final String? challengerPhotoUrl;
+  final String? challengedPhotoUrl;
 
   /// Convert to Firestore document data
   Map<String, dynamic> toFirestore() => {
@@ -118,37 +146,6 @@ class DuelDto {
       completedAt: completedAtTimestamp != null
           ? DateTime.fromMillisecondsSinceEpoch(completedAtTimestamp!)
           : null,
-    );
-  }
-
-  /// Create DTO from Domain Entity
-  ///
-  /// Note: Denormalized user data (names, photos) must be provided separately.
-  factory DuelDto.fromEntity(
-    Duel duel, {
-    required String challengerName,
-    required String challengedName,
-    String? challengerPhotoUrl,
-    String? challengedPhotoUrl,
-  }) {
-    return DuelDto(
-      id: duel.id,
-      challengerId: duel.challengerId,
-      challengedId: duel.challengedId,
-      challengerSteps: duel.challengerSteps.value,
-      challengedSteps: duel.challengedSteps.value,
-      status: duel.status.name,
-      startTimestamp: duel.startTime.millisecondsSinceEpoch,
-      endTimestamp: duel.endTime.millisecondsSinceEpoch,
-      createdAtTimestamp: duel.createdAt.millisecondsSinceEpoch,
-      acceptedAtTimestamp: duel.acceptedAt?.millisecondsSinceEpoch,
-      completedAtTimestamp: duel.completedAt?.millisecondsSinceEpoch,
-      participants: [duel.challengerId, duel.challengedId],
-      winnerId: duel.isCompleted ? duel.currentLeader : null,
-      challengerName: challengerName,
-      challengedName: challengedName,
-      challengerPhotoUrl: challengerPhotoUrl,
-      challengedPhotoUrl: challengedPhotoUrl,
     );
   }
 }

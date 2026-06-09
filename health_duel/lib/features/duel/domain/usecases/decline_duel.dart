@@ -9,9 +9,9 @@ import 'package:health_duel/features/duel/domain/repositories/duel_repository.da
 /// **Validation:**
 /// - Only pending duels can be declined
 class DeclineDuel {
-  final DuelRepository _repository;
 
   const DeclineDuel(this._repository);
+  final DuelRepository _repository;
 
   /// Execute duel decline
   ///
@@ -23,7 +23,7 @@ class DeclineDuel {
     final duelResult = await _repository.getDuelById(duelId);
 
     return duelResult.fold(
-      (failure) => Left(failure),
+      Left.new,
       (duel) async {
         // Validation: Can only cancel/decline pending duels
         if (!duel.status.canBeCancelled) {

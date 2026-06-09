@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/update_step_count.dart';
-import 'package:health_duel/features/duel/domain/value_objects/step_count.dart'
-    as duel;
+import 'package:health_duel/features/duel/domain/value_objects/step_count.dart' as duel;
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../helpers/helpers.dart';
@@ -83,13 +83,14 @@ void main() {
       test('updates step count for a valid participant in an active duel',
           () async {
         final activeDuel = tActiveDuel;
-        mockRepository.setupGetDuelById(tDuelId, activeDuel);
-        mockRepository.setupUpdateStepCount(
-          duelId: tDuelId,
-          userId: userId,
-          steps: steps,
-          result: activeDuel,
-        );
+        mockRepository
+          ..setupGetDuelById(tDuelId, activeDuel)
+          ..setupUpdateStepCount(
+            duelId: tDuelId,
+            userId: userId,
+            steps: steps,
+            result: activeDuel,
+          );
 
         final result = await updateStepCount(
           duelId: tDuelId,
@@ -97,7 +98,7 @@ void main() {
           steps: steps,
         );
 
-        expect(result, Right(activeDuel));
+        expect(result, Right<Failure, Duel>(activeDuel));
       });
     });
 
@@ -112,18 +113,19 @@ void main() {
           steps: steps,
         );
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, Duel>(failure));
       });
 
       test('propagates failure from repository updateStepCount', () async {
         const failure = ServerFailure(message: 'Write failed');
-        mockRepository.setupGetDuelById(tDuelId, tActiveDuel);
-        mockRepository.setupUpdateStepCountFailure(
-          duelId: tDuelId,
-          userId: userId,
-          steps: steps,
-          failure: failure,
-        );
+        mockRepository
+          ..setupGetDuelById(tDuelId, tActiveDuel)
+          ..setupUpdateStepCountFailure(
+            duelId: tDuelId,
+            userId: userId,
+            steps: steps,
+            failure: failure,
+          );
 
         final result = await updateStepCount(
           duelId: tDuelId,
@@ -131,7 +133,7 @@ void main() {
           steps: steps,
         );
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, Duel>(failure));
       });
     });
   });

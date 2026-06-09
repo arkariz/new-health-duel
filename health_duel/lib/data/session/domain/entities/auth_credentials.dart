@@ -1,8 +1,13 @@
 import 'package:equatable/equatable.dart';
+import 'package:health_duel/data/session/data/data.dart' show UserModel;
+import 'package:health_duel/data/session/data/models/user_model.dart' show UserModel;
 
 import 'package:health_duel/data/session/domain/value_objects/display_name.dart';
 import 'package:health_duel/data/session/domain/value_objects/email.dart';
 import 'package:health_duel/data/session/domain/value_objects/password.dart';
+import 'package:health_duel/data/session/session.dart' show UserModel;
+import 'package:health_duel/features/auth/auth.dart' show UserModel;
+import 'package:health_duel/features/auth/data/models/user_model.dart' show UserModel;
 
 /// AuthCredentials Entity (Global Domain Layer)
 ///
@@ -12,7 +17,7 @@ import 'package:health_duel/data/session/domain/value_objects/password.dart';
 /// **Purpose:**
 /// - Validates email, password, and display name before sending to backend
 /// - Enforces business rules at the domain boundary
-/// - Throws [ArgumentError] if validation fails
+/// - Throws [Exception] if validation fails
 ///
 /// **NOT for:**
 /// - Storing authenticated user data (use [UserModel] instead)
@@ -31,12 +36,9 @@ import 'package:health_duel/data/session/domain/value_objects/password.dart';
 /// - Email validation enforced via [Email] value object
 /// - Display name validation enforced via [DisplayName] value object
 /// - Password validation enforced via [Password] value object
-/// - Factory methods throw [ArgumentError] if validation fails
+/// - Factory methods throw [Exception] if validation fails
 /// - Use cases should catch exceptions and convert to `Either<Failure, UserModel>`
 class AuthCredentials extends Equatable {
-  final DisplayName name;
-  final Email email;
-  final Password password;
 
   const AuthCredentials._({
     required this.name,
@@ -48,7 +50,7 @@ class AuthCredentials extends Equatable {
   ///
   /// Validates email and password before authentication.
   ///
-  /// Throws [ArgumentError] if:
+  /// Throws [Exception] if:
   /// - Email validation fails (empty, invalid format, too long)
   /// - Password validation fails (empty, too short)
   factory AuthCredentials.forLogin({
@@ -66,7 +68,7 @@ class AuthCredentials extends Equatable {
   ///
   /// Validates email, password, and display name before creating account.
   ///
-  /// Throws [ArgumentError] if:
+  /// Throws [Exception] if:
   /// - Email validation fails (empty, invalid format, too long)
   /// - Display name validation fails (empty, too short, too long)
   /// - Password validation fails (empty, too short)
@@ -81,6 +83,9 @@ class AuthCredentials extends Equatable {
       name: DisplayName(name), // Validates display name
     );
   }
+  final DisplayName name;
+  final Email email;
+  final Password password;
 
   @override
   List<Object?> get props => [name, email, password];

@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 /// Provides convenient number formatting and manipulation.
 extension NumExtensions on num {
   /// Format as currency (e.g., "$1,234.56")
-  String toCurrency({String symbol = '\$', int decimalDigits = 2}) {
+  String toCurrency({String symbol = r'$', int decimalDigits = 2}) {
     final formatter = NumberFormat.currency(
       symbol: symbol,
       decimalDigits: decimalDigits,

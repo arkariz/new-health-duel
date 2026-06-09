@@ -10,9 +10,9 @@ sealed class CreateDuelEvent extends Equatable {
 
 /// Load potential opponents for the current user
 class CreateDuelOpponentsRequested extends CreateDuelEvent {
-  final String currentUserId;
 
   const CreateDuelOpponentsRequested(this.currentUserId);
+  final String currentUserId;
 
   @override
   List<Object?> get props => [currentUserId];
@@ -20,15 +20,15 @@ class CreateDuelOpponentsRequested extends CreateDuelEvent {
 
 /// Submit a new duel challenge
 class CreateDuelSubmitted extends CreateDuelEvent {
-  final String challengerId;
-  final String challengedId;
-  final String challengedName;
 
   const CreateDuelSubmitted({
     required this.challengerId,
     required this.challengedId,
     required this.challengedName,
   });
+  final String challengerId;
+  final String challengedId;
+  final String challengedName;
 
   @override
   List<Object?> get props => [challengerId, challengedId, challengedName];

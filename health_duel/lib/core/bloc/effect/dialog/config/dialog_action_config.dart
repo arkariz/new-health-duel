@@ -8,6 +8,13 @@ enum DialogIcon { info, success, warning, error, question }
 /// [onPressed] is optional - if null, dialog will just pop with the [action] value.
 /// If provided, it will be called AND dialog will still pop.
 class DialogActionConfig {
+
+  const DialogActionConfig({
+    required this.action,
+    this.label,
+    this.isPrimary = false,
+    this.onPressed,
+  });
   final DialogAction action;
   final String? label;
   final bool isPrimary;
@@ -16,13 +23,6 @@ class DialogActionConfig {
   /// Called before Navigator.pop().
   /// Note: Excluded from equality comparison.
   final VoidCallback? onPressed;
-
-  const DialogActionConfig({
-    required this.action,
-    this.label,
-    this.isPrimary = false,
-    this.onPressed,
-  });
 
   String get defaultLabel => switch (action) {
     DialogAction.confirm => 'OK',

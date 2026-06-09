@@ -108,7 +108,7 @@ GoRouter createTestRouter({
         .map(
           (e) => GoRoute(
             path: e.key,
-            builder: (_, __) => e.value,
+            builder: (_, _) => e.value,
           ),
         )
         .toList(),

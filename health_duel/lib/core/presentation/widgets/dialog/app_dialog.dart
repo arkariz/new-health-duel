@@ -6,7 +6,9 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/bloc/bloc.dart' show ShowDialogEffect;
 import 'package:health_duel/core/bloc/effect/dialog/config/dialog_action_config.dart';
+import 'package:health_duel/core/bloc/effect/dialog/dialog_effect.dart' show ShowDialogEffect;
 import 'package:health_duel/core/theme/theme.dart';
 
 part 'fullscreen_dialog.dart';

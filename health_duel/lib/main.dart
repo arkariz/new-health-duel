@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_duel/app.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/config/config.dart';
 import 'package:health_duel/core/di/injection.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_event.dart';
-
-import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

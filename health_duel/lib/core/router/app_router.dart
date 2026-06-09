@@ -6,6 +6,7 @@ import 'package:health_duel/core/di/injection.dart';
 import 'package:health_duel/core/router/go_router_refresh.dart';
 import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/features/auth/auth.dart';
+import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
@@ -34,12 +35,12 @@ GoRouter createAppRouter(AuthBloc authBloc) {
       GoRoute(
         path: AppRoutes.login,
         name: 'login',
-        builder: (_, __) => const LoginPage(),
+        builder: (_, _) => const LoginPage(),
       ),
       GoRoute(
         path: AppRoutes.register,
         name: 'register',
-        builder: (_, __) => const RegisterPage(),
+        builder: (_, _) => const RegisterPage(),
       ),
 
       // ═══════════════════════════════════════════════════════════════════════
@@ -48,12 +49,12 @@ GoRouter createAppRouter(AuthBloc authBloc) {
       GoRoute(
         path: AppRoutes.home,
         name: 'home',
-        builder: (_, __) => BlocProvider(create: (_) => getIt<HomeBloc>(), child: const HomePage()),
+        builder: (_, _) => BlocProvider(create: (_) => getIt<HomeBloc>(), child: const HomePage()),
       ),
       GoRoute(
         path: AppRoutes.health,
         name: 'health',
-        builder: (_, __) => BlocProvider(create: (_) => getIt<HealthBloc>(), child: const HealthPage()),
+        builder: (_, _) => BlocProvider(create: (_) => getIt<HealthBloc>(), child: const HealthPage()),
       ),
 
       // ═══════════════════════════════════════════════════════════════════════
@@ -114,12 +115,11 @@ GoRouter createAppRouter(AuthBloc authBloc) {
           if (extra == null || extra['duel'] == null) {
             // Missing data - should not happen in normal flow
             // Capture navigator before microtask to avoid async context issue
-            final navigator = Navigator.of(context);
-            Future.microtask(() => navigator.pop());
+            Navigator.of(context).pop();
             return const SizedBox.shrink();
           }
           return DuelResultScreen(
-            duel: extra['duel'],
+            duel: extra['duel'] as Duel,
             currentUserId: extra['currentUserId'] as String,
           );
         },

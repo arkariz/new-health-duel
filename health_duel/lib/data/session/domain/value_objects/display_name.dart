@@ -1,17 +1,15 @@
 import 'package:equatable/equatable.dart';
+import 'package:health_duel/core/error/error.dart';
 
 /// Display name value object with built-in validation.
 ///
-/// Ensures display name is always valid when created. Throws [ArgumentError]
+/// Ensures display name is always valid when created. Throws [ValidationFailure]
 /// if validation fails - use cases should catch and convert to Failure.
 class DisplayName extends Equatable {
-  final String value;
-
-  const DisplayName._(this.value);
 
   /// Creates a DisplayName value object.
   ///
-  /// Throws [ArgumentError] if:
+  /// Throws [Exception] if:
   /// - Display name is empty
   /// - Display name is only whitespace
   /// - Display name exceeds maximum length (100 characters)
@@ -20,19 +18,22 @@ class DisplayName extends Equatable {
     final trimmed = value.trim();
 
     if (trimmed.isEmpty) {
-      throw ArgumentError('Display name cannot be empty');
+      throw const ValidationFailure(message: 'Display name cannot be empty');
     }
 
     if (trimmed.length < 2) {
-      throw ArgumentError('Display name must be at least 2 characters');
+      throw const ValidationFailure(message: 'Display name must be at least 2 characters');
     }
 
     if (trimmed.length > 100) {
-      throw ArgumentError('Display name cannot exceed 100 characters');
+      throw const ValidationFailure(message: 'Display name cannot exceed 100 characters');
     }
 
     return DisplayName._(trimmed);
   }
+
+  const DisplayName._(this.value);
+  final String value;
 
   @override
   List<Object?> get props => [value];

@@ -16,13 +16,13 @@ class AuthCheckRequested extends AuthEvent {
 
 /// Sign in with email and password
 class AuthSignInWithEmailRequested extends AuthEvent {
-  final String email;
-  final String password;
 
   const AuthSignInWithEmailRequested({
     required this.email,
     required this.password,
   });
+  final String email;
+  final String password;
 
   @override
   List<Object?> get props => [email, password];
@@ -40,15 +40,15 @@ class AuthSignInWithAppleRequested extends AuthEvent {
 
 /// Register with email and password
 class AuthRegisterWithEmailRequested extends AuthEvent {
-  final String email;
-  final String password;
-  final String name;
 
   const AuthRegisterWithEmailRequested({
     required this.email,
     required this.password,
     required this.name,
   });
+  final String email;
+  final String password;
+  final String name;
 
   @override
   List<Object?> get props => [email, password, name];
@@ -61,9 +61,9 @@ class AuthSignOutRequested extends AuthEvent {
 
 /// Auth state changed (from stream)
 class AuthStateChanged extends AuthEvent {
-  final UserModel? user;
 
   const AuthStateChanged(this.user);
+  final UserModel? user;
 
   @override
   List<Object?> get props => [user];

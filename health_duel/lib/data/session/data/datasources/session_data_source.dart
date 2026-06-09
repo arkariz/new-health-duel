@@ -1,4 +1,6 @@
 import 'package:health_duel/data/session/data/models/user_model.dart';
+import 'package:health_duel/features/auth/auth.dart' show AuthRemoteDataSource;
+import 'package:health_duel/features/auth/data/datasources/auth_remote_data_source.dart' show AuthRemoteDataSource;
 
 /// Session Data Source Interface (Global)
 ///

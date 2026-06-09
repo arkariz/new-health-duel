@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'connectivity_state.dart';
+import 'package:health_duel/core/presentation/widgets/connectivity/connectivity_state.dart';
 
 /// Cubit for tracking device connectivity status
 ///
@@ -60,8 +60,8 @@ class ConnectivityCubit extends Cubit<ConnectivityStatus> {
   bool get isOffline => state == ConnectivityStatus.offline;
 
   @override
-  Future<void> close() {
-    _subscription?.cancel();
+  Future<void> close() async {
+    await _subscription?.cancel();
     return super.close();
   }
 }

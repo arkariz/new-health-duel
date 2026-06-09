@@ -20,8 +20,6 @@ part 'home_side_effect.dart';
 /// - [NavigateGoEffect] → For navigation after sign out
 /// - [ShowSnackBarEffect] → For error/success messages
 class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
-  final SessionRepository _sessionRepository;
-  final SignOut _signOut;
 
   HomeBloc({
     required SessionRepository sessionRepository, 
@@ -35,6 +33,8 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
     on<HomeRefreshRequested>(_onRefreshRequested);
     on<HomeNavigateToHealthRequested>(_onNavigateToHealthRequested);
   }
+  final SessionRepository _sessionRepository;
+  final SignOut _signOut;
 
   /// Load current user data
   Future<void> _onLoadUserRequested(HomeLoadUserRequested event, Emitter<HomeState> emit) async {

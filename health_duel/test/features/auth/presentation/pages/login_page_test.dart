@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,9 +12,7 @@ void main() {
   late MockAuthBloc mockAuthBloc;
   late MockConnectivityCubit mockConnectivityCubit;
 
-  setUpAll(() {
-    registerFallbackValues();
-  });
+  setUpAll(registerFallbackValues);
 
   setUp(() {
     mockAuthBloc = MockAuthBloc();
@@ -26,7 +22,7 @@ void main() {
     when(() => mockAuthBloc.state).thenReturn(const AuthInitial());
     whenListen(
       mockAuthBloc,
-      Stream<AuthState>.empty(),
+      const Stream<AuthState>.empty(),
       initialState: const AuthInitial(),
     );
 
@@ -36,7 +32,7 @@ void main() {
     ).thenReturn(ConnectivityStatus.online);
     whenListen(
       mockConnectivityCubit,
-      Stream<ConnectivityStatus>.empty(),
+      const Stream<ConnectivityStatus>.empty(),
       initialState: ConnectivityStatus.online,
     );
   });
@@ -85,7 +81,7 @@ void main() {
           ).thenReturn(const AuthLoading(message: 'Signing in...'));
           whenListen(
             mockAuthBloc,
-            Stream<AuthState>.empty(),
+            const Stream<AuthState>.empty(),
             initialState: const AuthLoading(message: 'Signing in...'),
           );
 
@@ -209,7 +205,7 @@ void main() {
         ).thenReturn(ConnectivityStatus.offline);
         whenListen(
           mockConnectivityCubit,
-          Stream<ConnectivityStatus>.empty(),
+          const Stream<ConnectivityStatus>.empty(),
           initialState: ConnectivityStatus.offline,
         );
 

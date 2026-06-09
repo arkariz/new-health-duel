@@ -19,9 +19,6 @@ part 'create_duel_side_effect.dart';
 /// - [CreateDuelSuccess]          → duel created; screen pops
 /// - [CreateDuelFailure]          → loading or creation failed
 class CreateDuelBloc extends EffectBloc<CreateDuelEvent, CreateDuelState> {
-  final GetOpponents _getOpponents;
-  final CreateDuel _createDuel;
-  final SessionRepository _sessionRepository;
 
   CreateDuelBloc({
     required GetOpponents getOpponents,
@@ -34,6 +31,9 @@ class CreateDuelBloc extends EffectBloc<CreateDuelEvent, CreateDuelState> {
     on<CreateDuelOpponentsRequested>(_onOpponentsRequested);
     on<CreateDuelSubmitted>(_onSubmitted);
   }
+  final GetOpponents _getOpponents;
+  final CreateDuel _createDuel;
+  final SessionRepository _sessionRepository;
 
   Future<void> _onOpponentsRequested(
     CreateDuelOpponentsRequested event,

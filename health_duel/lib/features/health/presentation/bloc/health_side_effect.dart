@@ -19,7 +19,6 @@ extension HealthSideEffect on HealthBloc {
     title: 'Not Supported',
     message: "Your device doesn't support health data tracking.",
     icon: DialogIcon.info,
-    isDismissible: true,
     actions: const [DialogActionConfig(action: DialogAction.confirm, label: 'OK', isPrimary: true)],
   );
 
@@ -42,7 +41,6 @@ extension HealthSideEffect on HealthBloc {
   /// Permissions revoked snackbar
   ShowSnackBarEffect get _effectPermissionsRevokedSnackbar => ShowSnackBarEffect(
     message: 'Health permissions revoked',
-    severity: FeedbackSeverity.info,
   );
 
   /// Generic error snackbar

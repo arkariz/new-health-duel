@@ -9,17 +9,17 @@ import 'package:flutter/foundation.dart';
 
 /// Notifies GoRouter to refresh when stream emits
 class GoRouterRefreshStream extends ChangeNotifier {
-  late final StreamSubscription<dynamic> _subscription;
 
   GoRouterRefreshStream(Stream<dynamic> stream) {
     _subscription = stream.asBroadcastStream().listen((_) {
       notifyListeners();
     });
   }
+  late final StreamSubscription<dynamic> _subscription;
 
   @override
   void dispose() {
-    _subscription.cancel();
+    unawaited(_subscription.cancel());
     super.dispose();
   }
 }

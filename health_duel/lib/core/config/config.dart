@@ -1,4 +1,3 @@
-library;
 
 export 'app_config.dart';
 export 'flavor_util.dart';

@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/router/router.dart';
+import 'package:health_duel/data/session/data/models/user_model.dart';
+import 'package:health_duel/data/session/domain/domain.dart';
 import 'package:health_duel/features/auth/domain/repositories/auth_repository.dart';
 import 'package:health_duel/features/auth/domain/usecases/register_with_email.dart';
 import 'package:health_duel/features/auth/domain/usecases/sign_in_with_apple.dart';
 import 'package:health_duel/features/auth/domain/usecases/sign_in_with_email.dart';
 import 'package:health_duel/features/auth/domain/usecases/sign_in_with_google.dart';
-import 'package:health_duel/data/session/domain/domain.dart';
-import 'package:health_duel/data/session/data/models/user_model.dart';
-import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_event.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_state.dart';
 
@@ -30,15 +30,6 @@ part 'auth_side_effect.dart';
 /// - [NavigateGoEffect] → For navigation (home, login)
 /// - [ShowSnackBarEffect] → For error/success messages
 class AuthBloc extends EffectBloc<AuthEvent, AuthState> {
-  final AuthRepository _authRepository;
-  final SessionRepository _sessionRepository;
-  final SignInWithEmail _signInWithEmail;
-  final SignInWithGoogle _signInWithGoogle;
-  final SignInWithApple _signInWithApple;
-  final RegisterWithEmail _registerWithEmail;
-  final SignOut _signOut;
-
-  StreamSubscription<UserModel?>? _authStateSubscription;
 
   AuthBloc({
     required AuthRepository authRepository,
@@ -70,6 +61,15 @@ class AuthBloc extends EffectBloc<AuthEvent, AuthState> {
       add(AuthStateChanged(user));
     });
   }
+  final AuthRepository _authRepository;
+  final SessionRepository _sessionRepository;
+  final SignInWithEmail _signInWithEmail;
+  final SignInWithGoogle _signInWithGoogle;
+  final SignInWithApple _signInWithApple;
+  final RegisterWithEmail _registerWithEmail;
+  final SignOut _signOut;
+
+  StreamSubscription<UserModel?>? _authStateSubscription;
 
   /// Check current authentication status
   Future<void> _onAuthCheckRequested(
@@ -203,7 +203,7 @@ class AuthBloc extends EffectBloc<AuthEvent, AuthState> {
 
   @override
   Future<void> close() {
-    _authStateSubscription?.cancel();
+    unawaited(_authStateSubscription?.cancel());
     return super.close();
   }
 }

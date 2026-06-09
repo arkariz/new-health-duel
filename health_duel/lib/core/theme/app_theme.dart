@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'extensions/extensions.dart';
-import 'tokens/tokens.dart';
+import 'package:health_duel/core/theme/extensions/extensions.dart';
+import 'package:health_duel/core/theme/tokens/tokens.dart';
 
 /// Application Theme Configuration
 ///
@@ -80,13 +80,10 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: _primaryLight,
         secondary: _secondaryLight,
-        surface: lightSurface,
         error: errorColor,
-        onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: lightOnSurface,
         onSurfaceVariant: lightOnSurfaceVariant,
-        onError: Colors.white,
         outline: Color(0xFFE5E7EB),
       ),
       scaffoldBackgroundColor: lightBackground,

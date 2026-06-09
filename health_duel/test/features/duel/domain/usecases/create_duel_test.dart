@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/create_duel.dart';
 
 import '../../../../helpers/helpers.dart';
@@ -69,18 +70,19 @@ void main() {
     group('success', () {
       test('creates duel when no active duel exists between users', () async {
         final expectedDuel = tPendingDuel;
-        mockRepository.setupGetActiveDuelBetween(
-          challengerId,
-          challengedId,
-          null,
-        );
-        mockRepository.setupCreateDuel(
-          challengerId: challengerId,
-          challengedId: challengedId,
-          challengerName: challengerName,
-          challengedName: challengedName,
-          duel: expectedDuel,
-        );
+        mockRepository
+          ..setupGetActiveDuelBetween(
+            challengerId,
+            challengedId,
+            null,
+          )
+          ..setupCreateDuel(
+            challengerId: challengerId,
+            challengedId: challengedId,
+            challengerName: challengerName,
+            challengedName: challengedName,
+            duel: expectedDuel,
+          );
 
         final result = await createDuel(
           challengerId: challengerId,
@@ -89,23 +91,24 @@ void main() {
           challengedName: challengedName,
         );
 
-        expect(result, Right(expectedDuel));
+        expect(result, Right<Failure, Duel>(expectedDuel));
       });
 
       test('proceeds when getActiveDuelBetween returns Left (error)', () async {
         final expectedDuel = tPendingDuel;
-        mockRepository.setupGetActiveDuelBetweenFailure(
-          challengerId,
-          challengedId,
-          const ServerFailure(message: 'Firestore unavailable'),
-        );
-        mockRepository.setupCreateDuel(
-          challengerId: challengerId,
-          challengedId: challengedId,
-          challengerName: challengerName,
-          challengedName: challengedName,
-          duel: expectedDuel,
-        );
+        mockRepository
+          ..setupGetActiveDuelBetweenFailure(
+            challengerId,
+            challengedId,
+            const ServerFailure(message: 'Firestore unavailable'),
+          )
+          ..setupCreateDuel(
+            challengerId: challengerId,
+            challengedId: challengedId,
+            challengerName: challengerName,
+            challengedName: challengedName,
+            duel: expectedDuel,
+          );
 
         final result = await createDuel(
           challengerId: challengerId,
@@ -114,7 +117,7 @@ void main() {
           challengedName: challengedName,
         );
 
-        expect(result, Right(expectedDuel));
+        expect(result, Right<Failure, Duel>(expectedDuel));
       });
     });
 
@@ -122,14 +125,15 @@ void main() {
       test('propagates ServerFailure from createDuel repository call', () async {
         const failure = ServerFailure(message: 'Failed to create duel: network error');
 
-        mockRepository.setupGetActiveDuelBetween(challengerId, challengedId, null);
-        mockRepository.setupCreateDuelFailure(
-          challengerId: challengerId,
-          challengedId: challengedId,
-          challengerName: challengerName,
-          challengedName: challengedName,
-          failure: failure,
-        );
+        mockRepository
+          ..setupGetActiveDuelBetween(challengerId, challengedId, null)
+          ..setupCreateDuelFailure(
+            challengerId: challengerId,
+            challengedId: challengedId,
+            challengerName: challengerName,
+            challengedName: challengedName,
+            failure: failure,
+          );
 
         final result = await createDuel(
           challengerId: challengerId,
@@ -138,7 +142,7 @@ void main() {
           challengedName: challengedName,
         );
 
-        expect(result, const Left(failure));
+        expect(result, const Left<Failure, Duel>(failure));
       });
     });
   });

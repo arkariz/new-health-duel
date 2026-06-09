@@ -38,15 +38,15 @@ abstract class HealthPlatformDataSource {
 /// Custom exception for health plugin errors.
 /// Mapped to domain Failures in repository layer.
 class HealthDataSourceException implements Exception {
-  final String message;
-  final String code;
-  final dynamic originalError;
 
   const HealthDataSourceException({
     required this.message,
     required this.code,
     this.originalError,
   });
+  final String message;
+  final String code;
+  final dynamic originalError;
 
   @override
   String toString() => 'HealthDataSourceException($code): $message';
@@ -57,6 +57,8 @@ class HealthDataSourceException implements Exception {
 /// Uses the health plugin for HealthKit (iOS) and Health Connect (Android).
 /// All platform-specific logic is encapsulated here.
 class HealthPlatformDataSourceImpl implements HealthPlatformDataSource {
+
+  HealthPlatformDataSourceImpl({Health? health}) : _health = health ?? Health();
   final Health _health;
 
   /// Data types we need access to
@@ -64,8 +66,6 @@ class HealthPlatformDataSourceImpl implements HealthPlatformDataSource {
 
   /// Permission types matching the data types
   static const List<HealthDataAccess> _accessTypes = [HealthDataAccess.READ];
-
-  HealthPlatformDataSourceImpl({Health? health}) : _health = health ?? Health();
 
   @override
   Future<HealthPermissionStatus> checkPermissions() async {

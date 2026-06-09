@@ -8,16 +8,16 @@ import 'package:health_duel/features/auth/domain/repositories/auth_repository.da
 /// Business logic for email/password authentication.
 /// Validates inputs and delegates to repository.
 class SignInWithEmail {
-  final AuthRepository repository;
 
   const SignInWithEmail(this.repository);
+  final AuthRepository repository;
 
   /// Execute sign in with email and password
   ///
   /// Returns [UserModel] on success or [Failure] on error.
   ///
   /// Validation is performed by AuthCredentials value objects (Email, Password).
-  /// This use case catches [ArgumentError] and converts to [ValidationFailure].
+  /// This use case catches [Exception] and converts to [ValidationFailure].
   ///
   /// Possible failures:
   /// - [ValidationFailure]: Invalid email format, empty/short password (from domain validation)
@@ -29,7 +29,7 @@ class SignInWithEmail {
   }) async {
     try {
       // Create auth credentials - validation happens here via value objects
-      // Throws ArgumentError if validation fails
+      // Throws Exception if validation fails
       final credentials = AuthCredentials.forLogin(
         email: email,
         password: password,
@@ -41,9 +41,9 @@ class SignInWithEmail {
         password: credentials.password.value, // Extract string from Password value object
       );
       return result;
-    } on ArgumentError catch (e) {
+    } on Exception catch (e) {
       // Convert domain validation exception to Failure
-      return Left(ValidationFailure(message: e.message));
+      return Left(ValidationFailure(message: e.toString()));
     }
   }
 }

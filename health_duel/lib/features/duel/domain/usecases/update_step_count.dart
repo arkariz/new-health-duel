@@ -12,9 +12,9 @@ import 'package:health_duel/features/duel/domain/value_objects/step_count.dart';
 /// - Only active duels can be updated
 /// - User must be a participant
 class UpdateStepCount {
-  final DuelRepository _repository;
 
   const UpdateStepCount(this._repository);
+  final DuelRepository _repository;
 
   /// Execute step count update
   ///
@@ -30,7 +30,7 @@ class UpdateStepCount {
     final duelResult = await _repository.getDuelById(duelId);
 
     return duelResult.fold(
-      (failure) => Left(failure),
+      Left.new,
       (duel) async {
         // Validation: Only update active duels
         if (!duel.isActive) {

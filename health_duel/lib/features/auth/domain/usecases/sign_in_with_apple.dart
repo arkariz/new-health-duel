@@ -7,10 +7,10 @@ import 'package:health_duel/features/auth/domain/repositories/auth_repository.da
 ///
 /// Business logic for Apple Sign In authentication (iOS only).
 class SignInWithApple {
-  // TODO: Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
-  final AuthRepository repository;
 
   const SignInWithApple(this.repository);
+  // TODO(rizky): Refactor - Thin Use Case (see TECHNICAL_DEBT.md)
+  final AuthRepository repository;
 
   /// Execute Apple sign in flow
   ///

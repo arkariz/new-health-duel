@@ -9,9 +9,6 @@ import 'package:timeago/timeago.dart' as timeago;
 /// - Loading state during sync
 /// - Manual refresh button
 class SyncIndicator extends StatelessWidget {
-  final DateTime lastSyncTime;
-  final bool isSyncing;
-  final VoidCallback? onRefresh;
 
   const SyncIndicator({
     required this.lastSyncTime,
@@ -19,6 +16,9 @@ class SyncIndicator extends StatelessWidget {
     this.onRefresh,
     super.key,
   });
+  final DateTime lastSyncTime;
+  final bool isSyncing;
+  final VoidCallback? onRefresh;
 
   @override
   Widget build(BuildContext context) {

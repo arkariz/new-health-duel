@@ -17,10 +17,10 @@ import 'package:health_duel/data/session/domain/repositories/session_repository.
 ///
 /// Other features depend on [SessionRepository], not on specific implementations.
 class SessionRepositoryImpl implements SessionRepository {
-  final SessionDataSource _sessionDataSource;
 
   SessionRepositoryImpl({required SessionDataSource sessionDataSource})
     : _sessionDataSource = sessionDataSource;
+  final SessionDataSource _sessionDataSource;
 
   @override
   Future<Either<Failure, UserModel?>> getCurrentUser() async {

@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/error/failures.dart';
 import 'package:health_duel/data/session/data/models/user_model.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_event.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_state.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 import '../../../helpers/helpers.dart';
 
@@ -24,9 +24,7 @@ void main() {
   // Auth state stream controller
   late StreamController<UserModel?> authStateController;
 
-  setUpAll(() {
-    registerFallbackValues();
-  });
+  setUpAll(registerFallbackValues);
 
   setUp(() {
     mockSessionRepository = MockSessionRepository();
@@ -42,7 +40,7 @@ void main() {
   });
 
   tearDown(() {
-    authStateController.close();
+    unawaited(authStateController.close());
   });
 
   AuthBloc buildBloc() => AuthBloc(

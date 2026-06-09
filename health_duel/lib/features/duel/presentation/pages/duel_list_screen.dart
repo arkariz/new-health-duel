@@ -18,12 +18,12 @@ import 'package:health_duel/features/duel/presentation/widgets/duel_card.dart';
 /// - TabBarView with 3 tabs showing DuelCard lists
 ///   or themed empty states
 class DuelListScreen extends StatefulWidget {
-  final String currentUserId;
 
   const DuelListScreen({
     required this.currentUserId,
     super.key,
   });
+  final String currentUserId;
 
   @override
   State<DuelListScreen> createState() => _DuelListScreenState();
@@ -67,7 +67,6 @@ class _DuelListScreenState extends State<DuelListScreen>
           bottom: TabBar(
             controller: _tabController,
             indicatorColor: primary,
-            indicatorWeight: 2,
             labelColor: primary,
             unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
             labelStyle: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -95,9 +94,9 @@ class _DuelListScreenState extends State<DuelListScreen>
 // ─── Active Duels Tab ─────────────────────────────────────────────────────────
 
 class _ActiveDuelsTab extends StatelessWidget {
-  final String currentUserId;
 
   const _ActiveDuelsTab({required this.currentUserId});
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -153,9 +152,9 @@ class _ActiveDuelsTab extends StatelessWidget {
 // ─── Pending Duels Tab ────────────────────────────────────────────────────────
 
 class _PendingDuelsTab extends StatelessWidget {
-  final String currentUserId;
 
   const _PendingDuelsTab({required this.currentUserId});
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -206,9 +205,9 @@ class _PendingDuelsTab extends StatelessWidget {
 // ─── History Tab ──────────────────────────────────────────────────────────────
 
 class _HistoryTab extends StatelessWidget {
-  final String currentUserId;
 
   const _HistoryTab({required this.currentUserId});
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -252,12 +251,6 @@ class _HistoryTab extends StatelessWidget {
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
 class _EmptyState extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String message;
-  final String? actionLabel;
-  final VoidCallback? onAction;
 
   const _EmptyState({
     required this.icon,
@@ -267,6 +260,12 @@ class _EmptyState extends StatelessWidget {
     this.actionLabel,
     this.onAction,
   });
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {

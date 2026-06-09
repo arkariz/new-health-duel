@@ -5,8 +5,7 @@ import 'package:health_duel/features/home/home.dart';
 
 class StepsHeroCardSection extends StatelessWidget {
   const StepsHeroCardSection({
-    super.key,
-    required this.onTap,
+    required this.onTap, super.key,
   });
 
   final VoidCallback onTap;
@@ -174,7 +173,7 @@ class StepsHeroCardSection extends StatelessWidget {
                     primary.withValues(alpha: 0.18),
                     primary.withValues(alpha: 0.09),
                     primary.withValues(alpha: 0.03),
-                    primary.withValues(alpha: 0.0),
+                    primary.withValues(alpha: 0),
                   ],
                   stops: const [0.0, 0.3, 0.55, 0.78, 1.0],
                 ),

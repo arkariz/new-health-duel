@@ -16,11 +16,6 @@ part 'duel_list_side_effect.dart';
 /// - [DuelListLoaded]  → all lists fetched (any can be empty)
 /// - [DuelListError]   → failed to fetch
 class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
-  final GetActiveDuels _getActiveDuels;
-  final GetPendingDuels _getPendingDuels;
-  final GetDuelHistory _getDuelHistory;
-  final AcceptDuel _acceptDuel;
-  final DeclineDuel _declineDuel;
 
   DuelListBloc({
     required GetActiveDuels getActiveDuels,
@@ -38,6 +33,11 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     on<DuelAcceptRequested>(_onAcceptRequested);
     on<DuelDeclineRequested>(_onDeclineRequested);
   }
+  final GetActiveDuels _getActiveDuels;
+  final GetPendingDuels _getPendingDuels;
+  final GetDuelHistory _getDuelHistory;
+  final AcceptDuel _acceptDuel;
+  final DeclineDuel _declineDuel;
 
   Future<void> _onLoadRequested(
     DuelListLoadRequested event,

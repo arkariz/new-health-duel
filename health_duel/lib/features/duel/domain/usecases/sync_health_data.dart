@@ -14,10 +14,10 @@ import 'package:health_duel/features/health/domain/repositories/health_repositor
 /// 2. Fetch steps from HealthKit/Health Connect
 /// 3. Update duel with fetched step count
 class SyncHealthData {
-  final HealthRepository _healthRepository;
-  final DuelRepository _duelRepository;
 
   const SyncHealthData(this._healthRepository, this._duelRepository);
+  final HealthRepository _healthRepository;
+  final DuelRepository _duelRepository;
 
   /// Execute health data sync
   ///
@@ -30,7 +30,7 @@ class SyncHealthData {
     final duelResult = await _duelRepository.getDuelById(duelId);
 
     return duelResult.fold(
-      (failure) => Left(failure),
+      Left.new,
       (duel) async {
         // Validation: Only sync active duels
         if (!duel.isActive) {
@@ -44,7 +44,7 @@ class SyncHealthData {
         );
 
         return stepsResult.fold(
-          (failure) => Left(failure),
+          Left.new,
           (stepCount) async {
             // Update duel with fetched step count
             return _duelRepository.updateStepCount(

@@ -1,3 +1,4 @@
+import 'package:health_duel/core/error/error.dart';
 import 'package:health_duel/data/session/domain/value_objects/display_name.dart';
 import 'package:health_duel/data/session/domain/value_objects/email.dart';
 import 'package:health_duel/data/session/domain/value_objects/password.dart';
@@ -33,8 +34,8 @@ class FormValidators {
     try {
       Email(value); // Domain validates here
       return null; // Valid
-    } on ArgumentError catch (e) {
-      return e.message; // Return domain error
+    } on ValidationFailure catch (e) {
+      return e.message;
     }
   }
 
@@ -54,7 +55,7 @@ class FormValidators {
     try {
       DisplayName(value);
       return null;
-    } on ArgumentError catch (e) {
+    } on ValidationFailure catch (e) {
       return e.message;
     }
   }
@@ -78,7 +79,7 @@ class FormValidators {
     try {
       Password(value); // Domain validates here
       return null;
-    } on ArgumentError catch (e) {
+    } on ValidationFailure catch (e) {
       return e.message;
     }
   }
@@ -105,7 +106,7 @@ class FormValidators {
     try {
       Password.strong(value); // Strong validation
       return null;
-    } on ArgumentError catch (e) {
+    } on ValidationFailure catch (e) {
       return e.message;
     }
   }

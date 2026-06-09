@@ -4,7 +4,7 @@
 ///
 /// IMPORTANT: This class overrides == and hashCode to include effect
 /// for bloc state emission, while subclasses should exclude effect
-/// from [props] to prevent unnecessary widget rebuilds.
+/// from props to prevent unnecessary widget rebuilds.
 ///
 /// This allows:
 /// - Bloc to emit state when only effect changes (for side effects)
@@ -19,9 +19,9 @@ import 'package:health_duel/core/bloc/base/effect/ui_effect.dart';
 /// Override == and hashCode to include effect for bloc emission,
 /// while keeping effect out of [props] for optimized rebuilds.
 abstract class UiState extends Equatable {
-  final UiEffect? effect;
 
   const UiState({this.effect});
+  final UiEffect? effect;
 
   bool get hasEffect => effect != null;
 

@@ -23,56 +23,56 @@ void registerDuelModule() {
   // DATA SOURCES
   // ════════════════════════════════════════════════════════════════════════
 
-  getIt.registerLazySingleton<DuelFirestoreDataSource>(
+  getIt..registerLazySingleton<DuelFirestoreDataSource>(
     () => DuelFirestoreDataSource(getIt<FirebaseFirestore>()),
-  );
+  )
 
   // ════════════════════════════════════════════════════════════════════════
   // REPOSITORIES
   // ════════════════════════════════════════════════════════════════════════
 
-  getIt.registerLazySingleton<DuelRepository>(
+  ..registerLazySingleton<DuelRepository>(
     () => DuelRepositoryImpl(getIt<DuelFirestoreDataSource>()),
-  );
+  )
 
   // ════════════════════════════════════════════════════════════════════════
   // USE CASES
   // ════════════════════════════════════════════════════════════════════════
 
   // Create & Manage Duels
-  getIt.registerFactory(() => CreateDuel(getIt<DuelRepository>()));
-  getIt.registerFactory(() => AcceptDuel(getIt<DuelRepository>()));
-  getIt.registerFactory(() => DeclineDuel(getIt<DuelRepository>()));
+  ..registerFactory(() => CreateDuel(getIt<DuelRepository>()))
+  ..registerFactory(() => AcceptDuel(getIt<DuelRepository>()))
+  ..registerFactory(() => DeclineDuel(getIt<DuelRepository>()))
 
   // Query Duels
-  getIt.registerFactory(() => GetActiveDuels(getIt<DuelRepository>()));
-  getIt.registerFactory(() => GetPendingDuels(getIt<DuelRepository>()));
-  getIt.registerFactory(() => GetDuelHistory(getIt<DuelRepository>()));
-  getIt.registerFactory(() => GetOpponents(getIt<DuelRepository>()));
+  ..registerFactory(() => GetActiveDuels(getIt<DuelRepository>()))
+  ..registerFactory(() => GetPendingDuels(getIt<DuelRepository>()))
+  ..registerFactory(() => GetDuelHistory(getIt<DuelRepository>()))
+  ..registerFactory(() => GetOpponents(getIt<DuelRepository>()))
 
   // Real-time & Sync
-  getIt.registerFactory(() => WatchDuel(getIt<DuelRepository>()));
-  getIt.registerFactory(() => UpdateStepCount(getIt<DuelRepository>()));
-  getIt.registerFactory(
+  ..registerFactory(() => WatchDuel(getIt<DuelRepository>()))
+  ..registerFactory(() => UpdateStepCount(getIt<DuelRepository>()))
+  ..registerFactory(
     () => SyncHealthData(
       getIt<HealthRepository>(),
       getIt<DuelRepository>(),
     ),
-  );
+  )
 
   // ════════════════════════════════════════════════════════════════════════
   // PRESENTATION (BLoCs)
   // ════════════════════════════════════════════════════════════════════════
 
-  getIt.registerFactory(
+  ..registerFactory(
     () => DuelBloc(
       watchDuel: getIt<WatchDuel>(),
       syncHealthData: getIt<SyncHealthData>(),
       sessionRepository: getIt<SessionRepository>(),
     ),
-  );
+  )
 
-  getIt.registerFactory(
+  ..registerFactory(
     () => DuelListBloc(
       getActiveDuels: getIt<GetActiveDuels>(),
       getPendingDuels: getIt<GetPendingDuels>(),
@@ -80,9 +80,9 @@ void registerDuelModule() {
       acceptDuel: getIt<AcceptDuel>(),
       declineDuel: getIt<DeclineDuel>(),
     ),
-  );
+  )
 
-  getIt.registerFactory(
+  ..registerFactory(
     () => CreateDuelBloc(
       getOpponents: getIt<GetOpponents>(),
       createDuel: getIt<CreateDuel>(),

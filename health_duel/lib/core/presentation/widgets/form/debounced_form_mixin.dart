@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import 'debouncer.dart';
+import 'package:health_duel/core/presentation/widgets/form/debouncer.dart';
 
 /// Mixin for StatefulWidgets with debounced real-time form validation
 ///
@@ -88,9 +88,7 @@ mixin DebouncedFormValidation<T extends StatefulWidget> on State<T> {
 
   /// Clear all field errors
   void clearAllErrors() {
-    setState(() {
-      _fieldErrors.clear();
-    });
+    setState(_fieldErrors.clear);
   }
 
   /// Dispose all debouncers - call in State.dispose()

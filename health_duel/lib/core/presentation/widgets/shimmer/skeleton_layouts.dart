@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:health_duel/core/presentation/widgets/shimmer/skeleton_shapes.dart';
 import 'package:health_duel/core/theme/theme.dart';
-
-import 'skeleton_shapes.dart';
 
 /// Skeleton for list items with avatar and text lines
 ///
@@ -80,7 +79,7 @@ class SkeletonCard extends StatelessWidget {
           child: Row(
             children: [
               if (hasImage) ...[SkeletonBox(width: imageSize, height: imageSize, borderRadius: 8), const SizedBox(width: AppSpacing.md)],
-              const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [SkeletonText(height: 18), SizedBox(height: AppSpacing.sm), SkeletonText(widthFactor: 0.6, height: 14), SizedBox(height: AppSpacing.sm), SkeletonText(widthFactor: 0.4, height: 14)])),
+              const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [SkeletonText(height: 18), SizedBox(height: AppSpacing.sm), SkeletonText(widthFactor: 0.6), SizedBox(height: AppSpacing.sm), SkeletonText(widthFactor: 0.4)])),
             ],
           ),
         ),

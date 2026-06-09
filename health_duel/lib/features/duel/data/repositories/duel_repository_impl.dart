@@ -11,9 +11,9 @@ import 'package:health_duel/features/duel/domain/value_objects/step_count.dart';
 /// Implements [DuelRepository] interface using Firestore data source.
 /// Handles DTO ↔ Entity mapping and exception handling.
 class DuelRepositoryImpl implements DuelRepository {
-  final DuelFirestoreDataSource _dataSource;
 
   const DuelRepositoryImpl(this._dataSource);
+  final DuelFirestoreDataSource _dataSource;
 
   @override
   Future<Either<Failure, Duel>> createDuel({
@@ -28,8 +28,6 @@ class DuelRepositoryImpl implements DuelRepository {
         challengedId: challengedId,
         challengerName: challengerName,
         challengedName: challengedName,
-        challengerPhotoUrl: null,
-        challengedPhotoUrl: null,
       );
 
       return Right(duelDto.toEntity());
@@ -138,7 +136,7 @@ class DuelRepositoryImpl implements DuelRepository {
     try {
       return _dataSource.watchDuel(duelId).map((duelDto) {
         return Right<Failure, Duel>(duelDto.toEntity());
-      }).handleError((error) {
+      }).handleError((Object error) {
         return Left<Failure, Duel>(
           ServerFailure(message: 'Failed to watch duel: $error'),
         );
@@ -166,7 +164,7 @@ class DuelRepositoryImpl implements DuelRepository {
       return _dataSource.watchActiveDuels(userId).map((duelDtos) {
         final duels = duelDtos.map((dto) => dto.toEntity()).toList();
         return Right<Failure, List<Duel>>(duels);
-      }).handleError((error) {
+      }).handleError((Object error) {
         return Left<Failure, List<Duel>>(
           ServerFailure(message: 'Failed to watch active duels: $error'),
         );

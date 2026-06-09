@@ -3,14 +3,14 @@ import 'package:equatable/equatable.dart';
 /// Base class for all domain failures (see ADR-002 Exception Isolation)
 ///
 /// All failures are immutable, equatable, and sealed for exhaustive handling.
-sealed class Failure extends Equatable {
+sealed class Failure extends Equatable implements Exception {
+
+  const Failure({required this.message, this.errorCode});
   /// User-facing or technical message
   final String message;
 
   /// Optional error code for diagnostics
   final String? errorCode;
-
-  const Failure({required this.message, this.errorCode});
 
   @override
   List<Object?> get props => [message, errorCode];
@@ -26,13 +26,13 @@ class NetworkFailure extends Failure {
 
 /// Server-side failures (API errors, 5xx responses, etc.)
 class ServerFailure extends Failure {
+
+  const ServerFailure({required super.message, super.errorCode, this.statusCode, this.metadata});
   /// HTTP status code (if available)
   final int? statusCode;
 
   /// Additional metadata (e.g., module, function)
   final Map<String, dynamic>? metadata;
-
-  const ServerFailure({required super.message, super.errorCode, this.statusCode, this.metadata});
 
   @override
   List<Object?> get props => [message, errorCode, statusCode, metadata];
@@ -59,10 +59,10 @@ class AuthFailure extends Failure {
 
 /// Validation failures (invalid data, business rule violations)
 class ValidationFailure extends Failure {
-  /// Field-level errors (e.g., {"email": "Invalid format"})
-  final Map<String, String>? fieldErrors;
 
   const ValidationFailure({required super.message, super.errorCode, this.fieldErrors});
+  /// Field-level errors (e.g., {"email": "Invalid format"})
+  final Map<String, String>? fieldErrors;
 
   @override
   List<Object?> get props => [message, errorCode, fieldErrors];
@@ -73,10 +73,10 @@ class ValidationFailure extends Failure {
 
 /// Unexpected/Unknown failures (fallback)
 class UnexpectedFailure extends Failure {
-  /// Original exception type or message (for diagnostics)
-  final String? originalException;
 
   const UnexpectedFailure({required super.message, super.errorCode, this.originalException});
+  /// Original exception type or message (for diagnostics)
+  final String? originalException;
 
   @override
   List<Object?> get props => [message, errorCode, originalException];

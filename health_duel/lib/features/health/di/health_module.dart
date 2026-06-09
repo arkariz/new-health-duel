@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:health/health.dart';
+import 'package:health_duel/core/di/core_module.dart';
 import 'package:health_duel/features/health/data/datasources/datasources.dart';
 import 'package:health_duel/features/health/data/repositories/repositories.dart';
 import 'package:health_duel/features/health/domain/repositories/repositories.dart';
@@ -22,51 +23,51 @@ void registerHealthModule(GetIt getIt) {
   // ========================
 
   if (!getIt.isRegistered<Health>()) {
-    getIt.registerLazySingleton<Health>(() => Health());
+    getIt.registerLazySingleton<Health>(Health.new);
   }
 
   // ========================
   // Data Sources
   // ========================
 
-  getIt.registerLazySingleton<HealthPlatformDataSource>(
+  getIt..registerLazySingleton<HealthPlatformDataSource>(
     () => HealthPlatformDataSourceImpl(health: getIt<Health>()),
-  );
+  )
 
   // ========================
   // Repositories
   // ========================
 
-  getIt.registerLazySingleton<HealthRepository>(
+  ..registerLazySingleton<HealthRepository>(
     () => HealthRepositoryImpl(getIt<HealthPlatformDataSource>()),
-  );
+  )
 
   // ========================
   // Use Cases
   // ========================
 
-  getIt.registerFactory<CheckHealthPermissions>(
+  ..registerFactory<CheckHealthPermissions>(
     () => CheckHealthPermissions(getIt<HealthRepository>()),
-  );
+  )
 
-  getIt.registerFactory<RequestHealthPermissions>(
+  ..registerFactory<RequestHealthPermissions>(
     () => RequestHealthPermissions(getIt<HealthRepository>()),
-  );
+  )
 
-  getIt.registerFactory<GetTodaySteps>(
+  ..registerFactory<GetTodaySteps>(
     () => GetTodaySteps(getIt<HealthRepository>()),
-  );
+  )
 
-  getIt.registerFactory<CheckHealthConnectAvailable>(
+  ..registerFactory<CheckHealthConnectAvailable>(
     () => CheckHealthConnectAvailable(getIt<HealthRepository>()),
-  );
+  )
 
   // ========================
   // Bloc
   // ========================
 
   // Factory: Create new instance each time (for route-scoped blocs)
-  getIt.registerFactory<HealthBloc>(
+  ..registerFactory<HealthBloc>(
     () => HealthBloc(
       checkHealthPermissions: getIt<CheckHealthPermissions>(),
       requestHealthPermissions: getIt<RequestHealthPermissions>(),

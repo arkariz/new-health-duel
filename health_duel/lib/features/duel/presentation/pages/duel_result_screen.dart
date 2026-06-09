@@ -13,14 +13,14 @@ import 'package:health_duel/features/duel/domain/domain.dart';
 /// - Details row: start date, end date, duration
 /// - CTA: Challenge Again (filled) + Back to Duels (outlined)
 class DuelResultScreen extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
 
   const DuelResultScreen({
     required this.duel,
     required this.currentUserId,
     super.key,
   });
+  final Duel duel;
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -102,10 +102,10 @@ class DuelResultScreen extends StatelessWidget {
 // ─── Result Header ────────────────────────────────────────────────────────────
 
 class _ResultHeader extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
 
   const _ResultHeader({required this.duel, required this.currentUserId});
+  final Duel duel;
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -226,10 +226,10 @@ class _ResultHeader extends StatelessWidget {
 // ─── Step Comparison ──────────────────────────────────────────────────────────
 
 class _StepComparison extends StatelessWidget {
-  final Duel duel;
-  final String currentUserId;
 
   const _StepComparison({required this.duel, required this.currentUserId});
+  final Duel duel;
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -286,11 +286,6 @@ class _StepComparison extends StatelessWidget {
 // ─── Step Card ────────────────────────────────────────────────────────────────
 
 class _StepCard extends StatelessWidget {
-  final String label;
-  final String emoji;
-  final int steps;
-  final Color color;
-  final bool isWinner;
 
   const _StepCard({
     required this.label,
@@ -299,6 +294,11 @@ class _StepCard extends StatelessWidget {
     required this.color,
     required this.isWinner,
   });
+  final String label;
+  final String emoji;
+  final int steps;
+  final Color color;
+  final bool isWinner;
 
   @override
   Widget build(BuildContext context) {
@@ -354,9 +354,9 @@ class _StepCard extends StatelessWidget {
 // ─── Details Card ─────────────────────────────────────────────────────────────
 
 class _DetailsCard extends StatelessWidget {
-  final Duel duel;
 
   const _DetailsCard({required this.duel});
+  final Duel duel;
 
   @override
   Widget build(BuildContext context) {
@@ -418,9 +418,9 @@ class _DetailsCard extends StatelessWidget {
 // ─── Action Buttons ───────────────────────────────────────────────────────────
 
 class _ActionButtons extends StatelessWidget {
-  final String currentUserId;
 
   const _ActionButtons({required this.currentUserId});
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {

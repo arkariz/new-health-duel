@@ -8,7 +8,6 @@ extension DuelListSideEffect on DuelListBloc {
 
   ShowSnackBarEffect _effectDeclineSuccess() => ShowSnackBarEffect(
         message: 'Duel invitation declined.',
-        severity: FeedbackSeverity.info,
       );
 
   ShowSnackBarEffect _effectError(String message) => ShowSnackBarEffect(

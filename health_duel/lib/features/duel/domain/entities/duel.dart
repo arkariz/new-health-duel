@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:health_duel/core/error/error.dart';
 import 'package:health_duel/features/duel/domain/value_objects/value_objects.dart';
 
 /// Duel Entity - Aggregate Root
@@ -13,19 +14,6 @@ import 'package:health_duel/features/duel/domain/value_objects/value_objects.dar
 ///
 /// **Immutable:** All properties final, use copyWith for updates.
 class Duel extends Equatable {
-  final String id;
-  final String challengerId;
-  final String challengedId;
-  final String challengerName;
-  final String challengedName;
-  final StepCount challengerSteps;
-  final StepCount challengedSteps;
-  final DateTime startTime;
-  final DateTime endTime;
-  final DuelStatus status;
-  final DateTime createdAt;
-  final DateTime? acceptedAt;
-  final DateTime? completedAt;
 
   const Duel({
     required this.id,
@@ -42,6 +30,19 @@ class Duel extends Equatable {
     this.acceptedAt,
     this.completedAt,
   });
+  final String id;
+  final String challengerId;
+  final String challengedId;
+  final String challengerName;
+  final String challengedName;
+  final StepCount challengerSteps;
+  final StepCount challengedSteps;
+  final DateTime startTime;
+  final DateTime endTime;
+  final DuelStatus status;
+  final DateTime createdAt;
+  final DateTime? acceptedAt;
+  final DateTime? completedAt;
 
   // ══════════════════════════════════════════════════════════════════════════
   // BUSINESS LOGIC METHODS
@@ -111,7 +112,7 @@ class Duel extends Equatable {
   /// Used for progress bars and UI visualization.
   /// Returns 1.0 if duel is not active.
   double get timeElapsedPercentage {
-    if (!isActive) return 1.0;
+    if (!isActive) return 1;
     final totalDuration = endTime.difference(startTime);
     final elapsed = DateTime.now().difference(startTime);
     final percentage = elapsed.inMilliseconds / totalDuration.inMilliseconds;
@@ -171,21 +172,21 @@ class Duel extends Equatable {
 
   /// Get opponent ID for given user
   ///
-  /// Throws [ArgumentError] if user is not a participant.
+  /// Throws [Exception] if user is not a participant.
   String getOpponentId(String userId) {
     if (!isParticipant(userId)) {
-      throw ArgumentError('User $userId is not a participant in this duel');
+      throw ValidationFailure(message: 'User $userId is not a participant in this duel');
     }
     return userId == challengerId ? challengedId : challengerId;
   }
 
   /// Get step count for specific user
   ///
-  /// Throws [ArgumentError] if user is not a participant.
+  /// Throws [Exception] if user is not a participant.
   StepCount getStepsForUser(String userId) {
     if (userId == challengerId) return challengerSteps;
     if (userId == challengedId) return challengedSteps;
-    throw ArgumentError('User $userId is not a participant in this duel');
+    throw ValidationFailure(message: 'User $userId is not a participant in this duel');
   }
 
   /// Calculate absolute step difference between participants

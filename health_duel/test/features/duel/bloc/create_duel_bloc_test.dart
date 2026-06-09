@@ -48,7 +48,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) =>
-            bloc.add(CreateDuelOpponentsRequested(currentUserId)),
+            bloc.add(const CreateDuelOpponentsRequested(currentUserId)),
         expect: () => [
           const CreateDuelLoadingOpponents(),
           isA<CreateDuelReady>().having(
@@ -69,7 +69,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) =>
-            bloc.add(CreateDuelOpponentsRequested(currentUserId)),
+            bloc.add(const CreateDuelOpponentsRequested(currentUserId)),
         expect: () => [
           const CreateDuelLoadingOpponents(),
           isA<CreateDuelFailure>()
@@ -101,7 +101,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(CreateDuelOpponentsRequested(challengerId));
+          bloc.add(const CreateDuelOpponentsRequested(challengerId));
           await Future<void>.delayed(const Duration(milliseconds: 10));
           bloc.add(const CreateDuelSubmitted(
             challengerId: challengerId,
@@ -135,7 +135,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(CreateDuelOpponentsRequested(challengerId));
+          bloc.add(const CreateDuelOpponentsRequested(challengerId));
           await Future<void>.delayed(const Duration(milliseconds: 10));
           bloc.add(const CreateDuelSubmitted(
             challengerId: challengerId,
@@ -160,7 +160,7 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(CreateDuelOpponentsRequested(challengerId));
+          bloc.add(const CreateDuelOpponentsRequested(challengerId));
           await Future<void>.delayed(const Duration(milliseconds: 10));
           bloc.add(const CreateDuelSubmitted(
             challengerId: challengerId,

@@ -36,10 +36,6 @@ sealed class DuelResult extends Equatable {
 ///
 /// Represents a duel where one participant won.
 final class WinnerResult extends DuelResult {
-  final String winnerId;
-  final String loserId;
-  final StepCount winnerSteps;
-  final StepCount loserSteps;
 
   const WinnerResult({
     required this.winnerId,
@@ -47,6 +43,10 @@ final class WinnerResult extends DuelResult {
     required this.winnerSteps,
     required this.loserSteps,
   });
+  final String winnerId;
+  final String loserId;
+  final StepCount winnerSteps;
+  final StepCount loserSteps;
 
   /// Get margin of victory (step difference)
   int get margin => winnerSteps.value - loserSteps.value;
@@ -59,15 +59,15 @@ final class WinnerResult extends DuelResult {
 ///
 /// Represents a duel where both participants had identical step counts.
 final class TieResult extends DuelResult {
-  final String challengerId;
-  final String challengedId;
-  final StepCount steps;
 
   const TieResult({
     required this.challengerId,
     required this.challengedId,
     required this.steps,
   });
+  final String challengerId;
+  final String challengedId;
+  final StepCount steps;
 
   @override
   List<Object> get props => [challengerId, challengedId, steps];

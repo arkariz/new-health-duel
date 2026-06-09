@@ -50,7 +50,7 @@ void main() {
           mockGetDuelHistory.setupSuccess(userId, [tCompletedDuel]);
           return buildBloc();
         },
-        act: (bloc) => bloc.add(DuelListLoadRequested(userId)),
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
         expect: () => [
           const DuelListLoading(),
           isA<DuelListLoaded>()
@@ -68,7 +68,7 @@ void main() {
           mockGetDuelHistory.setupSuccess(userId, []);
           return buildBloc();
         },
-        act: (bloc) => bloc.add(DuelListLoadRequested(userId)),
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
         expect: () => [
           const DuelListLoading(),
           isA<DuelListLoaded>()
@@ -89,7 +89,7 @@ void main() {
           mockGetDuelHistory.setupSuccess(userId, []);
           return buildBloc();
         },
-        act: (bloc) => bloc.add(DuelListLoadRequested(userId)),
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
         expect: () => [
           const DuelListLoading(),
           isA<DuelListError>().having(
@@ -111,7 +111,7 @@ void main() {
           mockGetDuelHistory.setupSuccess(userId, []);
           return buildBloc();
         },
-        act: (bloc) => bloc.add(DuelListLoadRequested(userId)),
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
         expect: () => [
           const DuelListLoading(),
           isA<DuelListError>().having(
@@ -133,7 +133,7 @@ void main() {
           );
           return buildBloc();
         },
-        act: (bloc) => bloc.add(DuelListLoadRequested(userId)),
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
         expect: () => [
           const DuelListLoading(),
           isA<DuelListError>(),
@@ -155,9 +155,9 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(DuelListLoadRequested(userId));
+          bloc.add(const DuelListLoadRequested(userId));
           await Future<void>.delayed(const Duration(milliseconds: 50));
-          bloc.add(DuelAcceptRequested(tPendingDuelId));
+          bloc.add(const DuelAcceptRequested(tPendingDuelId));
         },
         skip: 2, // skip Loading and initial Loaded
         expect: () => [
@@ -193,9 +193,9 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(DuelListLoadRequested(userId));
+          bloc.add(const DuelListLoadRequested(userId));
           await Future<void>.delayed(const Duration(milliseconds: 50));
-          bloc.add(DuelAcceptRequested(tPendingDuelId));
+          bloc.add(const DuelAcceptRequested(tPendingDuelId));
         },
         skip: 2,
         expect: () => [
@@ -222,9 +222,9 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(DuelListLoadRequested(userId));
+          bloc.add(const DuelListLoadRequested(userId));
           await Future<void>.delayed(const Duration(milliseconds: 50));
-          bloc.add(DuelDeclineRequested(tPendingDuelId));
+          bloc.add(const DuelDeclineRequested(tPendingDuelId));
         },
         skip: 2,
         expect: () => [
@@ -255,9 +255,9 @@ void main() {
           return buildBloc();
         },
         act: (bloc) async {
-          bloc.add(DuelListLoadRequested(userId));
+          bloc.add(const DuelListLoadRequested(userId));
           await Future<void>.delayed(const Duration(milliseconds: 50));
-          bloc.add(DuelDeclineRequested(tPendingDuelId));
+          bloc.add(const DuelDeclineRequested(tPendingDuelId));
         },
         skip: 2,
         expect: () => [

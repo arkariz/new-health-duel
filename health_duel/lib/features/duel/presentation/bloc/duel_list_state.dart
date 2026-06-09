@@ -43,9 +43,6 @@ class DuelListLoading extends DuelListState {
 }
 
 class DuelListLoaded extends DuelListState {
-  final List<Duel> activeDuels;
-  final List<Duel> pendingDuels;
-  final List<Duel> historyDuels;
 
   const DuelListLoaded({
     required this.activeDuels,
@@ -53,6 +50,9 @@ class DuelListLoaded extends DuelListState {
     required this.historyDuels,
     super.effect,
   });
+  final List<Duel> activeDuels;
+  final List<Duel> pendingDuels;
+  final List<Duel> historyDuels;
 
   @override
   List<Object?> get props => [activeDuels, pendingDuels, historyDuels];
@@ -65,6 +65,7 @@ class DuelListLoaded extends DuelListState {
         effect: effect,
       );
 
+  @override
   DuelListLoaded copyWith({
     List<Duel>? activeDuels,
     List<Duel>? pendingDuels,
@@ -81,9 +82,9 @@ class DuelListLoaded extends DuelListState {
 }
 
 class DuelListError extends DuelListState {
-  final String message;
 
   const DuelListError(this.message, {super.effect});
+  final String message;
 
   @override
   List<Object?> get props => [message];

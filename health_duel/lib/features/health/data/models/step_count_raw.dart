@@ -1,10 +1,19 @@
 import 'package:equatable/equatable.dart';
+import 'package:health_duel/features/health/domain/entities/step_count.dart';
 
 /// Raw step data DTO from health platform.
 ///
 /// Carries unvalidated data from HealthKit/Health Connect.
 /// Use case converts this to [StepCount] entity (ADR-006).
 class StepCountRaw extends Equatable {
+
+  const StepCountRaw({
+    required this.value,
+    required this.startTime,
+    required this.endTime,
+    this.sourceDevice,
+    this.hasManualEntries = false,
+  });
   /// Raw step count value from platform
   final int value;
 
@@ -19,14 +28,6 @@ class StepCountRaw extends Equatable {
 
   /// Whether data includes manually entered steps
   final bool hasManualEntries;
-
-  const StepCountRaw({
-    required this.value,
-    required this.startTime,
-    required this.endTime,
-    this.sourceDevice,
-    this.hasManualEntries = false,
-  });
 
   @override
   List<Object?> get props => [
