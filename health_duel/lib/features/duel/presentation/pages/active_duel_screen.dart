@@ -6,6 +6,7 @@ import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
+import 'package:health_duel/features/duel/presentation/widgets/duel_arena_widgets.dart';
 
 /// Active Duel Screen — Sports-energy dark aesthetic
 ///
@@ -146,10 +147,6 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
     final isChallenger = duel.challengerId == widget.currentUserId;
     final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
     final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
-    final total = mySteps.value + opponentSteps.value;
-    final myBattle = total > 0 ? mySteps.value / total : 0.5;
-    final oppBattle = total > 0 ? opponentSteps.value / total : 0.5;
-
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.md,
@@ -161,13 +158,12 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // ── Arena Card ─────────────────────────────────────────────────────
-          _ArenaCard(
+          DuelActiveCard(
             duel: duel,
-            mySteps: mySteps.value,
-            opponentSteps: opponentSteps.value,
-            myBattle: myBattle,
-            oppBattle: oppBattle,
-            duelId: widget.duelId,
+            currentUserId: widget.currentUserId,
+            footerTimeText: 'Ends ${_formatTime(duel.endTime)}',
+            footerTrailingText:
+                '${(duel.timeElapsedPercentage * 100).toStringAsFixed(0)}% elapsed',
           ),
 
           const SizedBox(height: AppSpacing.md),
@@ -205,303 +201,9 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
       ),
     );
   }
-}
-
-// ─── Arena Card ──────────────────────────────────────────────────────────────
-
-class _ArenaCard extends StatelessWidget {
-
-  const _ArenaCard({
-    required this.duel,
-    required this.mySteps,
-    required this.opponentSteps,
-    required this.myBattle,
-    required this.oppBattle,
-    required this.duelId,
-  });
-  final Duel duel;
-  final int mySteps;
-  final int opponentSteps;
-  final double myBattle;
-  final double oppBattle;
-  final String duelId;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
-    final opponent = context.appColors.opponent;
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF0E1F18), Color(0xFF0D1A23)],
-        ),
-        borderRadius: AppRadius.xlBorder,
-        border: Border.all(color: primary.withValues(alpha: 0.2)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Players row
-                Row(
-                  children: [
-                    _PlayerTile(
-                      emoji: '🏃',
-                      name: 'You',
-                      steps: mySteps,
-                      color: primary,
-                      isGreen: true,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                      child: Text(
-                        'VS',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: context.appColors.gold,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                    _PlayerTile(
-                      emoji: '👤',
-                      name: 'Opponent',
-                      steps: opponentSteps,
-                      color: opponent,
-                      isGreen: false,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: AppSpacing.md),
-
-                // Battle bar split
-                _BattleBar(
-                  myBattle: myBattle,
-                  oppBattle: oppBattle,
-                  primary: primary,
-                  opponent: opponent,
-                ),
-
-                const SizedBox(height: AppSpacing.md),
-
-                // Duel info row
-                Row(
-                  children: [
-                    Icon(
-                      Icons.timer_outlined,
-                      size: 12,
-                      color: context.appColors.gold,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Ends ${_formatTime(duel.endTime)}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${(duel.timeElapsedPercentage * 100).toStringAsFixed(0)}% elapsed',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // LIVE badge
-          Positioned(
-            top: 12,
-            right: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: 3,
-              ),
-              decoration: BoxDecoration(
-                color: primary.withValues(alpha: 0.12),
-                borderRadius: AppRadius.smBorder,
-                border: Border.all(color: primary.withValues(alpha: 0.3)),
-              ),
-              child: Text(
-                'LIVE',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: primary,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   String _formatTime(DateTime dt) =>
       '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
-}
-
-// ─── Player Tile ─────────────────────────────────────────────────────────────
-
-class _PlayerTile extends StatelessWidget {
-
-  const _PlayerTile({
-    required this.emoji,
-    required this.name,
-    required this.steps,
-    required this.color,
-    required this.isGreen,
-  });
-  final String emoji;
-  final String name;
-  final int steps;
-  final Color color;
-  final bool isGreen;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final stepsText =
-        steps >= 1000 ? '${(steps / 1000).toStringAsFixed(1)}k steps' : '$steps steps';
-
-    return Expanded(
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isGreen
-                    ? [const Color(0xFF00E5A0), const Color(0xFF00A872)]
-                    : [const Color(0xFFFF6B35), const Color(0xFFCC4410)],
-              ),
-            ),
-            child: Center(
-              child: Text(emoji, style: const TextStyle(fontSize: 18)),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: theme.textTheme.titleSmall,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  stepsText,
-                  style: theme.textTheme.bodySmall?.copyWith(color: color),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Battle Bar ──────────────────────────────────────────────────────────────
-
-class _BattleBar extends StatelessWidget {
-
-  const _BattleBar({
-    required this.myBattle,
-    required this.oppBattle,
-    required this.primary,
-    required this.opponent,
-  });
-  final double myBattle;
-  final double oppBattle;
-  final Color primary;
-  final Color opponent;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Left — YOUR progress (fills left → right)
-        Expanded(
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(3),
-              bottomLeft: Radius.circular(3),
-            ),
-            child: Stack(
-              children: [
-                Container(height: 8, color: context.appColors.divider),
-                FractionallySizedBox(
-                  widthFactor: myBattle.clamp(0.0, 1.0),
-                  child: Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [primary, const Color(0xFF00C87A)],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // Center divider
-        Container(
-          width: 2,
-          height: 18,
-          color: context.appColors.divider,
-        ),
-
-        // Right — OPPONENT progress (fills right → left)
-        Expanded(
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(3),
-              bottomRight: Radius.circular(3),
-            ),
-            child: Stack(
-              children: [
-                Container(height: 8, color: context.appColors.divider),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: FractionallySizedBox(
-                    widthFactor: oppBattle.clamp(0.0, 1.0),
-                    child: Container(
-                      height: 8,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [const Color(0xFFCC4410), opponent],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 // ─── Countdown Card ───────────────────────────────────────────────────────────

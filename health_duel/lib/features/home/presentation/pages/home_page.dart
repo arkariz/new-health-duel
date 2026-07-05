@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_duel/core/presentation/widgets/widgets.dart';
 import 'package:health_duel/core/router/router.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
+import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
+import 'package:health_duel/features/health/presentation/bloc/health_bloc.dart';
+import 'package:health_duel/features/health/presentation/bloc/health_event.dart';
 import 'package:health_duel/features/home/home.dart';
 
 /// Home Page - Shows authenticated user dashboard with dark sports-energy design
@@ -21,67 +25,77 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    context.read<HomeBloc>().add(const HomeLoadUserRequested());
     super.initState();
+    context.read<HomeBloc>().add(const HomeLoadUserRequested());
+    context.read<HealthBloc>().add(const HealthInitRequested());
   }
+
   @override
   Widget build(BuildContext context) {
     return EffectListener<HomeBloc, HomeState>(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          actions: [
-            BlocSelector<HomeBloc, HomeState, bool>(
-              selector: (state) => state.isLoading,
-              builder: (context, isLoading) {
-                if (isLoading) return const SizedBox.shrink();
-                return IconButton(
-                  icon: const Icon(Icons.logout_rounded),
-                  tooltip: 'Sign Out',
-                  onPressed: () => context.read<HomeBloc>().add(const HomeSignOutRequested()),
-                );
-              },
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            // Offline banner
-            const AnimatedOfflineBanner(),
-
-            // Main content - only rebuilds when status changes
-            Expanded(
-              child: BlocBuilder<HomeBloc, HomeState>(
-                buildWhen: (prev, curr) => prev.status != curr.status || prev.user != curr.user,
-                builder: (context, state) => switch (state.status) {
-                  HomeStatus.failure => ErrorView(
-                    message: state.errorMessage ?? 'Unknown error',
-                    onRetry: () => context.read<HomeBloc>().add(const HomeLoadUserRequested()),
-                  ),
-                  HomeStatus.loaded => AuthenticatedView(
-                    onRefresh: () async {
-                      context.read<HomeBloc>().add(const HomeRefreshRequested());
-                    },
-                    children: [
-                      GreetingHeaderSection(username: state.user?.name ?? ''),
-                      StepsHeroCardSection(onTap: () => context.read<HomeBloc>().add(const HomeNavigateToHealthRequested())),
-                      ActiveDuelsSection(
-                        onTapSeeAll: () => context.push(AppRoutes.duels, extra: state.user?.id ?? ''),
-                        onTapDuelCard: () => context.push(AppRoutes.duels, extra: state.user?.id ?? ''),
-                      ),
-                      QuickActionCardSection(
-                        onTapNewDuel: () => context.push(AppRoutes.createDuel, extra: state.user?.id ?? ''),
-                        onTapWeeklyStats: () => context.push(AppRoutes.duels, extra: state.user?.id ?? ''),
-                      ),
-                    ],
-                  ),
-                  _ => const LoadingView(),
+      child: BlocListener<HomeBloc, HomeState>(
+        listenWhen: (prev, curr) => prev.user == null && curr.user != null,
+        listener: (context, state) {
+          context.read<DuelListBloc>().add(DuelListLoadRequested(state.user!.id));
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            actions: [
+              BlocSelector<HomeBloc, HomeState, bool>(
+                selector: (state) => state.isLoading,
+                builder: (context, isLoading) {
+                  if (isLoading) return const SizedBox.shrink();
+                  return IconButton(
+                    icon: const Icon(Icons.logout_rounded),
+                    tooltip: 'Sign Out',
+                    onPressed: () => context.read<HomeBloc>().add(const HomeSignOutRequested()),
+                  );
                 },
               ),
-            ),
-          ],
+            ],
+          ),
+          body: Column(
+            children: [
+              // Offline banner
+              const AnimatedOfflineBanner(),
+
+              // Main content - only rebuilds when status changes
+              Expanded(
+                child: BlocBuilder<HomeBloc, HomeState>(
+                  buildWhen: (prev, curr) => prev.status != curr.status || prev.user != curr.user,
+                  builder: (context, state) => switch (state.status) {
+                    HomeStatus.failure => ErrorView(
+                      message: state.errorMessage ?? 'Unknown error',
+                      onRetry: () => context.read<HomeBloc>().add(const HomeLoadUserRequested()),
+                    ),
+                    HomeStatus.loaded => AuthenticatedView(
+                      onRefresh: () async {
+                        context.read<HomeBloc>().add(const HomeRefreshRequested());
+                      },
+                      children: [
+                        GreetingHeaderSection(username: state.user?.name ?? ''),
+                        StepsHeroCardSection(onTap: () => context.read<HomeBloc>().add(const HomeNavigateToHealthRequested())),
+                        ActiveDuelsSection(
+                          currentUserId: state.user?.id ?? '',
+                          onTapSeeAll: () => context.push(AppRoutes.duels, extra: state.user?.id ?? ''),
+                          onTapDuelCard: (duelId) => context.push(AppRoutes.duelPath(duelId), extra: state.user?.id ?? ''),
+                        ),
+                        QuickActionCardSection(
+                          onTapNewDuel: () => context.push(AppRoutes.createDuel, extra: state.user?.id ?? ''),
+                          onTapWeeklyStats: () => context.push(AppRoutes.duels, extra: state.user?.id ?? ''),
+                          onTapFriends: () => context.push(AppRoutes.friends, extra: state.user?.id ?? ''),
+                        ),
+                      ],
+                    ),
+                    _ => const LoadingView(),
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

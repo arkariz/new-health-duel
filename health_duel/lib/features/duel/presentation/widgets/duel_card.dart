@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
+import 'package:health_duel/features/duel/presentation/widgets/duel_arena_widgets.dart';
 
 /// Duel Card — Sports-energy dark aesthetic
 ///
@@ -65,190 +66,20 @@ class _ActiveDuelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
-    final opponent = context.appColors.opponent;
-
-    final isChallenger = duel.challengerId == currentUserId;
-    final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
-    final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
-    final total = mySteps.value + opponentSteps.value;
-    final myBattle = total > 0 ? mySteps.value / total : 0.5;
-    final oppBattle = total > 0 ? opponentSteps.value / total : 0.5;
-    final opponentId = isChallenger ? duel.challengedId : duel.challengerId;
-
-    return GestureDetector(
+    return DuelActiveCard(
+      duel: duel,
+      currentUserId: currentUserId,
       onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0E1F18), Color(0xFF0D1A23)],
-          ),
-          borderRadius: AppRadius.xlBorder,
-          border: Border.all(color: primary.withValues(alpha: 0.2)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Players row
-                  Row(
-                    children: [
-                      _MiniPlayerTile(
-                        initials: 'Me',
-                        name: 'You',
-                        steps: mySteps.value,
-                        color: primary,
-                        isGreen: true,
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                        child: Text(
-                          'VS',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: context.appColors.gold,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      _MiniPlayerTile(
-                        initials: opponentId.substring(0, 1).toUpperCase(),
-                        name: 'Opponent',
-                        steps: opponentSteps.value,
-                        color: opponent,
-                        isGreen: false,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: AppSpacing.sm),
-
-                  // Mini battle bar
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(3),
-                            bottomLeft: Radius.circular(3),
-                          ),
-                          child: Stack(
-                            children: [
-                              Container(height: 5, color: context.appColors.divider),
-                              FractionallySizedBox(
-                                widthFactor: myBattle.clamp(0.0, 1.0),
-                                child: Container(
-                                  height: 5,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [primary, const Color(0xFF00C87A)],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 1,
-                        height: 12,
-                        color: context.appColors.divider,
-                      ),
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(3),
-                            bottomRight: Radius.circular(3),
-                          ),
-                          child: Stack(
-                            children: [
-                              Container(height: 5, color: context.appColors.divider),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: FractionallySizedBox(
-                                  widthFactor: oppBattle.clamp(0.0, 1.0),
-                                  child: Container(
-                                    height: 5,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [const Color(0xFFCC4410), opponent],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: AppSpacing.sm),
-
-                  // Time row
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.timer_outlined,
-                        size: 11,
-                        color: context.appColors.gold,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Ends ${_formatTime(duel.endTime)}',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // LIVE badge
-            Positioned(
-              top: 10,
-              right: 10,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: primary.withValues(alpha: 0.12),
-                  borderRadius: AppRadius.smBorder,
-                  border: Border.all(color: primary.withValues(alpha: 0.3)),
-                ),
-                child: Text(
-                  'LIVE',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: primary,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 9,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+      compact: true,
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
       ),
+      footerTimeText: 'Ends ${_formatTime(duel.endTime)}',
     );
   }
 
-  String _formatTime(DateTime dt) =>
-      '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  String _formatTime(DateTime dt) => '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
 }
 
 // ─── Pending Duel Card ────────────────────────────────────────────────────────
@@ -502,76 +333,4 @@ class _HistoryDuelCard extends StatelessWidget {
   }
 
   String _compact(int v) => v >= 1000 ? '${(v / 1000).toStringAsFixed(1)}k' : '$v';
-}
-
-// ─── Mini Player Tile ─────────────────────────────────────────────────────────
-
-class _MiniPlayerTile extends StatelessWidget {
-
-  const _MiniPlayerTile({
-    required this.initials,
-    required this.name,
-    required this.steps,
-    required this.color,
-    required this.isGreen,
-  });
-  final String initials;
-  final String name;
-  final int steps;
-  final Color color;
-  final bool isGreen;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final stepsText = steps >= 1000 ? '${(steps / 1000).toStringAsFixed(1)}k' : '$steps';
-
-    return Expanded(
-      child: Row(
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isGreen
-                    ? [const Color(0xFF00E5A0), const Color(0xFF00A872)]
-                    : [const Color(0xFFFF6B35), const Color(0xFFCC4410)],
-              ),
-            ),
-            child: Center(
-              child: Text(
-                initials.length > 2 ? initials.substring(0, 2) : initials,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: isGreen ? const Color(0xFF060A0E) : Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 10,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: theme.textTheme.labelMedium,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  '$stepsText steps',
-                  style: theme.textTheme.labelSmall?.copyWith(color: color),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

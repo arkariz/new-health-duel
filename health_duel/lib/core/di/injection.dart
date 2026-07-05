@@ -10,6 +10,7 @@ import 'package:health_duel/data/session/di/session_module.dart';
 import 'package:health_duel/features/auth/di/auth_module.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/duel/di/duel_module.dart';
+import 'package:health_duel/features/friends/di/friends_module.dart';
 import 'package:health_duel/features/health/di/health_module.dart';
 import 'package:health_duel/features/home/di/home_module.dart';
 
@@ -58,6 +59,9 @@ Future<void> initializeDependencies() async {
 
   // Health feature: step counting, health permissions
   registerHealthModule(getIt);
+
+  // Friends feature: friend management and user search
+  registerFriendsModule();
 
   // Duel feature: duel management, step competitions (Phase 4)
   registerDuelModule();

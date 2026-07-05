@@ -18,7 +18,6 @@ library;
 export 'presentation/bloc/home_bloc.dart';
 export 'presentation/bloc/home_event.dart';
 export 'presentation/bloc/home_state.dart';
-export 'presentation/dummy/home_dummy.dart';
 // Pages
 export 'presentation/pages/home_page.dart';
 export 'presentation/widgets//greeting_header_section.dart';

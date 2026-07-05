@@ -6,6 +6,8 @@ import 'package:health_duel/data/session/domain/repositories/session_repository.
 import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
+import 'package:health_duel/features/health/domain/entities/entities.dart';
+import 'package:health_duel/features/health/domain/usecases/usecases.dart';
 
 part 'duel_side_effect.dart';
 
@@ -29,9 +31,13 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
     required WatchDuel watchDuel,
     required SyncHealthData syncHealthData,
     required SessionRepository sessionRepository,
+    required CheckHealthPermissions checkHealthPermissions,
+    required RequestHealthPermissions requestHealthPermissions,
   })  : _watchDuel = watchDuel,
         _syncHealthData = syncHealthData,
         _sessionRepository = sessionRepository,
+        _checkHealthPermissions = checkHealthPermissions,
+        _requestHealthPermissions = requestHealthPermissions,
         super(const DuelInitial()) {
     // Register event handlers
     on<DuelLoadRequested>(_onLoadRequested);
@@ -45,6 +51,8 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
   final WatchDuel _watchDuel;
   final SyncHealthData _syncHealthData;
   final SessionRepository _sessionRepository;
+  final CheckHealthPermissions _checkHealthPermissions;
+  final RequestHealthPermissions _requestHealthPermissions;
 
   // Three subscriptions as per design
   StreamSubscription<dynamic>? _duelStreamSubscription;
@@ -77,6 +85,17 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
     }
 
     _currentUserId = currentUser.id;
+
+    // Ensure health permissions are granted before starting health sync
+    final permResult = await _checkHealthPermissions();
+    await permResult.fold(
+      (_) async {},
+      (status) async {
+        if (status == HealthPermissionStatus.notDetermined) {
+          await _requestHealthPermissions();
+        }
+      },
+    );
 
     // Cancel existing subscriptions before starting new ones
     await _cancelSubscriptions();

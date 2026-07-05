@@ -14,6 +14,8 @@ import 'package:health_duel/features/duel/presentation/pages/active_duel_screen.
 import 'package:health_duel/features/duel/presentation/pages/create_duel_screen.dart';
 import 'package:health_duel/features/duel/presentation/pages/duel_list_screen.dart';
 import 'package:health_duel/features/duel/presentation/pages/duel_result_screen.dart';
+import 'package:health_duel/features/friends/presentation/bloc/friends_bloc.dart';
+import 'package:health_duel/features/friends/presentation/pages/friends_screen.dart';
 import 'package:health_duel/features/health/health.dart';
 import 'package:health_duel/features/home/home.dart';
 
@@ -49,12 +51,30 @@ GoRouter createAppRouter(AuthBloc authBloc) {
       GoRoute(
         path: AppRoutes.home,
         name: 'home',
-        builder: (_, _) => BlocProvider(create: (_) => getIt<HomeBloc>(), child: const HomePage()),
+        builder: (_, __) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => getIt<HomeBloc>()),
+            BlocProvider(create: (_) => getIt<HealthBloc>()),
+            BlocProvider(create: (_) => getIt<DuelListBloc>()),
+          ],
+          child: const HomePage(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.health,
         name: 'health',
         builder: (_, _) => BlocProvider(create: (_) => getIt<HealthBloc>(), child: const HealthPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.friends,
+        name: 'friends',
+        builder: (context, state) {
+          final currentUserId = state.extra as String?;
+          return BlocProvider(
+            create: (_) => getIt<FriendsBloc>(),
+            child: FriendsScreen(currentUserId: currentUserId ?? ''),
+          );
+        },
       ),
 
       // ═══════════════════════════════════════════════════════════════════════
