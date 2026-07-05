@@ -269,17 +269,19 @@ agar alur "tantang teman" lebih natural daripada memilih dari semua user acak.
 
 ---
 
-### ❌ Phase 8: Create Duel — Toggle Friends / All Players (PLANNED)
+### ✅ Phase 8: Create Duel — Toggle Friends / All Players — DONE 2026-07-05 (commit `37409a4`)
 
-> Plan detail: `.claude/plans/create-duel-opponent-toggle.md` (disetujui, belum dikerjakan)
+> Plan detail: `.claude/plans/create-duel-opponent-toggle.md`
 
-User ingin tetap bisa menantang orang random. `GetOpponents` **dipertahankan**.
-Create Duel akan punya toggle **[ Friends | All Players ]**:
-- Friends → `GetFriends`; All Players → `GetOpponents`
-- WIP: `create_duel_event.dart` sudah ditambah `enum OpponentSource` (belum di-commit)
-- Sisa: `create_duel_bloc` (inject `GetOpponents`, branch source), `duel_module` (register ulang `GetOpponents`), `create_duel_screen` (SegmentedButton)
+User ingin tetap bisa menantang orang random. `GetOpponents` **dipertahankan** dan
+diregistrasi ulang di DI. Create Duel sekarang punya toggle **[ Friends | All Players ]**:
+- `create_duel_event.dart`: `enum OpponentSource { friends, all }`; `CreateDuelOpponentsRequested` bawa `source` (default `friends`)
+- `create_duel_bloc.dart`: inject `GetOpponents` di samping `GetFriends`; branch berdasarkan `event.source`
+- `duel_module.dart`: register ulang `GetOpponents`, wire ke `CreateDuelBloc`
+- `create_duel_screen.dart`: `SegmentedButton` toggle di atas daftar lawan; ganti source reset pilihan & reload; empty-state & retry source-aware
+- `flutter analyze`: 0 errors ✅ · `flutter test`: 42/42 pass ✅
 
-**Backlog review Friends (terpisah):**
+**Backlog review Friends (terpisah, belum dikerjakan):**
 - Debounce search (query Firestore tiap keystroke)
 - Preselect teman saat klik "Challenge" dari layar Friends (konteks teman hilang)
 - Test unit/bloc Friends & Duel (Step 15 masih pending)
@@ -308,10 +310,11 @@ Create Duel akan punya toggle **[ Friends | All Players ]**:
 5. ✅ **After Phase 7 (2026-07-05)**: Friends feature done & wired (commit `b005462`)
    - `flutter analyze` — 0 errors ✅ · `flutter test` — 42/42 pass ✅
    - Pending: test Friends belum ditulis
-   - ⚠️ **Env note:** `flutter analyze/test` via fvm meng-upgrade 15 transitive deps
-     (analyzer 7.7→8.4, dll) → `pubspec.lock` termodifikasi tapi **sengaja belum
-     di-commit**. Perlu keputusan: pin ulang lock lama atau commit upgrade.
    - ⚠️ Butuh Flutter SDK terbaru (`CardTheme` sudah jadi `CardThemeData`)
+6. ✅ **After Phase 8 (2026-07-05)**: Create Duel toggle Friends/All Players (commit `37409a4`)
+   - `flutter analyze` — 0 errors ✅ · `flutter test` — 42/42 pass ✅
+   - `pubspec.lock` dikonfirmasi tidak berubah oleh user setelah dikembalikan manual
+   - `GetOpponents` tetap hidup & terpakai (bukan dead code)
 
 ---
 
