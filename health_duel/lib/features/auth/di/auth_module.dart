@@ -61,7 +61,7 @@ void registerAuthModule() {
   // Register as SessionDataSource for global session module
   // AuthRemoteDataSource implements SessionDataSource
   ..registerLazySingleton<SessionDataSource>(
-    getIt.call,
+    () => GetIt.instance<AuthRemoteDataSource>(),
   )
 
   // ========================
