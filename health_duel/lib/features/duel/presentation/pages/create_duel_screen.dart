@@ -30,12 +30,25 @@ class CreateDuelScreen extends StatefulWidget {
 class _CreateDuelScreenState extends State<CreateDuelScreen> {
   String? _selectedOpponentId;
   String? _selectedOpponentName;
+  OpponentSource _source = OpponentSource.friends;
 
   @override
   void initState() {
     super.initState();
     context.read<CreateDuelBloc>().add(
-          CreateDuelOpponentsRequested(widget.currentUserId),
+          CreateDuelOpponentsRequested(widget.currentUserId, source: _source),
+        );
+  }
+
+  void _onSourceChanged(OpponentSource source) {
+    if (source == _source) return;
+    setState(() {
+      _source = source;
+      _selectedOpponentId = null;
+      _selectedOpponentName = null;
+    });
+    context.read<CreateDuelBloc>().add(
+          CreateDuelOpponentsRequested(widget.currentUserId, source: source),
         );
   }
 
@@ -90,6 +103,31 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                       ],
+                    ),
+                  ),
+
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // Opponent source toggle
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md),
+                    child: SegmentedButton<OpponentSource>(
+                      segments: const [
+                        ButtonSegment(
+                          value: OpponentSource.friends,
+                          label: Text('Friends'),
+                          icon: Icon(Icons.people_alt_rounded, size: 16),
+                        ),
+                        ButtonSegment(
+                          value: OpponentSource.all,
+                          label: Text('All Players'),
+                          icon: Icon(Icons.public_rounded, size: 16),
+                        ),
+                      ],
+                      selected: {_source},
+                      onSelectionChanged: (selected) =>
+                          _onSourceChanged(selected.first),
                     ),
                   ),
 
@@ -156,7 +194,10 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
               const SizedBox(height: AppSpacing.md),
               TextButton(
                 onPressed: () => context.read<CreateDuelBloc>().add(
-                      CreateDuelOpponentsRequested(widget.currentUserId),
+                      CreateDuelOpponentsRequested(
+                        widget.currentUserId,
+                        source: _source,
+                      ),
                     ),
                 child: const Text('Retry'),
               ),
@@ -173,7 +214,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
     };
 
     if (opponents.isEmpty) {
-      return const _NoOpponentsState();
+      return _NoOpponentsState(source: _source);
     }
 
     return ListView.builder(
@@ -384,11 +425,14 @@ class _OpponentCard extends StatelessWidget {
 // ─── No Opponents State ───────────────────────────────────────────────────────
 
 class _NoOpponentsState extends StatelessWidget {
-  const _NoOpponentsState();
+  final OpponentSource source;
+
+  const _NoOpponentsState({required this.source});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isFriends = source == OpponentSource.friends;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -409,10 +453,15 @@ class _NoOpponentsState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text('No Other Users Yet', style: theme.textTheme.titleLarge),
+            Text(
+              isFriends ? 'No Friends Yet' : 'No Other Users Yet',
+              style: theme.textTheme.titleLarge,
+            ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Invite friends to join Health Duel so you can challenge them!',
+              isFriends
+                  ? 'Add friends from the Friends tab, or switch to "All Players" to challenge anyone.'
+                  : 'Invite friends to join Health Duel so you can challenge them!',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

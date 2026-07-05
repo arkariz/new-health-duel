@@ -91,6 +91,7 @@ void registerDuelModule() {
   ..registerFactory(
     () => CreateDuelBloc(
       getFriends: getIt<GetFriends>(),
+      getOpponents: getIt<GetOpponents>(),
       createDuel: getIt<CreateDuel>(),
       sessionRepository: getIt<SessionRepository>(),
     ),

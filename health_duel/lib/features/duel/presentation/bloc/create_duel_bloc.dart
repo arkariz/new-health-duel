@@ -45,7 +45,9 @@ class CreateDuelBloc extends EffectBloc<CreateDuelEvent, CreateDuelState> {
   ) async {
     emit(const CreateDuelLoadingOpponents());
 
-    final result = await _getFriends(event.currentUserId);
+    final result = event.source == OpponentSource.friends
+        ? await _getFriends(event.currentUserId)
+        : await _getOpponents(event.currentUserId);
 
     result.fold(
       (failure) => emit(CreateDuelFailure(

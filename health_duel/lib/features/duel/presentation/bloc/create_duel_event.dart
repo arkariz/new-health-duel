@@ -1,5 +1,11 @@
 import 'package:equatable/equatable.dart';
 
+/// Where the opponent list is sourced from in the Create Duel screen.
+///
+/// - [friends] — only the user's added friends (curated list)
+/// - [all]     — every registered user (challenge someone random)
+enum OpponentSource { friends, all }
+
 /// Create Duel Events
 sealed class CreateDuelEvent extends Equatable {
   const CreateDuelEvent();
@@ -8,14 +14,18 @@ sealed class CreateDuelEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Load potential opponents for the current user
+/// Load potential opponents for the current user from [source]
 class CreateDuelOpponentsRequested extends CreateDuelEvent {
+  const CreateDuelOpponentsRequested(
+    this.currentUserId, {
+    this.source = OpponentSource.friends,
+  });
 
-  const CreateDuelOpponentsRequested(this.currentUserId);
   final String currentUserId;
+  final OpponentSource source;
 
   @override
-  List<Object?> get props => [currentUserId];
+  List<Object?> get props => [currentUserId, source];
 }
 
 /// Submit a new duel challenge
