@@ -17,6 +17,9 @@ class FriendsInitial extends FriendsState {
   const FriendsInitial({super.effect});
 
   @override
+  FriendsState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
+
+  @override
   List<Object?> get props => [];
 
   @override
@@ -25,6 +28,9 @@ class FriendsInitial extends FriendsState {
 
 class FriendsLoading extends FriendsState {
   const FriendsLoading({super.effect});
+
+  @override
+  FriendsState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
 
   @override
   List<Object?> get props => [];
@@ -79,11 +85,13 @@ class FriendsLoaded extends FriendsState {
 class FriendsError extends FriendsState {
   final String message;
   const FriendsError(this.message, {super.effect});
+  
+  @override
+  FriendsState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
 
   @override
   List<Object?> get props => [message];
 
   @override
-  FriendsState _copyWithEffect(UiEffect? effect) =>
-      FriendsError(message, effect: effect);
+  FriendsState _copyWithEffect(UiEffect? effect) => FriendsError(message, effect: effect);
 }
