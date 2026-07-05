@@ -44,7 +44,10 @@ import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart'
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_state.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
+import 'package:health_duel/features/friends/domain/usecases/get_friends.dart';
+import 'package:health_duel/features/health/domain/entities/entities.dart';
 import 'package:health_duel/features/health/domain/repositories/health_repository.dart';
+import 'package:health_duel/features/health/domain/usecases/usecases.dart';
 import 'package:mocktail/mocktail.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -251,6 +254,14 @@ class MockWatchDuel extends Mock implements WatchDuel {}
 class MockSyncHealthData extends Mock implements SyncHealthData {}
 
 class MockUpdateStepCount extends Mock implements UpdateStepCount {}
+
+class MockGetFriends extends Mock implements GetFriends {}
+
+class MockCheckHealthPermissions extends Mock
+    implements CheckHealthPermissions {}
+
+class MockRequestHealthPermissions extends Mock
+    implements RequestHealthPermissions {}
 
 /// Mock DuelListBloc for widget testing
 class MockDuelListBloc extends MockBloc<DuelListEvent, DuelListState>
@@ -481,6 +492,36 @@ extension MockGetOpponentsX on MockGetOpponents {
 
   void setupFailure(String excludeUserId, Failure failure) {
     when(() => call(excludeUserId)).thenAnswer((_) async => Left(failure));
+  }
+}
+
+extension MockGetFriendsX on MockGetFriends {
+  void setupSuccess(String userId, List<UserModel> friends) {
+    when(() => call(userId)).thenAnswer((_) async => Right(friends));
+  }
+
+  void setupFailure(String userId, Failure failure) {
+    when(() => call(userId)).thenAnswer((_) async => Left(failure));
+  }
+}
+
+extension MockCheckHealthPermissionsX on MockCheckHealthPermissions {
+  void setupSuccess(HealthPermissionStatus status) {
+    when(call).thenAnswer((_) async => Right(status));
+  }
+
+  void setupFailure(Failure failure) {
+    when(call).thenAnswer((_) async => Left(failure));
+  }
+}
+
+extension MockRequestHealthPermissionsX on MockRequestHealthPermissions {
+  void setupSuccess({required bool granted}) {
+    when(call).thenAnswer((_) async => Right(granted));
+  }
+
+  void setupFailure(Failure failure) {
+    when(call).thenAnswer((_) async => Left(failure));
   }
 }
 

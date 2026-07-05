@@ -5,6 +5,7 @@ import 'package:health_duel/core/error/failures.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_state.dart';
+import 'package:health_duel/features/health/domain/entities/entities.dart';
 
 import '../../../helpers/helpers.dart';
 
@@ -14,6 +15,8 @@ void main() {
   late MockGetDuelHistory mockGetDuelHistory;
   late MockAcceptDuel mockAcceptDuel;
   late MockDeclineDuel mockDeclineDuel;
+  late MockSyncHealthData mockSyncHealthData;
+  late MockCheckHealthPermissions mockCheckHealthPermissions;
 
   setUpAll(registerFallbackValues);
 
@@ -23,6 +26,12 @@ void main() {
     mockGetDuelHistory = MockGetDuelHistory();
     mockAcceptDuel = MockAcceptDuel();
     mockDeclineDuel = MockDeclineDuel();
+    mockSyncHealthData = MockSyncHealthData();
+    // Not authorized by default so the background health-sync branch (which
+    // would emit an extra refreshed DuelListLoaded) stays inactive and
+    // existing [Loading, Loaded] expectations remain exact.
+    mockCheckHealthPermissions = MockCheckHealthPermissions()
+      ..setupSuccess(HealthPermissionStatus.notDetermined);
   });
 
   DuelListBloc buildBloc() => DuelListBloc(
@@ -31,6 +40,8 @@ void main() {
         getDuelHistory: mockGetDuelHistory,
         acceptDuel: mockAcceptDuel,
         declineDuel: mockDeclineDuel,
+        syncHealthData: mockSyncHealthData,
+        checkHealthPermissions: mockCheckHealthPermissions,
       );
 
   group('DuelListBloc', () {

@@ -9,6 +9,7 @@ import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
+import 'package:health_duel/features/health/domain/entities/entities.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/helpers.dart';
@@ -17,6 +18,8 @@ void main() {
   late MockWatchDuel mockWatchDuel;
   late MockSyncHealthData mockSyncHealthData;
   late MockSessionRepository mockSessionRepository;
+  late MockCheckHealthPermissions mockCheckHealthPermissions;
+  late MockRequestHealthPermissions mockRequestHealthPermissions;
 
   setUpAll(registerFallbackValues);
 
@@ -24,12 +27,18 @@ void main() {
     mockWatchDuel = MockWatchDuel();
     mockSyncHealthData = MockSyncHealthData();
     mockSessionRepository = MockSessionRepository();
+    mockCheckHealthPermissions = MockCheckHealthPermissions();
+    mockRequestHealthPermissions = MockRequestHealthPermissions();
+    mockCheckHealthPermissions.setupSuccess(HealthPermissionStatus.authorized);
+    mockRequestHealthPermissions.setupSuccess(granted: true);
   });
 
   DuelBloc buildBloc() => DuelBloc(
         watchDuel: mockWatchDuel,
         syncHealthData: mockSyncHealthData,
         sessionRepository: mockSessionRepository,
+        checkHealthPermissions: mockCheckHealthPermissions,
+        requestHealthPermissions: mockRequestHealthPermissions,
       );
 
   group('DuelBloc', () {

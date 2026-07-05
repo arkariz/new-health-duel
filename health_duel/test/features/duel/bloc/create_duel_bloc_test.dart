@@ -11,6 +11,7 @@ import 'package:mocktail/mocktail.dart';
 import '../../../helpers/helpers.dart';
 
 void main() {
+  late MockGetFriends mockGetFriends;
   late MockGetOpponents mockGetOpponents;
   late MockCreateDuel mockCreateDuel;
   late MockSessionRepository mockSessionRepository;
@@ -18,12 +19,14 @@ void main() {
   setUpAll(registerFallbackValues);
 
   setUp(() {
+    mockGetFriends = MockGetFriends();
     mockGetOpponents = MockGetOpponents();
     mockCreateDuel = MockCreateDuel();
     mockSessionRepository = MockSessionRepository();
   });
 
   CreateDuelBloc buildBloc() => CreateDuelBloc(
+        getFriends: mockGetFriends,
         getOpponents: mockGetOpponents,
         createDuel: mockCreateDuel,
         sessionRepository: mockSessionRepository,
@@ -39,9 +42,9 @@ void main() {
       const currentUserId = 'test-user-123';
 
       blocTest<CreateDuelBloc, CreateDuelState>(
-        'emits [LoadingOpponents, Ready] with opponent list on success',
+        'emits [LoadingOpponents, Ready] using GetFriends by default (friends source)',
         build: () {
-          mockGetOpponents.setupSuccess(
+          mockGetFriends.setupSuccess(
             currentUserId,
             [tOpponentModel, tOpponent2Model],
           );
@@ -57,12 +60,16 @@ void main() {
             [tOpponentModel, tOpponent2Model],
           ),
         ],
+        verify: (_) {
+          verify(() => mockGetFriends(currentUserId)).called(1);
+          verifyNever(() => mockGetOpponents(any()));
+        },
       );
 
       blocTest<CreateDuelBloc, CreateDuelState>(
-        'emits [LoadingOpponents, Failure] with error effect when fetch fails',
+        'emits [LoadingOpponents, Failure] with error effect when friends fetch fails',
         build: () {
-          mockGetOpponents.setupFailure(
+          mockGetFriends.setupFailure(
             currentUserId,
             const ServerFailure(message: tDuelErrorMessage),
           );
@@ -70,6 +77,54 @@ void main() {
         },
         act: (bloc) =>
             bloc.add(const CreateDuelOpponentsRequested(currentUserId)),
+        expect: () => [
+          const CreateDuelLoadingOpponents(),
+          isA<CreateDuelFailure>()
+              .having((s) => s.message, 'message', tDuelErrorMessage)
+              .having((s) => s.effect, 'effect', isA<ShowSnackBarEffect>()),
+        ],
+      );
+
+      blocTest<CreateDuelBloc, CreateDuelState>(
+        'emits [LoadingOpponents, Ready] using GetOpponents when source is all',
+        build: () {
+          mockGetOpponents.setupSuccess(
+            currentUserId,
+            [tOpponentModel, tOpponent2Model],
+          );
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const CreateDuelOpponentsRequested(
+          currentUserId,
+          source: OpponentSource.all,
+        )),
+        expect: () => [
+          const CreateDuelLoadingOpponents(),
+          isA<CreateDuelReady>().having(
+            (s) => s.opponents,
+            'opponents',
+            [tOpponentModel, tOpponent2Model],
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockGetOpponents(currentUserId)).called(1);
+          verifyNever(() => mockGetFriends(any()));
+        },
+      );
+
+      blocTest<CreateDuelBloc, CreateDuelState>(
+        'emits [LoadingOpponents, Failure] with error effect when all-players fetch fails',
+        build: () {
+          mockGetOpponents.setupFailure(
+            currentUserId,
+            const ServerFailure(message: tDuelErrorMessage),
+          );
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const CreateDuelOpponentsRequested(
+          currentUserId,
+          source: OpponentSource.all,
+        )),
         expect: () => [
           const CreateDuelLoadingOpponents(),
           isA<CreateDuelFailure>()
@@ -89,7 +144,7 @@ void main() {
       blocTest<CreateDuelBloc, CreateDuelState>(
         'emits [Submitting, Success] with success effect on successful creation',
         build: () {
-          mockGetOpponents.setupSuccess(challengerId, [tOpponentModel]);
+          mockGetFriends.setupSuccess(challengerId, [tOpponentModel]);
           mockSessionRepository.setupGetCurrentUserDuel(tUserModel);
           mockCreateDuel.setupSuccess(
             challengerId: challengerId,
@@ -121,7 +176,7 @@ void main() {
       blocTest<CreateDuelBloc, CreateDuelState>(
         'emits [Submitting, Failure] with error effect when creation fails',
         build: () {
-          mockGetOpponents.setupSuccess(challengerId, [tOpponentModel]);
+          mockGetFriends.setupSuccess(challengerId, [tOpponentModel]);
           mockSessionRepository.setupGetCurrentUserDuel(tUserModel);
           mockCreateDuel.setupFailure(
             challengerId: challengerId,
@@ -154,7 +209,7 @@ void main() {
       blocTest<CreateDuelBloc, CreateDuelState>(
         'emits Failure when session user is null (unauthenticated)',
         build: () {
-          mockGetOpponents.setupSuccess(challengerId, [tOpponentModel]);
+          mockGetFriends.setupSuccess(challengerId, [tOpponentModel]);
           when(() => mockSessionRepository.getCurrentUser())
               .thenAnswer((_) async => const Right(null));
           return buildBloc();
