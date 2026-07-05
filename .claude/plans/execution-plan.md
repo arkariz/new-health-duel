@@ -1,6 +1,6 @@
 # Health Duel — Recreate & Continue Plan
 
-> **Last reviewed:** 2026-02-28
+> **Last reviewed:** 2026-07-05
 > **Legend:** ✅ Done · ⚠️ Partial · ❌ Not started
 
 ## Context
@@ -240,6 +240,52 @@ semua list screen tidak functional. Perlu diselesaikan sebelum testing.
 
 ---
 
+### ✅ Phase 7: Friends Feature — DONE 2026-07-05 (commit `b005462`)
+
+Fitur sosial: kelola daftar teman & cari pemain. Di luar plan original, ditambahkan
+agar alur "tantang teman" lebih natural daripada memilih dari semua user acak.
+
+**✅ Step 7.1 — Friends feature (Clean Architecture)**
+- Domain: `FriendRepository` + use cases `GetFriends`, `AddFriend`, `RemoveFriend`, `SearchUsers`
+- Data: `FriendFirestoreDataSource` (subcollection `users/{id}/friends`) + `FriendRepositoryImpl`
+- Presentation: `FriendsBloc` (EffectBloc) + `FriendsScreen` (search, add, remove, challenge)
+- DI: `friends_module.dart`, barrel `friends.dart`
+
+**✅ Step 7.2 — Wiring**
+- `injection.dart` → `registerFriendsModule()`
+- `routes.dart` + `app_router.dart` → route `/friends`
+- Home quick-action card → navigasi ke Friends
+
+**✅ Step 7.3 — Integrasi ke Create Duel**
+- `CreateDuelBloc` sumber lawan dari `GetFriends` (menggantikan `GetOpponents`)
+- `duel_module` wire `GetFriends` ke `CreateDuelBloc`
+
+**✅ Step 7.4 — Refactor pendukung**
+- Ekstrak widget arena duel → `duel_arena_widgets.dart`; ramping `active_duel_screen`, `duel_card`, `active_duels_section`
+- Hapus `home_dummy`; rework `home_page` + hero/quick-action sections
+- Fix `app_theme` `CardTheme` → `CardThemeData` (Flutter SDK terbaru)
+
+**⚠️ Belum: test Friends** — `test/features/friends/` masih kosong
+
+---
+
+### ❌ Phase 8: Create Duel — Toggle Friends / All Players (PLANNED)
+
+> Plan detail: `.claude/plans/create-duel-opponent-toggle.md` (disetujui, belum dikerjakan)
+
+User ingin tetap bisa menantang orang random. `GetOpponents` **dipertahankan**.
+Create Duel akan punya toggle **[ Friends | All Players ]**:
+- Friends → `GetFriends`; All Players → `GetOpponents`
+- WIP: `create_duel_event.dart` sudah ditambah `enum OpponentSource` (belum di-commit)
+- Sisa: `create_duel_bloc` (inject `GetOpponents`, branch source), `duel_module` (register ulang `GetOpponents`), `create_duel_screen` (SegmentedButton)
+
+**Backlog review Friends (terpisah):**
+- Debounce search (query Firestore tiap keystroke)
+- Preselect teman saat klik "Challenge" dari layar Friends (konteks teman hilang)
+- Test unit/bloc Friends & Duel (Step 15 masih pending)
+
+---
+
 ## Key Coordination Points
 
 | File | Touched By | Coordination |
@@ -259,6 +305,13 @@ semua list screen tidak functional. Perlu diselesaikan sebelum testing.
 4. ✅ **After Phase 6**: Duel feature fully functional — semua screens wire ke BLoC, real opponent data dari Firestore, 0 TODO/commented code (analyze clean ✅, tests pass ✅)
    - Pending: `firebase deploy --only firestore:indexes` untuk deploy composite indexes
    - Pending: duel tests belum ditulis (Step 15)
+5. ✅ **After Phase 7 (2026-07-05)**: Friends feature done & wired (commit `b005462`)
+   - `flutter analyze` — 0 errors ✅ · `flutter test` — 42/42 pass ✅
+   - Pending: test Friends belum ditulis
+   - ⚠️ **Env note:** `flutter analyze/test` via fvm meng-upgrade 15 transitive deps
+     (analyzer 7.7→8.4, dll) → `pubspec.lock` termodifikasi tapi **sengaja belum
+     di-commit**. Perlu keputusan: pin ulang lock lama atau commit upgrade.
+   - ⚠️ Butuh Flutter SDK terbaru (`CardTheme` sudah jadi `CardThemeData`)
 
 ---
 
