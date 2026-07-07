@@ -235,7 +235,7 @@ class _HistoryDuelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isChallenger = duel.challengerId == currentUserId;
-    final opponentId = isChallenger ? duel.challengedId : duel.challengerId;
+    final opponentName = isChallenger ? duel.challengedName : duel.challengerName;
     final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
     final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
     final isTie = duel.currentLeader == null;
@@ -290,7 +290,7 @@ class _HistoryDuelCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'vs ${opponentId.substring(0, 1).toUpperCase()}${opponentId.substring(1, opponentId.length > 6 ? 6 : opponentId.length)}',
+                    'vs $opponentName',
                     style: theme.textTheme.titleSmall,
                     overflow: TextOverflow.ellipsis,
                   ),
