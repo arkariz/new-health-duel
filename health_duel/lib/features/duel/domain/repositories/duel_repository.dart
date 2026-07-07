@@ -48,6 +48,15 @@ abstract class DuelRepository {
   /// Returns completed [Duel] or [Failure].
   Future<Either<Failure, Duel>> completeDuel(String duelId);
 
+  /// Finalize a pending invitation that was never accepted in time
+  /// (client-side expiration)
+  ///
+  /// Writes status=expired atomically via Firestore transaction. Idempotent:
+  /// returns the duel unchanged if it is already accepted/declined/expired.
+  ///
+  /// Returns expired [Duel] or [Failure].
+  Future<Either<Failure, Duel>> expirePendingDuel(String duelId);
+
   /// Get duel by ID
   ///
   /// Returns [Duel] or [Failure] if not found.

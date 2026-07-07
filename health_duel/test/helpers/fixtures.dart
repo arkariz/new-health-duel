@@ -107,6 +107,12 @@ DateTime get tActiveStartTime => DateTime.now().subtract(const Duration(hours: 1
 DateTime get tActiveEndTime => DateTime.now().add(const Duration(hours: 23));
 DateTime get tPendingCreatedAt => DateTime.now().subtract(const Duration(hours: 1));
 
+/// While a duel is pending, endTime holds createdAt + 24h (mirrors
+/// createDuel's write) — [Duel.isPendingExpired]/[Duel.pendingTimeRemaining]
+/// read endTime directly, so fixtures must keep this invariant.
+DateTime get tPendingEndTime =>
+    tPendingCreatedAt.add(const Duration(hours: 24));
+
 const tDuelId = 'duel-active-123';
 const tPendingDuelId = 'duel-pending-456';
 const tHistoryDuelId = 'duel-history-789';
@@ -143,7 +149,7 @@ Duel get tPendingDuel => Duel(
       challengedSteps: duel.StepCount(0),
       status: DuelStatus.pending,
       startTime: tDuelStartTime,
-      endTime: tDuelEndTime,
+      endTime: tPendingEndTime,
       createdAt: tPendingCreatedAt,
     );
 
@@ -162,8 +168,47 @@ Duel get tSentDuel => Duel(
       challengedSteps: duel.StepCount(0),
       status: DuelStatus.pending,
       startTime: tDuelStartTime,
-      endTime: tDuelEndTime,
+      endTime: tPendingEndTime,
       createdAt: tPendingCreatedAt,
+    );
+
+/// createdAt more than 24 hours ago, so [Duel.isPendingExpired] returns true.
+DateTime get tExpiredPendingCreatedAt =>
+    DateTime.now().subtract(const Duration(hours: 25));
+
+/// endTime = createdAt + 24h, already in the past — mirrors the invariant
+/// [Duel.isPendingExpired] relies on.
+DateTime get tExpiredPendingEndTime =>
+    tExpiredPendingCreatedAt.add(const Duration(hours: 24));
+
+/// Expired pending invitation (received) — never accepted within 24 hours
+Duel get tExpiredPendingDuel => Duel(
+      id: tPendingDuelId,
+      challengerId: tOpponentModel.id,
+      challengedId: tUserModel.id,
+      challengerName: tOpponentModel.name,
+      challengedName: tUserModel.name,
+      challengerSteps: duel.StepCount(0),
+      challengedSteps: duel.StepCount(0),
+      status: DuelStatus.pending,
+      startTime: tDuelStartTime,
+      endTime: tExpiredPendingEndTime,
+      createdAt: tExpiredPendingCreatedAt,
+    );
+
+/// Expired outgoing pending challenge (sent) — never accepted within 24 hours
+Duel get tExpiredSentDuel => Duel(
+      id: tSentDuelId,
+      challengerId: tUserModel.id,
+      challengedId: tOpponentModel.id,
+      challengerName: tUserModel.name,
+      challengedName: tOpponentModel.name,
+      challengerSteps: duel.StepCount(0),
+      challengedSteps: duel.StepCount(0),
+      status: DuelStatus.pending,
+      startTime: tDuelStartTime,
+      endTime: tExpiredPendingEndTime,
+      createdAt: tExpiredPendingCreatedAt,
     );
 
 /// Expired-but-still-active duel — endTime in the past, status still active
@@ -286,6 +331,23 @@ DuelDto tSentDuelDto() => DuelDto(
       participants: [tUserModel.id, tOpponentModel.id],
       challengerName: tUserModel.name,
       challengedName: tOpponentModel.name,
+    );
+
+/// DuelDto matching [tExpiredPendingDuel] after client-side expiration —
+/// status expired
+DuelDto tExpiredPendingDuelDto() => DuelDto(
+      id: tPendingDuelId,
+      challengerId: tOpponentModel.id,
+      challengedId: tUserModel.id,
+      challengerSteps: 0,
+      challengedSteps: 0,
+      status: DuelStatus.expired.name,
+      startTimestamp: tDuelStartTime.millisecondsSinceEpoch,
+      endTimestamp: tDuelEndTime.millisecondsSinceEpoch,
+      createdAtTimestamp: tExpiredPendingCreatedAt.millisecondsSinceEpoch,
+      participants: [tOpponentModel.id, tUserModel.id],
+      challengerName: tOpponentModel.name,
+      challengedName: tUserModel.name,
     );
 
 /// DuelDto matching [tCompletedDuel]

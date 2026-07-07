@@ -27,6 +27,7 @@ import 'package:health_duel/features/duel/domain/usecases/accept_duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/complete_duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/create_duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/decline_duel.dart';
+import 'package:health_duel/features/duel/domain/usecases/expire_pending_duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/get_active_duels.dart';
 import 'package:health_duel/features/duel/domain/usecases/get_duel_history.dart';
 import 'package:health_duel/features/duel/domain/usecases/get_opponents.dart';
@@ -250,6 +251,8 @@ class MockAcceptDuel extends Mock implements AcceptDuel {}
 class MockDeclineDuel extends Mock implements DeclineDuel {}
 
 class MockCompleteDuel extends Mock implements CompleteDuel {}
+
+class MockExpirePendingDuel extends Mock implements ExpirePendingDuel {}
 
 class MockGetOpponents extends Mock implements GetOpponents {}
 
@@ -511,6 +514,16 @@ extension MockDeclineDuelX on MockDeclineDuel {
 }
 
 extension MockCompleteDuelX on MockCompleteDuel {
+  void setupSuccess(String duelId, Duel duel) {
+    when(() => call(duelId)).thenAnswer((_) async => Right(duel));
+  }
+
+  void setupFailure(String duelId, Failure failure) {
+    when(() => call(duelId)).thenAnswer((_) async => Left(failure));
+  }
+}
+
+extension MockExpirePendingDuelX on MockExpirePendingDuel {
   void setupSuccess(String duelId, Duel duel) {
     when(() => call(duelId)).thenAnswer((_) async => Right(duel));
   }

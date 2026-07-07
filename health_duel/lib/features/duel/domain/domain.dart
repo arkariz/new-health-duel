@@ -12,6 +12,7 @@ export 'usecases/accept_duel.dart';
 export 'usecases/complete_duel.dart';
 export 'usecases/create_duel.dart';
 export 'usecases/decline_duel.dart';
+export 'usecases/expire_pending_duel.dart';
 export 'usecases/get_active_duels.dart';
 export 'usecases/get_duel_history.dart';
 export 'usecases/get_opponents.dart';

@@ -22,6 +22,7 @@ void main() {
   late MockSyncHealthData mockSyncHealthData;
   late MockCheckHealthPermissions mockCheckHealthPermissions;
   late MockCompleteDuel mockCompleteDuel;
+  late MockExpirePendingDuel mockExpirePendingDuel;
 
   setUpAll(registerFallbackValues);
 
@@ -33,6 +34,7 @@ void main() {
     mockDeclineDuel = MockDeclineDuel();
     mockSyncHealthData = MockSyncHealthData();
     mockCompleteDuel = MockCompleteDuel();
+    mockExpirePendingDuel = MockExpirePendingDuel();
     // Empty by default so tests that don't care about outgoing challenges
     // don't need to stub it explicitly; existing [Loading, Loaded]
     // expectations remain exact.
@@ -55,6 +57,7 @@ void main() {
         syncHealthData: mockSyncHealthData,
         checkHealthPermissions: mockCheckHealthPermissions,
         completeDuel: mockCompleteDuel,
+        expirePendingDuel: mockExpirePendingDuel,
       );
 
   group('DuelListBloc', () {
@@ -275,6 +278,101 @@ void main() {
         ],
         verify: (_) {
           verify(() => mockCompleteDuel(tDuelId)).called(1);
+        },
+      );
+    });
+
+    // ─── Expired pending duel sweep ─────────────────────────────────────────
+    group('expired pending duel sweep', () {
+      const userId = 'test-user-123';
+
+      blocTest<DuelListBloc, DuelListState>(
+        'expires stale received invitations and removes them from pending',
+        build: () {
+          mockGetActiveDuels.setupSuccess(userId, []);
+          // First fetch returns the expired invitation; refetch after the
+          // sweep returns the post-expiration (empty) list.
+          var pendingCalls = 0;
+          when(() => mockGetPendingDuels(userId)).thenAnswer((_) async {
+            pendingCalls++;
+            return pendingCalls == 1
+                ? Right([tExpiredPendingDuel])
+                : const Right(<Duel>[]);
+          });
+          mockGetDuelHistory.setupSuccess(userId, []);
+          mockExpirePendingDuel.setupSuccess(
+            tPendingDuelId,
+            tExpiredPendingDuel,
+          );
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
+        expect: () => [
+          const DuelListLoading(),
+          isA<DuelListLoaded>().having(
+            (s) => s.pendingDuels,
+            'pendingDuels',
+            isEmpty,
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockExpirePendingDuel(tPendingDuelId)).called(1);
+        },
+      );
+
+      blocTest<DuelListBloc, DuelListState>(
+        'expires stale sent challenges and removes them from sent',
+        build: () {
+          mockGetActiveDuels.setupSuccess(userId, []);
+          mockGetPendingDuels.setupSuccess(userId, []);
+          var sentCalls = 0;
+          when(() => mockGetSentDuels(userId)).thenAnswer((_) async {
+            sentCalls++;
+            return sentCalls == 1
+                ? Right([tExpiredSentDuel])
+                : const Right(<Duel>[]);
+          });
+          mockGetDuelHistory.setupSuccess(userId, []);
+          mockExpirePendingDuel.setupSuccess(tSentDuelId, tExpiredSentDuel);
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
+        expect: () => [
+          const DuelListLoading(),
+          isA<DuelListLoaded>().having(
+            (s) => s.sentDuels,
+            'sentDuels',
+            isEmpty,
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockExpirePendingDuel(tSentDuelId)).called(1);
+        },
+      );
+
+      blocTest<DuelListBloc, DuelListState>(
+        'still emits DuelListLoaded when expiring a pending duel fails',
+        build: () {
+          mockGetActiveDuels.setupSuccess(userId, []);
+          mockGetPendingDuels.setupSuccess(userId, [tExpiredPendingDuel]);
+          mockGetDuelHistory.setupSuccess(userId, []);
+          mockExpirePendingDuel.setupFailure(
+            tPendingDuelId,
+            const ServerFailure(message: 'permission denied'),
+          );
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
+        expect: () => [
+          const DuelListLoading(),
+          isA<DuelListLoaded>().having(
+            (s) => s.pendingDuels.map((d) => d.id),
+            'pendingDuelIds',
+            [tPendingDuelId],
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockExpirePendingDuel(tPendingDuelId)).called(1);
         },
       );
     });

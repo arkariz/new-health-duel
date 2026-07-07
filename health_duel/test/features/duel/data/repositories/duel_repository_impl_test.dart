@@ -149,6 +149,52 @@ void main() {
       });
     });
 
+    // ─── expirePendingDuel ────────────────────────────────────────────────────
+    group('expirePendingDuel', () {
+      test('returns expired Duel entity on success', () async {
+        when(() => mockDataSource.expirePendingDuel(tPendingDuelId))
+            .thenAnswer((_) async => tExpiredPendingDuelDto());
+
+        final result = await repository.expirePendingDuel(tPendingDuelId);
+
+        expect(result.isRight(), isTrue);
+        result.fold(
+          (_) => fail('Expected Right'),
+          (duel) => expect(duel.status.name, 'expired'),
+        );
+      });
+
+      test('returns ServerFailure when datasource throws generic exception',
+          () async {
+        when(() => mockDataSource.expirePendingDuel(tPendingDuelId))
+            .thenThrow(Exception('Firestore error'));
+
+        final result = await repository.expirePendingDuel(tPendingDuelId);
+
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (_) => fail('Expected Left'),
+        );
+      });
+
+      test('passes ValidationFailure through unchanged when datasource throws it',
+          () async {
+        const validationFailure =
+            ValidationFailure(message: 'Pending duel has not expired yet');
+        when(() => mockDataSource.expirePendingDuel(tPendingDuelId))
+            .thenThrow(validationFailure);
+
+        final result = await repository.expirePendingDuel(tPendingDuelId);
+
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure, validationFailure),
+          (_) => fail('Expected Left'),
+        );
+      });
+    });
+
     // ─── cancelDuel ───────────────────────────────────────────────────────────
     group('cancelDuel', () {
       test('returns void on success', () async {

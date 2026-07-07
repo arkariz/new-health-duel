@@ -129,6 +129,49 @@ class DuelFirestoreDataSource {
     return getDuelById(duelId);
   }
 
+  /// Finalize a pending invitation that was never accepted in time
+  /// (client-side expiration)
+  ///
+  /// Atomically writes status=expired via a Firestore transaction.
+  /// Idempotent: if the duel is no longer pending (already accepted,
+  /// declined, or expired by another writer), returns the duel unchanged
+  /// without writing.
+  Future<DuelDto> expirePendingDuel(String duelId) async {
+    final docRef = _duelsCollection.doc(duelId);
+
+    await _firestore.runTransaction((transaction) async {
+      final doc = await transaction.get(docRef);
+
+      if (!doc.exists) {
+        throw Exception('Duel not found: $duelId');
+      }
+
+      final data = doc.data()!;
+      if (data['status'] != DuelStatus.pending.name) {
+        // Already accepted/declined/expired by another writer — idempotent success
+        return;
+      }
+
+      // While status is pending, endTime holds createdAt + 24h (set by
+      // createDuel and only overwritten once the duel is accepted) — the
+      // pending-invitation deadline, read straight from the document
+      // instead of recomputed here.
+      final expiresAt = (data['endTime'] as Timestamp).toDate();
+      if (DateTime.now().isBefore(expiresAt)) {
+        throw const ValidationFailure(
+          message: 'Pending duel has not expired yet',
+        );
+      }
+
+      transaction.update(docRef, {
+        'status': DuelStatus.expired.name,
+      });
+    });
+
+    // Return updated duel
+    return getDuelById(duelId);
+  }
+
   /// Cancel/decline a duel
   ///
   /// Sets status to cancelled.

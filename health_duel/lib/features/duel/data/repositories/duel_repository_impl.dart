@@ -59,6 +59,18 @@ class DuelRepositoryImpl implements DuelRepository {
   }
 
   @override
+  Future<Either<Failure, Duel>> expirePendingDuel(String duelId) async {
+    try {
+      final duelDto = await _dataSource.expirePendingDuel(duelId);
+      return Right(duelDto.toEntity());
+    } on Failure catch (failure) {
+      return Left(failure);
+    } catch (e) {
+      return Left(ServerFailure(message: 'Failed to expire pending duel: $e'));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> cancelDuel(String duelId) async {
     try {
       await _dataSource.cancelDuel(duelId);

@@ -28,6 +28,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     required SyncHealthData syncHealthData,
     required CheckHealthPermissions checkHealthPermissions,
     required CompleteDuel completeDuel,
+    required ExpirePendingDuel expirePendingDuel,
   })  : _getActiveDuels = getActiveDuels,
         _getPendingDuels = getPendingDuels,
         _getSentDuels = getSentDuels,
@@ -37,6 +38,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
         _syncHealthData = syncHealthData,
         _checkHealthPermissions = checkHealthPermissions,
         _completeDuel = completeDuel,
+        _expirePendingDuel = expirePendingDuel,
         super(const DuelListInitial()) {
     on<DuelListLoadRequested>(_onLoadRequested);
     on<DuelAcceptRequested>(_onAcceptRequested);
@@ -51,6 +53,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
   final SyncHealthData _syncHealthData;
   final CheckHealthPermissions _checkHealthPermissions;
   final CompleteDuel _completeDuel;
+  final ExpirePendingDuel _expirePendingDuel;
 
   Future<void> _onLoadRequested(
     DuelListLoadRequested event,
@@ -114,10 +117,29 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
       historyList = refreshedHistory.getOrElse(() => historyList);
     }
 
+    var pendingList = pendingResult.getOrElse(() => []);
+    var sentList = sentResult.getOrElse(() => []);
+
+    // Sweep: finalize pending invitations that were never accepted within
+    // 24 hours so they stop showing up as pending (Received and Sent alike).
+    final expiredPending = [...pendingList, ...sentList]
+        .where((d) => d.isPendingExpired)
+        .toList();
+    if (expiredPending.isNotEmpty) {
+      for (final duel in expiredPending) {
+        // Failures are non-fatal — the duel stays pending until next load
+        await _expirePendingDuel(duel.id);
+      }
+      final refreshedPending = await _getPendingDuels(event.userId);
+      final refreshedSent = await _getSentDuels(event.userId);
+      pendingList = refreshedPending.getOrElse(() => pendingList);
+      sentList = refreshedSent.getOrElse(() => sentList);
+    }
+
     emit(DuelListLoaded(
       activeDuels: activeList,
-      pendingDuels: pendingResult.getOrElse(() => []),
-      sentDuels: sentResult.getOrElse(() => []),
+      pendingDuels: pendingList,
+      sentDuels: sentList,
       historyDuels: historyList,
     ));
 

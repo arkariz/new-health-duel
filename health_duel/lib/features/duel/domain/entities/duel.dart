@@ -84,12 +84,12 @@ class Duel extends Equatable {
 
   /// Check if pending invitation has expired (24 hours)
   ///
-  /// Pending invitations expire if not accepted within 24 hours.
-  bool get isPendingExpired {
-    final now = DateTime.now();
-    final expirationTime = createdAt.add(const Duration(hours: 24));
-    return status == DuelStatus.pending && now.isAfter(expirationTime);
-  }
+  /// Pending invitations expire if not accepted within 24 hours. While a
+  /// duel is pending, [endTime] holds createdAt + 24h (set at creation and
+  /// only overwritten once accepted), so it doubles as the invitation
+  /// deadline.
+  bool get isPendingExpired =>
+      status == DuelStatus.pending && DateTime.now().isAfter(endTime);
 
   /// Get remaining time in the duel competition
   ///
@@ -106,9 +106,7 @@ class Duel extends Equatable {
   /// Returns [Duration.zero] if not pending or already expired.
   Duration get pendingTimeRemaining {
     if (!isPending) return Duration.zero;
-    final now = DateTime.now();
-    final expirationTime = createdAt.add(const Duration(hours: 24));
-    final remaining = expirationTime.difference(now);
+    final remaining = endTime.difference(DateTime.now());
     return remaining.isNegative ? Duration.zero : remaining;
   }
 
