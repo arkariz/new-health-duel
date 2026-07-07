@@ -6,12 +6,31 @@
 **Platform:** Android & iOS (Flutter)
 **Version:** MVP v1.0
 **Owner:** Product / Engineering
-**Status:** In Development - Phase 1
+**Status:** In Development — ~42% of MVP acceptance criteria implemented as of
+2026-07-07 (see the Implementation Status note below and the `[x]` marks
+throughout Section 7)
 
 Health Duel is a mobile application that enables users to challenge friends in
 24-hour health competitions focused on step counts. The app combines social
 accountability with health habits to create engaging, time-bound competitions
 that motivate daily activity.
+
+> **Note — Implementation status (2026-07-07):** Section 7 was audited
+> requirement-by-requirement against the current codebase. Grouping tightly
+> related and nested criteria into 86 distinct requirements, 36 are
+> implemented (also 36 of the section's 111 individual checkboxes — the
+> counts agree because every implemented item happens to be a single-line
+> criterion), 11 are partially implemented (annotated inline below), and 39
+> are not started. Each criterion is checked off (`- [x]`) only if fully
+> implemented; a partial implementation stays unchecked with a short note
+> explaining the gap. The single largest gap is **push notifications**: no
+> Cloud Functions exist in the repository and `firebase_messaging` is an
+> unused dependency, so every "notify the other participant" criterion across
+> FR-DUEL-002, FR-DUEL-003, FR-DUEL-005, and all of FR-NOTIF-001–004 is
+> unimplemented for this one structural reason. The duel lifecycle itself
+> (creation through completion, including sent/received invitations and
+> client-side 24-hour expiry) is the most complete area; share cards,
+> notifications, and the user profile screen are the least complete.
 
 ## 2. Problem Statement
 
@@ -164,12 +183,14 @@ consequence for the loser that we can share on social media."
 - Account creation grants unique user ID
 
 **Acceptance Criteria:**
-- [ ] Email/password registration with validation
+- [x] Email/password registration with validation
 - [ ] Google OAuth integration
-- [ ] Apple Sign-In integration (iOS)
+- [ ] Apple Sign-In integration (iOS) — bloc/repository support exists, but no
+      button calls it from the register screen
 - [ ] Email verification sent after registration
-- [ ] User profile created in Firestore after successful registration
-- [ ] Error handling for duplicate emails
+- [x] User profile created in Firestore after successful registration
+- [ ] Error handling for duplicate emails — the underlying exception is
+      mapped, but the app doesn't show dedicated copy for this case
 
 **FR-AUTH-002: User Login**
 - Users can log in with registered credentials
@@ -177,12 +198,14 @@ consequence for the loser that we can share on social media."
 - Support for password reset flow
 
 **Acceptance Criteria:**
-- [ ] Login with email/password
-- [ ] Login with Google
-- [ ] Login with Apple (iOS)
-- [ ] "Remember me" persists session
-- [ ] "Forgot password" triggers reset email
-- [ ] Invalid credentials show clear error messages
+- [x] Login with email/password
+- [x] Login with Google
+- [ ] Login with Apple (iOS) — same as registration, no UI entry point
+- [ ] "Remember me" persists session — no user-facing toggle; relies on
+      Firebase Auth's default persistence only
+- [ ] "Forgot password" triggers reset email — no reset flow exists
+- [ ] Invalid credentials show clear error messages — shown via snackbar, but
+      it's the raw mapped exception message, not dedicated copy
 
 **FR-AUTH-003: User Profile**
 - Users can view and edit their profile
@@ -193,6 +216,10 @@ consequence for the loser that we can share on social media."
 - [ ] Edit name and bio
 - [ ] Upload and change profile photo
 - [ ] Changes sync to Firestore immediately
+
+> **Note:** No profile feature exists yet — there's no profile screen, and
+> `UserModel` doesn't carry bio or stats fields. This entire FR is
+> unimplemented.
 
 ### 7.2 Friend Management
 
@@ -206,15 +233,23 @@ consequence for the loser that we can share on social media."
 - [ ] New user clicking link creates account and adds friend relationship
 - [ ] Display pending friend requests
 
+> **Note:** None of the above is implemented. What's built instead is a
+> different mechanism — in-app user search with an instant "Add" button that
+> writes directly to `users/{uid}/friends`, no invitation link and no
+> request/approval state. It satisfies the underlying need ("find and add a
+> friend") but not these specific acceptance criteria.
+
 **FR-FRIEND-002: Friend List**
 - Users can view list of friends and their availability status
 
 **Acceptance Criteria:**
-- [ ] Display friend list sorted by recent activity
+- [ ] Display friend list sorted by recent activity — currently sorted
+      alphabetically by name instead
 - [ ] Show friend online/offline status
 - [ ] Show friend current active duel count
-- [ ] Search/filter friends by name
-- [ ] Remove friend option with confirmation
+- [x] Search/filter friends by name
+- [ ] Remove friend option with confirmation — removal works but fires
+      immediately, with no confirmation dialog
 
 ### 7.3 Duel Creation
 
@@ -222,25 +257,31 @@ consequence for the loser that we can share on social media."
 - Users can initiate a duel by selecting a friend and metric
 
 **Acceptance Criteria:**
-- [ ] Select friend from friend list
-- [ ] Metric defaults to "Steps" (only option in MVP)
+- [x] Select friend from friend list
+- [x] Metric defaults to "Steps" (only option in MVP)
 - [ ] Display estimated start time (immediate upon acceptance)
 - [ ] Display end time (24 hours from start)
-- [ ] Preview duel details before sending
-- [ ] Send duel challenge notification to friend
+- [ ] Preview duel details before sending — flow is select opponent → send,
+      with no confirmation step
+- [ ] Send duel challenge notification to friend — no push infrastructure
+      exists (see Implementation Status note above)
 
 **FR-DUEL-002: Duel Invitation**
 - Challenged user receives notification and can accept or decline
 
 **Acceptance Criteria:**
 - [ ] Push notification sent to challenged user
-- [ ] In-app notification badge on duels screen
-- [ ] Accept/Decline buttons in notification and app
-- [ ] Duel starts immediately when accepted
-- [ ] Challenger notified of acceptance/decline
-- [ ] Challenger can view the status of challenges they sent, separate from
+- [ ] In-app notification badge on duels screen — a count chip exists inside
+      the Pending tab itself, but nothing badges the tab bar or app entry
+      point proactively
+- [ ] Accept/Decline buttons in notification and app — implemented in-app;
+      not applicable in a notification since none exists
+- [x] Duel starts immediately when accepted
+- [ ] Challenger notified of acceptance/decline — visible only if the
+      challenger reopens the Sent list themselves
+- [x] Challenger can view the status of challenges they sent, separate from
       challenges they received
-- [ ] Challenger can cancel a sent challenge before it's accepted
+- [x] Challenger can cancel a sent challenge before it's accepted
 
 ### 7.4 Duel Lifecycle
 
@@ -253,31 +294,34 @@ consequence for the loser that we can share on social media."
 * **Completed:** 24-hour window ended, winner determined
 
 **Acceptance Criteria:**
-- [ ] Pending duels expire after 24 hours if not accepted
-- [ ] Active duels automatically transition to Completed after 24 hours
-- [ ] Completed duels remain in history indefinitely
-- [ ] State transitions trigger appropriate notifications
+- [x] Pending duels expire after 24 hours if not accepted
+- [x] Active duels automatically transition to Completed after 24 hours
+- [x] Completed duels remain in history indefinitely
+- [ ] State transitions trigger appropriate notifications — surfaced only as
+      a local snackbar on the acting device, not to the other participant
 
 **FR-DUEL-004: Progress Tracking**
 - Users can view current step counts for active duels
 
 **Acceptance Criteria:**
-- [ ] Real-time step count display for both participants
-- [ ] Progress bars showing relative performance
-- [ ] Lead indicator (who is currently winning)
-- [ ] Countdown timer showing time remaining
-- [ ] Pull-to-refresh to manually sync latest data
-- [ ] Automatic refresh every 5 minutes while app is open
+- [x] Real-time step count display for both participants
+- [x] Progress bars showing relative performance
+- [x] Lead indicator (who is currently winning)
+- [x] Countdown timer showing time remaining
+- [ ] Pull-to-refresh to manually sync latest data — only a manual AppBar
+      button exists, not a swipe gesture
+- [x] Automatic refresh every 5 minutes while app is open
 
 **FR-DUEL-005: Winner Determination**
 - Winner is determined by highest step count at duel end time
 
 **Acceptance Criteria:**
-- [ ] Winner calculated exactly at 24-hour mark
-- [ ] Ties result in both users marked as winners
-- [ ] Winner notification sent to both participants
-- [ ] Duel result stored in Firestore and user history
-- [ ] Winner badge displayed on result screen
+- [x] Winner calculated exactly at 24-hour mark
+- [x] Ties result in both users marked as winners
+- [ ] Winner notification sent to both participants — each device only learns
+      the result from its own Firestore read
+- [x] Duel result stored in Firestore and user history
+- [x] Winner badge displayed on result screen
 
 ### 7.5 Health Data Integration
 
@@ -285,33 +329,48 @@ consequence for the loser that we can share on social media."
 - App requests health data permission with clear rationale
 
 **Acceptance Criteria:**
-- [ ] Permission request screen explains why data access is needed
-- [ ] iOS: HealthKit permission dialog for step data read access
-- [ ] Android: Health Connect permission dialog for step data
-- [ ] Graceful handling if permission denied (show educational message)
-- [ ] Re-request flow if user denied but later wants to participate
+- [ ] Permission request screen explains why data access is needed — copy is
+      generic, doesn't mention duels specifically
+- [x] iOS: HealthKit permission dialog for step data read access
+- [x] Android: Health Connect permission dialog for step data
+- [ ] Graceful handling if permission denied (show educational message) — the
+      permission view re-shows, but Android can't distinguish "denied" from
+      "never asked" (a platform API limitation, noted in source)
+- [x] Re-request flow if user denied but later wants to participate
 
 **FR-HEALTH-002: Step Data Sync**
 - App periodically fetches step data from platform health APIs
 
 **Acceptance Criteria:**
-- [ ] Fetch step data for current 24-hour duel window
-- [ ] iOS: Query HealthKit for HKQuantityTypeIdentifierStepCount
-- [ ] Android: Query Health Connect for Steps data type
-- [ ] Sync occurs every 5 minutes for active duels
-- [ ] Background sync when app is backgrounded (best effort)
-- [ ] Handle missing data gracefully (show last successful sync time)
+- [ ] Fetch step data for current 24-hour duel window — the query end time is
+      the current moment, not clamped to `duel.endTime`, so a late sync can
+      read slightly past the window
+- [x] iOS: Query HealthKit for HKQuantityTypeIdentifierStepCount
+- [x] Android: Query Health Connect for Steps data type
+- [x] Sync occurs every 5 minutes for active duels
+- [ ] Background sync when app is backgrounded (best effort) — sync is a
+      timer tied to the duel screen's lifecycle; no background task
+      registration exists
+- [ ] Handle missing data gracefully (show last successful sync time) — the
+      timestamp is tracked in state but not rendered anywhere in the UI
 
 **FR-HEALTH-003: Data Accuracy**
 - Step counts reflect platform health data accurately
 
 **Acceptance Criteria:**
-- [ ] Step counts match values shown in Apple Health / Health Connect
-- [ ] Data includes steps from all sources (phone, watches, other apps)
-- [ ] Historical data correctly filtered to duel time window
-- [ ] No double-counting of steps from multiple sources
+- [x] Step counts match values shown in Apple Health / Health Connect
+- [x] Data includes steps from all sources (phone, watches, other apps)
+- [x] Historical data correctly filtered to duel time window
+- [x] No double-counting of steps from multiple sources
 
 ### 7.6 Notifications
+
+> **Note:** None of FR-NOTIF-001 through FR-NOTIF-004 is implemented. There's
+> no sending mechanism of any kind — no Cloud Functions exist in the
+> repository, and `firebase_messaging` is listed in `pubspec.yaml` but never
+> used in application code. Every checkbox in this section is accurate as
+> unchecked; no per-item notes are added below to avoid repeating this once
+> per line.
 
 **FR-NOTIF-001: Duel Start Notification**
 - Both participants notified when duel becomes active
@@ -356,23 +415,32 @@ consequence for the loser that we can share on social media."
 - Clear display of duel outcome with winner/loser indication
 
 **Acceptance Criteria:**
-- [ ] Winner shown with celebratory icon/animation
-- [ ] Final step counts displayed prominently for both users
-- [ ] Loser shown with punishment emoji (🙇 default)
-- [ ] Time range of duel displayed
-- [ ] Share button to generate share card
-- [ ] Return to home button
+- [x] Winner shown with celebratory icon/animation
+- [x] Final step counts displayed prominently for both users
+- [ ] Loser shown with punishment emoji (🙇 default) — uses 💪 instead; see
+      FR-RESULT-002, no punishment concept exists in code
+- [x] Time range of duel displayed
+- [ ] Share button to generate share card — the button exists, but tapping it
+      only shows a "coming soon" snackbar
+- [ ] Return to home button — only "Challenge Again" and "Back to Duels"
+      exist; the latter pops the current route rather than routing home
 
 **FR-RESULT-002: Punishment Display**
 - Loser receives lighthearted punishment emoji
 
 **Acceptance Criteria:**
-- [ ] Default emoji: 🙇 (bowing person)
-- [ ] Displayed prominently on result screen
-- [ ] Included in share card
-- [ ] No financial or serious consequences (MVP scope)
+- [ ] Default emoji: 🙇 (bowing person) — the result screen shows 💪 for the
+      loser instead
+- [ ] Displayed prominently on result screen — n/a, no punishment emoji exists
+- [ ] Included in share card — n/a, share cards aren't generated (FR-SHARE-001)
+- [x] No financial or serious consequences (MVP scope)
 
 ### 7.8 Share Cards
+
+> **Note:** Neither FR-SHARE-001 nor FR-SHARE-002 is implemented — there's no
+> image-generation code (no `RepaintBoundary`/canvas capture) and no share
+> package (e.g. `share_plus`) in `pubspec.yaml`. The result screen's Share
+> button is a placeholder (see FR-RESULT-001).
 
 **FR-SHARE-001: Share Card Generation**
 - System generates shareable image of duel results
@@ -400,6 +468,13 @@ consequence for the loser that we can share on social media."
 - [ ] Success feedback after share
 
 ## 8. Non-Functional Requirements
+
+> **Note:** Most NFR criteria describe runtime/device behavior (startup
+> time, frame rate, battery drain) that can't be confirmed by reading code —
+> they need device testing, not a code audit, so they're left unmarked below
+> rather than guessed at. Three criteria with a clear code-level signal were
+> spot-checked as part of the 2026-07-07 audit and are marked accordingly;
+> everything else in this section reflects the original, unaudited MVP scope.
 
 ### 8.1 Performance
 
@@ -439,7 +514,8 @@ consequence for the loser that we can share on social media."
 - [ ] View cached duel history offline
 - [ ] Graceful error messages when offline
 - [ ] Queue actions for sync when connectivity returns
-- [ ] Sync indicator shows connection status
+- [x] Sync indicator shows connection status — `ConnectivityCubit` tracks
+      online/offline via `connectivity_plus` and is wired app-wide (spot-checked)
 
 **NFR-REL-002: Data Accuracy**
 - Health data must be accurate and trustworthy
@@ -457,7 +533,8 @@ consequence for the loser that we can share on social media."
 
 **Acceptance Criteria:**
 - [ ] Health data stored encrypted in Firestore
-- [ ] Firestore rules prevent unauthorized access
+- [ ] Firestore rules prevent unauthorized access — no `firestore.rules` file
+      exists in the repository at all (spot-checked)
 - [ ] Health data only visible to duel participants
 - [ ] Users can delete their data at any time
 
@@ -485,7 +562,8 @@ consequence for the loser that we can share on social media."
 - App should be usable by people with disabilities
 
 **Acceptance Criteria:**
-- [ ] Screen reader support (iOS VoiceOver, Android TalkBack)
+- [ ] Screen reader support (iOS VoiceOver, Android TalkBack) — no explicit
+      `Semantics` widgets found anywhere in the codebase (spot-checked)
 - [ ] Sufficient color contrast ratios (WCAG AA)
 - [ ] Large touch targets (min 44x44 points)
 - [ ] Text scales with system font size settings
@@ -658,6 +736,8 @@ for UI design system.
 ---
 
 **Document Version:** 1.0
-**Last Updated:** 2026-02-08
-**Status:** Approved - Development in Progress
+**Last Updated:** 2026-07-07 (Section 7 checkboxes updated to reflect
+implementation status; requirements text unchanged)
+**Status:** Approved - Development in Progress (~42% of MVP acceptance
+criteria implemented)
 **Owner:** Product & Engineering Team
