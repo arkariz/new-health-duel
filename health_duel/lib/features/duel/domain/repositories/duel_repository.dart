@@ -73,6 +73,12 @@ abstract class DuelRepository {
   /// Sorted by creation time (newest first).
   Future<Either<Failure, List<Duel>>> getPendingDuels(String userId);
 
+  /// Get outgoing (sent) pending duel challenges for a user
+  ///
+  /// Returns list of duels where user is the challenger and status is
+  /// `pending`. Sorted by creation time (newest first).
+  Future<Either<Failure, List<Duel>>> getSentDuels(String userId);
+
   /// Get duel history (completed duels) for a user
   ///
   /// Returns list of completed duels where user participated.

@@ -20,6 +20,12 @@ An invitation sent by one user to another to start a duel. The challenge
 contains metadata about the duel type, duration, and participants. A challenge
 becomes an active **Duel** once the invited participant accepts.
 
+A pending challenge has two sides: the **challenger** sees it as a **sent**
+challenge (status: waiting for the opponent to accept, with an option to
+cancel) and the **challenged** user sees it as a **received** challenge (with
+options to accept or decline). Both views are surfaced on the **Pending** tab
+of the My Duels screen.
+
 ### Duel
 A 24-hour competition between two users comparing a health metric (steps in MVP).
 A duel has distinct lifecycle states: **Pending**, **Active**, and **Completed**.

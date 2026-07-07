@@ -187,8 +187,8 @@ class _PendingDuelCard extends StatelessWidget {
               ],
             ),
 
-            // Accept / Decline buttons (opponent only)
-            if (!isChallenger && (onAccept != null || onDecline != null)) ...[
+            // Accept / Decline (received) or Cancel (sent) buttons
+            if (onAccept != null || onDecline != null) ...[
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
@@ -196,7 +196,7 @@ class _PendingDuelCard extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: onDecline,
-                        child: const Text('Decline'),
+                        child: Text(isChallenger ? 'Cancel' : 'Decline'),
                       ),
                     ),
                   if (onDecline != null && onAccept != null)

@@ -31,6 +31,7 @@ import 'package:health_duel/features/duel/domain/usecases/get_active_duels.dart'
 import 'package:health_duel/features/duel/domain/usecases/get_duel_history.dart';
 import 'package:health_duel/features/duel/domain/usecases/get_opponents.dart';
 import 'package:health_duel/features/duel/domain/usecases/get_pending_duels.dart';
+import 'package:health_duel/features/duel/domain/usecases/get_sent_duels.dart';
 import 'package:health_duel/features/duel/domain/usecases/sync_health_data.dart';
 import 'package:health_duel/features/duel/domain/usecases/update_step_count.dart';
 import 'package:health_duel/features/duel/domain/usecases/watch_duel.dart';
@@ -240,6 +241,8 @@ class MockGetActiveDuels extends Mock implements GetActiveDuels {}
 
 class MockGetPendingDuels extends Mock implements GetPendingDuels {}
 
+class MockGetSentDuels extends Mock implements GetSentDuels {}
+
 class MockGetDuelHistory extends Mock implements GetDuelHistory {}
 
 class MockAcceptDuel extends Mock implements AcceptDuel {}
@@ -305,6 +308,15 @@ extension MockDuelRepositoryX on MockDuelRepository {
 
   void setupGetPendingDuelsFailure(String userId, Failure failure) {
     when(() => getPendingDuels(userId))
+        .thenAnswer((_) async => Left(failure));
+  }
+
+  void setupGetSentDuels(String userId, List<Duel> duels) {
+    when(() => getSentDuels(userId)).thenAnswer((_) async => Right(duels));
+  }
+
+  void setupGetSentDuelsFailure(String userId, Failure failure) {
+    when(() => getSentDuels(userId))
         .thenAnswer((_) async => Left(failure));
   }
 
@@ -449,6 +461,16 @@ extension MockGetActiveDuelsX on MockGetActiveDuels {
 }
 
 extension MockGetPendingDuelsX on MockGetPendingDuels {
+  void setupSuccess(String userId, List<Duel> duels) {
+    when(() => call(userId)).thenAnswer((_) async => Right(duels));
+  }
+
+  void setupFailure(String userId, Failure failure) {
+    when(() => call(userId)).thenAnswer((_) async => Left(failure));
+  }
+}
+
+extension MockGetSentDuelsX on MockGetSentDuels {
   void setupSuccess(String userId, List<Duel> duels) {
     when(() => call(userId)).thenAnswer((_) async => Right(duels));
   }

@@ -164,8 +164,9 @@ class _PendingDuelsTab extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (state is DuelListLoaded) {
-          final duels = state.pendingDuels;
-          if (duels.isEmpty) {
+          final received = state.pendingDuels;
+          final sent = state.sentDuels;
+          if (received.isEmpty && sent.isEmpty) {
             return _EmptyState(
               icon: Icons.hourglass_empty_rounded,
               iconColor: context.appColors.warning,
@@ -173,31 +174,83 @@ class _PendingDuelsTab extends StatelessWidget {
               message: 'You have no pending duel invitations.',
             );
           }
-          return ListView.builder(
+          return ListView(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-            itemCount: duels.length,
-            itemBuilder: (context, index) {
-              final duel = duels[index];
-              final isChallenger = duel.challengerId == currentUserId;
-              return DuelCard(
-                duel: duel,
-                currentUserId: currentUserId,
-                onAccept: !isChallenger
-                    ? () => context
+            children: [
+              if (received.isNotEmpty) ...[
+                _SectionHeader(title: 'Received', count: received.length),
+                for (final duel in received)
+                  DuelCard(
+                    duel: duel,
+                    currentUserId: currentUserId,
+                    onAccept: () => context
                         .read<DuelListBloc>()
-                        .add(DuelAcceptRequested(duel.id))
-                    : null,
-                onDecline: !isChallenger
-                    ? () => context
+                        .add(DuelAcceptRequested(duel.id)),
+                    onDecline: () => context
                         .read<DuelListBloc>()
-                        .add(DuelDeclineRequested(duel.id))
-                    : null,
-              );
-            },
+                        .add(DuelDeclineRequested(duel.id)),
+                  ),
+              ],
+              if (sent.isNotEmpty) ...[
+                _SectionHeader(title: 'Sent', count: sent.length),
+                for (final duel in sent)
+                  DuelCard(
+                    duel: duel,
+                    currentUserId: currentUserId,
+                    onDecline: () => context
+                        .read<DuelListBloc>()
+                        .add(DuelDeclineRequested(duel.id)),
+                  ),
+              ],
+            ],
           );
         }
         return const SizedBox.shrink();
       },
+    );
+  }
+}
+
+// ─── Section Header ───────────────────────────────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
+
+  const _SectionHeader({required this.title, this.count});
+  final String title;
+  final int? count;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.xs,
+      ),
+      child: Row(
+        children: [
+          Text(title, style: theme.textTheme.titleSmall),
+          if (count != null) ...[
+            const SizedBox(width: AppSpacing.xs),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '$count',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

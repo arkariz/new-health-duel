@@ -238,6 +238,9 @@ consequence for the loser that we can share on social media."
 - [ ] Accept/Decline buttons in notification and app
 - [ ] Duel starts immediately when accepted
 - [ ] Challenger notified of acceptance/decline
+- [ ] Challenger can view the status of challenges they sent, separate from
+      challenges they received
+- [ ] Challenger can cancel a sent challenge before it's accepted
 
 ### 7.4 Duel Lifecycle
 

@@ -250,9 +250,10 @@ Stories are grouped by feature area and prioritized for MVP development.
 **Priority:** P1 (High)
 
 **Acceptance Criteria:**
-- [ ] Pending duels shown in separate section on home screen
-- [ ] Each pending duel shows: friend name, time since sent
-- [ ] Status text: "Waiting for acceptance..."
+- [ ] Sent challenges shown in a "Sent" section on the **Pending** tab of the
+      My Duels screen, separate from challenges the user received
+- [ ] Each sent challenge shows: opponent name, status badge
+- [ ] Status text: "Waiting for opponent to accept"
 - [ ] Cancel button to withdraw challenge
 - [ ] Notification when friend accepts or declines
 - [ ] Pending duels expire after 24 hours if not accepted
@@ -260,6 +261,14 @@ Stories are grouped by feature area and prioritized for MVP development.
 **Design Notes:**
 - Distinct visual style from active duels
 - Clear "Pending" label
+- The **Pending** tab splits into two sections: **Received** (challenges
+  awaiting the user's response, with **Accept** and **Decline** actions) and
+  **Sent** (challenges the user sent, with a **Cancel** action)
+
+> **Note:** As of this writing, the "Sent" section, status text, and cancel
+> action are implemented. Push notifications on accept or decline and
+> automatic expiration of unanswered pending duels after 24 hours are not yet
+> implemented.
 
 ---
 

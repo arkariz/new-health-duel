@@ -101,6 +101,17 @@ class DuelRepositoryImpl implements DuelRepository {
   }
 
   @override
+  Future<Either<Failure, List<Duel>>> getSentDuels(String userId) async {
+    try {
+      final duelDtos = await _dataSource.getSentDuels(userId);
+      final duels = duelDtos.map((dto) => dto.toEntity()).toList();
+      return Right(duels);
+    } catch (e) {
+      return Left(ServerFailure(message: 'Failed to get sent duels: $e'));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<Duel>>> getDuelHistory(String userId) async {
     try {
       final duelDtos = await _dataSource.getDuelHistory(userId);

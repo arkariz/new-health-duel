@@ -21,6 +21,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
   DuelListBloc({
     required GetActiveDuels getActiveDuels,
     required GetPendingDuels getPendingDuels,
+    required GetSentDuels getSentDuels,
     required GetDuelHistory getDuelHistory,
     required AcceptDuel acceptDuel,
     required DeclineDuel declineDuel,
@@ -29,6 +30,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     required CompleteDuel completeDuel,
   })  : _getActiveDuels = getActiveDuels,
         _getPendingDuels = getPendingDuels,
+        _getSentDuels = getSentDuels,
         _getDuelHistory = getDuelHistory,
         _acceptDuel = acceptDuel,
         _declineDuel = declineDuel,
@@ -42,6 +44,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
   }
   final GetActiveDuels _getActiveDuels;
   final GetPendingDuels _getPendingDuels;
+  final GetSentDuels _getSentDuels;
   final GetDuelHistory _getDuelHistory;
   final AcceptDuel _acceptDuel;
   final DeclineDuel _declineDuel;
@@ -55,16 +58,18 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
   ) async {
     emit(const DuelListLoading());
 
-    // Fetch all three lists in parallel
+    // Fetch all four lists in parallel
     final results = await Future.wait([
       _getActiveDuels(event.userId),
       _getPendingDuels(event.userId),
+      _getSentDuels(event.userId),
       _getDuelHistory(event.userId),
     ]);
 
     final activeResult = results[0];
     final pendingResult = results[1];
-    final historyResult = results[2];
+    final sentResult = results[2];
+    final historyResult = results[3];
 
     // Fail fast if any list errors
     if (activeResult.isLeft()) {
@@ -76,6 +81,12 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     if (pendingResult.isLeft()) {
       emit(DuelListError(
         pendingResult.fold((f) => f.message, (_) => 'Failed to load duels'),
+      ));
+      return;
+    }
+    if (sentResult.isLeft()) {
+      emit(DuelListError(
+        sentResult.fold((f) => f.message, (_) => 'Failed to load duels'),
       ));
       return;
     }
@@ -106,6 +117,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     emit(DuelListLoaded(
       activeDuels: activeList,
       pendingDuels: pendingResult.getOrElse(() => []),
+      sentDuels: sentResult.getOrElse(() => []),
       historyDuels: historyList,
     ));
 
@@ -186,11 +198,17 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
       (_) {
         if (state is DuelListLoaded) {
           final current = state as DuelListLoaded;
+          final isCancel =
+              current.sentDuels.any((d) => d.id == event.duelId);
           emit(current.copyWith(
             pendingDuels: current.pendingDuels
                 .where((d) => d.id != event.duelId)
                 .toList(),
-            effect: _effectDeclineSuccess(),
+            sentDuels: current.sentDuels
+                .where((d) => d.id != event.duelId)
+                .toList(),
+            effect:
+                isCancel ? _effectCancelSuccess() : _effectDeclineSuccess(),
           ));
         }
       },

@@ -147,6 +147,25 @@ Duel get tPendingDuel => Duel(
       createdAt: tPendingCreatedAt,
     );
 
+const tSentDuelId = 'duel-sent-999';
+
+/// Outgoing pending duel — current user (tUserModel) is the challenger
+///
+/// Uses runtime createdAt so [Duel.isPending] returns true.
+Duel get tSentDuel => Duel(
+      id: tSentDuelId,
+      challengerId: tUserModel.id,
+      challengedId: tOpponentModel.id,
+      challengerName: tUserModel.name,
+      challengedName: tOpponentModel.name,
+      challengerSteps: duel.StepCount(0),
+      challengedSteps: duel.StepCount(0),
+      status: DuelStatus.pending,
+      startTime: tDuelStartTime,
+      endTime: tDuelEndTime,
+      createdAt: tPendingCreatedAt,
+    );
+
 /// Expired-but-still-active duel — endTime in the past, status still active
 ///
 /// Uses runtime timestamps so [Duel.needsCompletion] returns true.
@@ -251,6 +270,22 @@ DuelDto tPendingDuelDto() => DuelDto(
       participants: [tOpponentModel.id, tUserModel.id],
       challengerName: tOpponentModel.name,
       challengedName: tUserModel.name,
+    );
+
+/// DuelDto matching [tSentDuel]
+DuelDto tSentDuelDto() => DuelDto(
+      id: tSentDuelId,
+      challengerId: tUserModel.id,
+      challengedId: tOpponentModel.id,
+      challengerSteps: 0,
+      challengedSteps: 0,
+      status: DuelStatus.pending.name,
+      startTimestamp: tDuelStartTime.millisecondsSinceEpoch,
+      endTimestamp: tDuelEndTime.millisecondsSinceEpoch,
+      createdAtTimestamp: tDuelCreatedAt.millisecondsSinceEpoch,
+      participants: [tUserModel.id, tOpponentModel.id],
+      challengerName: tUserModel.name,
+      challengedName: tOpponentModel.name,
     );
 
 /// DuelDto matching [tCompletedDuel]

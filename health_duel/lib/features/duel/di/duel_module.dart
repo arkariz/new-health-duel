@@ -50,6 +50,7 @@ void registerDuelModule() {
   // Query Duels
   ..registerFactory(() => GetActiveDuels(getIt<DuelRepository>()))
   ..registerFactory(() => GetPendingDuels(getIt<DuelRepository>()))
+  ..registerFactory(() => GetSentDuels(getIt<DuelRepository>()))
   ..registerFactory(() => GetDuelHistory(getIt<DuelRepository>()))
   ..registerFactory(() => GetOpponents(getIt<DuelRepository>()))
 
@@ -82,6 +83,7 @@ void registerDuelModule() {
     () => DuelListBloc(
       getActiveDuels: getIt<GetActiveDuels>(),
       getPendingDuels: getIt<GetPendingDuels>(),
+      getSentDuels: getIt<GetSentDuels>(),
       getDuelHistory: getIt<GetDuelHistory>(),
       acceptDuel: getIt<AcceptDuel>(),
       declineDuel: getIt<DeclineDuel>(),

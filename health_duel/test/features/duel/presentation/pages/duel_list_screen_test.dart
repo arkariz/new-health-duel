@@ -48,12 +48,14 @@ void main() {
           const DuelListLoaded(
             activeDuels: [],
             pendingDuels: [],
+            sentDuels: [],
             historyDuels: [],
           ),
         ]),
         initialState: const DuelListLoaded(
           activeDuels: [],
           pendingDuels: [],
+          sentDuels: [],
           historyDuels: [],
         ),
       );
@@ -87,12 +89,14 @@ void main() {
           const DuelListLoaded(
             activeDuels: [],
             pendingDuels: [],
+            sentDuels: [],
             historyDuels: [],
           ),
         ]),
         initialState: const DuelListLoaded(
           activeDuels: [],
           pendingDuels: [],
+          sentDuels: [],
           historyDuels: [],
         ),
       );
@@ -128,12 +132,14 @@ void main() {
           DuelListLoaded(
             activeDuels: [tActiveDuel],
             pendingDuels: const [],
+            sentDuels: const [],
             historyDuels: const [],
           ),
         ]),
         initialState: DuelListLoaded(
           activeDuels: [tActiveDuel],
           pendingDuels: const [],
+          sentDuels: const [],
           historyDuels: const [],
         ),
       );
@@ -154,12 +160,14 @@ void main() {
           DuelListLoaded(
             activeDuels: const [],
             pendingDuels: [tPendingDuel],
+            sentDuels: const [],
             historyDuels: const [],
           ),
         ]),
         initialState: DuelListLoaded(
           activeDuels: const [],
           pendingDuels: [tPendingDuel],
+          sentDuels: const [],
           historyDuels: const [],
         ),
       );

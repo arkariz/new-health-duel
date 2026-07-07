@@ -15,6 +15,7 @@ import '../../../helpers/helpers.dart';
 void main() {
   late MockGetActiveDuels mockGetActiveDuels;
   late MockGetPendingDuels mockGetPendingDuels;
+  late MockGetSentDuels mockGetSentDuels;
   late MockGetDuelHistory mockGetDuelHistory;
   late MockAcceptDuel mockAcceptDuel;
   late MockDeclineDuel mockDeclineDuel;
@@ -32,6 +33,11 @@ void main() {
     mockDeclineDuel = MockDeclineDuel();
     mockSyncHealthData = MockSyncHealthData();
     mockCompleteDuel = MockCompleteDuel();
+    // Empty by default so tests that don't care about outgoing challenges
+    // don't need to stub it explicitly; existing [Loading, Loaded]
+    // expectations remain exact.
+    mockGetSentDuels = MockGetSentDuels()
+      ..setupSuccess('test-user-123', []);
     // Not authorized by default so the background health-sync branch (which
     // would emit an extra refreshed DuelListLoaded) stays inactive and
     // existing [Loading, Loaded] expectations remain exact.
@@ -42,6 +48,7 @@ void main() {
   DuelListBloc buildBloc() => DuelListBloc(
         getActiveDuels: mockGetActiveDuels,
         getPendingDuels: mockGetPendingDuels,
+        getSentDuels: mockGetSentDuels,
         getDuelHistory: mockGetDuelHistory,
         acceptDuel: mockAcceptDuel,
         declineDuel: mockDeclineDuel,
@@ -78,6 +85,26 @@ void main() {
       );
 
       blocTest<DuelListBloc, DuelListState>(
+        'emits [DuelListLoading, DuelListLoaded] with sent duels populated',
+        build: () {
+          mockGetActiveDuels.setupSuccess(userId, []);
+          mockGetPendingDuels.setupSuccess(userId, []);
+          mockGetSentDuels.setupSuccess(userId, [tSentDuel]);
+          mockGetDuelHistory.setupSuccess(userId, []);
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
+        expect: () => [
+          const DuelListLoading(),
+          isA<DuelListLoaded>().having(
+            (s) => s.sentDuels.map((d) => d.id),
+            'sentDuelIds',
+            [tSentDuelId],
+          ),
+        ],
+      );
+
+      blocTest<DuelListBloc, DuelListState>(
         'emits [DuelListLoading, DuelListLoaded] with empty lists when user has no duels',
         build: () {
           mockGetActiveDuels.setupSuccess(userId, []);
@@ -91,7 +118,31 @@ void main() {
           isA<DuelListLoaded>()
               .having((s) => s.activeDuels, 'activeDuels', isEmpty)
               .having((s) => s.pendingDuels, 'pendingDuels', isEmpty)
+              .having((s) => s.sentDuels, 'sentDuels', isEmpty)
               .having((s) => s.historyDuels, 'historyDuels', isEmpty),
+        ],
+      );
+
+      blocTest<DuelListBloc, DuelListState>(
+        'emits [DuelListLoading, DuelListError] when sent duels fetch fails',
+        build: () {
+          mockGetActiveDuels.setupSuccess(userId, []);
+          mockGetPendingDuels.setupSuccess(userId, []);
+          mockGetSentDuels.setupFailure(
+            userId,
+            const ServerFailure(message: tDuelErrorMessage),
+          );
+          mockGetDuelHistory.setupSuccess(userId, []);
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
+        expect: () => [
+          const DuelListLoading(),
+          isA<DuelListError>().having(
+            (s) => s.message,
+            'message',
+            tDuelErrorMessage,
+          ),
         ],
       );
 
@@ -353,6 +404,38 @@ void main() {
             'effect',
             isA<ShowSnackBarEffect>(),
           ),
+        ],
+      );
+
+      blocTest<DuelListBloc, DuelListState>(
+        'removes cancelled duel from sentDuels and emits cancel effect',
+        build: () {
+          mockGetActiveDuels.setupSuccess(userId, []);
+          mockGetPendingDuels.setupSuccess(userId, []);
+          mockGetSentDuels.setupSuccess(userId, [tSentDuel]);
+          mockGetDuelHistory.setupSuccess(userId, []);
+          mockDeclineDuel.setupSuccess(tSentDuelId);
+          return buildBloc();
+        },
+        act: (bloc) async {
+          bloc.add(const DuelListLoadRequested(userId));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          bloc.add(const DuelDeclineRequested(tSentDuelId));
+        },
+        skip: 2,
+        expect: () => [
+          isA<DuelListLoaded>()
+              .having(
+                (s) => s.sentDuels.map((d) => d.id),
+                'sentDuelIds',
+                isNot(contains(tSentDuelId)),
+              )
+              .having(
+                (s) => s.effect,
+                'effect',
+                isA<ShowSnackBarEffect>()
+                    .having((e) => e.message, 'message', 'Challenge cancelled.'),
+              ),
         ],
       );
     });

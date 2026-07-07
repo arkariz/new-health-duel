@@ -47,20 +47,23 @@ class DuelListLoaded extends DuelListState {
   const DuelListLoaded({
     required this.activeDuels,
     required this.pendingDuels,
+    required this.sentDuels,
     required this.historyDuels,
     super.effect,
   });
   final List<Duel> activeDuels;
   final List<Duel> pendingDuels;
+  final List<Duel> sentDuels;
   final List<Duel> historyDuels;
 
   @override
-  List<Object?> get props => [activeDuels, pendingDuels, historyDuels];
+  List<Object?> get props => [activeDuels, pendingDuels, sentDuels, historyDuels];
 
   @override
   DuelListState _copyWithEffect(UiEffect? effect) => DuelListLoaded(
         activeDuels: activeDuels,
         pendingDuels: pendingDuels,
+        sentDuels: sentDuels,
         historyDuels: historyDuels,
         effect: effect,
       );
@@ -69,12 +72,14 @@ class DuelListLoaded extends DuelListState {
   DuelListLoaded copyWith({
     List<Duel>? activeDuels,
     List<Duel>? pendingDuels,
+    List<Duel>? sentDuels,
     List<Duel>? historyDuels,
     UiEffect? effect,
   }) {
     return DuelListLoaded(
       activeDuels: activeDuels ?? this.activeDuels,
       pendingDuels: pendingDuels ?? this.pendingDuels,
+      sentDuels: sentDuels ?? this.sentDuels,
       historyDuels: historyDuels ?? this.historyDuels,
       effect: effect,
     );

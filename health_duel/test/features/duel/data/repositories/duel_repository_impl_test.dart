@@ -243,6 +243,34 @@ void main() {
       });
     });
 
+    // ─── getSentDuels ─────────────────────────────────────────────────────────
+    group('getSentDuels', () {
+      test('maps DuelDto list to Duel entity list', () async {
+        when(() => mockDataSource.getSentDuels(tUserModel.id))
+            .thenAnswer((_) async => [tSentDuelDto()]);
+
+        final result = await repository.getSentDuels(tUserModel.id);
+
+        expect(result.isRight(), isTrue);
+        result.fold(
+          (_) => fail('Expected Right'),
+          (duels) {
+            expect(duels, hasLength(1));
+            expect(duels.first.id, tSentDuelId);
+          },
+        );
+      });
+
+      test('returns ServerFailure when datasource throws', () async {
+        when(() => mockDataSource.getSentDuels(tUserModel.id))
+            .thenThrow(Exception('Query failed'));
+
+        final result = await repository.getSentDuels(tUserModel.id);
+
+        expect(result.isLeft(), isTrue);
+      });
+    });
+
     // ─── getDuelHistory ───────────────────────────────────────────────────────
     group('getDuelHistory', () {
       test('maps DuelDto list to Duel entity list', () async {

@@ -181,6 +181,22 @@ class DuelFirestoreDataSource {
     return query.docs.map(DuelDto.fromFirestore).toList();
   }
 
+  /// Get outgoing (sent) pending duel challenges for a user
+  ///
+  /// Queries duels where:
+  /// - User is the challenger
+  /// - Status is pending
+  /// - Sorted by creation time (newest first)
+  Future<List<DuelDto>> getSentDuels(String userId) async {
+    final query = await _duelsCollection
+        .where('challengerId', isEqualTo: userId)
+        .where('status', isEqualTo: DuelStatus.pending.name)
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return query.docs.map(DuelDto.fromFirestore).toList();
+  }
+
   /// Get duel history (completed duels) for a user
   ///
   /// Queries completed duels sorted by completion time.

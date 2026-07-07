@@ -10,6 +10,10 @@ extension DuelListSideEffect on DuelListBloc {
         message: 'Duel invitation declined.',
       );
 
+  ShowSnackBarEffect _effectCancelSuccess() => ShowSnackBarEffect(
+        message: 'Challenge cancelled.',
+      );
+
   ShowSnackBarEffect _effectError(String message) => ShowSnackBarEffect(
         message: message,
         severity: FeedbackSeverity.error,
