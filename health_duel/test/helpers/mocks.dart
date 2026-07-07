@@ -24,6 +24,7 @@ import 'package:health_duel/features/duel/data/datasources/duel_firestore_dataso
 import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/repositories/duel_repository.dart';
 import 'package:health_duel/features/duel/domain/usecases/accept_duel.dart';
+import 'package:health_duel/features/duel/domain/usecases/complete_duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/create_duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/decline_duel.dart';
 import 'package:health_duel/features/duel/domain/usecases/get_active_duels.dart';
@@ -244,6 +245,8 @@ class MockGetDuelHistory extends Mock implements GetDuelHistory {}
 class MockAcceptDuel extends Mock implements AcceptDuel {}
 
 class MockDeclineDuel extends Mock implements DeclineDuel {}
+
+class MockCompleteDuel extends Mock implements CompleteDuel {}
 
 class MockGetOpponents extends Mock implements GetOpponents {}
 
@@ -478,6 +481,16 @@ extension MockAcceptDuelX on MockAcceptDuel {
 extension MockDeclineDuelX on MockDeclineDuel {
   void setupSuccess(String duelId) {
     when(() => call(duelId)).thenAnswer((_) async => const Right(null));
+  }
+
+  void setupFailure(String duelId, Failure failure) {
+    when(() => call(duelId)).thenAnswer((_) async => Left(failure));
+  }
+}
+
+extension MockCompleteDuelX on MockCompleteDuel {
+  void setupSuccess(String duelId, Duel duel) {
+    when(() => call(duelId)).thenAnswer((_) async => Right(duel));
   }
 
   void setupFailure(String duelId, Failure failure) {

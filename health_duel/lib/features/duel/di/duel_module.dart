@@ -45,6 +45,7 @@ void registerDuelModule() {
   ..registerFactory(() => CreateDuel(getIt<DuelRepository>()))
   ..registerFactory(() => AcceptDuel(getIt<DuelRepository>()))
   ..registerFactory(() => DeclineDuel(getIt<DuelRepository>()))
+  ..registerFactory(() => CompleteDuel(getIt<DuelRepository>()))
 
   // Query Duels
   ..registerFactory(() => GetActiveDuels(getIt<DuelRepository>()))
@@ -73,6 +74,7 @@ void registerDuelModule() {
       sessionRepository: getIt<SessionRepository>(),
       checkHealthPermissions: getIt<CheckHealthPermissions>(),
       requestHealthPermissions: getIt<RequestHealthPermissions>(),
+      completeDuel: getIt<CompleteDuel>(),
     ),
   )
 
@@ -85,6 +87,7 @@ void registerDuelModule() {
       declineDuel: getIt<DeclineDuel>(),
       syncHealthData: getIt<SyncHealthData>(),
       checkHealthPermissions: getIt<CheckHealthPermissions>(),
+      completeDuel: getIt<CompleteDuel>(),
     ),
   )
 

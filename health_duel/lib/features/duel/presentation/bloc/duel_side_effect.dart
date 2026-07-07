@@ -32,4 +32,14 @@ extension DuelSideEffect on DuelBloc {
       severity: FeedbackSeverity.success,
     );
   }
+
+  // ════════════════════════════════════════════
+  // NAVIGATION EFFECTS
+  // ════════════════════════════════════════════
+
+  /// Navigate to duel result screen after completion
+  NavigatePushEffect _effectNavigateToResult(Duel duel) => NavigatePushEffect(
+        route: AppRoutes.duelResultPath(duel.id),
+        arguments: {'duel': duel, 'currentUserId': _currentUserId ?? ''},
+      );
 }

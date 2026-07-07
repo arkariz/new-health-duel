@@ -9,6 +9,7 @@ export 'entities/duel.dart';
 export 'repositories/duel_repository.dart';
 // Use Cases
 export 'usecases/accept_duel.dart';
+export 'usecases/complete_duel.dart';
 export 'usecases/create_duel.dart';
 export 'usecases/decline_duel.dart';
 export 'usecases/get_active_duels.dart';

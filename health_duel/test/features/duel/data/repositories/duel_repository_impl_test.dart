@@ -103,6 +103,52 @@ void main() {
       });
     });
 
+    // ─── completeDuel ─────────────────────────────────────────────────────────
+    group('completeDuel', () {
+      test('returns completed Duel entity on success', () async {
+        when(() => mockDataSource.completeDuel(tDuelId))
+            .thenAnswer((_) async => tCompletedDuelDto());
+
+        final result = await repository.completeDuel(tDuelId);
+
+        expect(result.isRight(), isTrue);
+        result.fold(
+          (_) => fail('Expected Right'),
+          (duel) => expect(duel.status.name, 'completed'),
+        );
+      });
+
+      test('returns ServerFailure when datasource throws generic exception',
+          () async {
+        when(() => mockDataSource.completeDuel(tDuelId))
+            .thenThrow(Exception('Firestore error'));
+
+        final result = await repository.completeDuel(tDuelId);
+
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (_) => fail('Expected Left'),
+        );
+      });
+
+      test('passes ValidationFailure through unchanged when datasource throws it',
+          () async {
+        const validationFailure =
+            ValidationFailure(message: 'Duel has not ended yet');
+        when(() => mockDataSource.completeDuel(tDuelId))
+            .thenThrow(validationFailure);
+
+        final result = await repository.completeDuel(tDuelId);
+
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure, validationFailure),
+          (_) => fail('Expected Left'),
+        );
+      });
+    });
+
     // ─── cancelDuel ───────────────────────────────────────────────────────────
     group('cancelDuel', () {
       test('returns void on success', () async {

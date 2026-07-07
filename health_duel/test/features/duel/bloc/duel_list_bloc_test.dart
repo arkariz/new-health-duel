@@ -1,11 +1,14 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_state.dart';
 import 'package:health_duel/features/health/domain/entities/entities.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/helpers.dart';
 
@@ -17,6 +20,7 @@ void main() {
   late MockDeclineDuel mockDeclineDuel;
   late MockSyncHealthData mockSyncHealthData;
   late MockCheckHealthPermissions mockCheckHealthPermissions;
+  late MockCompleteDuel mockCompleteDuel;
 
   setUpAll(registerFallbackValues);
 
@@ -27,6 +31,7 @@ void main() {
     mockAcceptDuel = MockAcceptDuel();
     mockDeclineDuel = MockDeclineDuel();
     mockSyncHealthData = MockSyncHealthData();
+    mockCompleteDuel = MockCompleteDuel();
     // Not authorized by default so the background health-sync branch (which
     // would emit an extra refreshed DuelListLoaded) stays inactive and
     // existing [Loading, Loaded] expectations remain exact.
@@ -42,6 +47,7 @@ void main() {
         declineDuel: mockDeclineDuel,
         syncHealthData: mockSyncHealthData,
         checkHealthPermissions: mockCheckHealthPermissions,
+        completeDuel: mockCompleteDuel,
       );
 
   group('DuelListBloc', () {
@@ -149,6 +155,76 @@ void main() {
           const DuelListLoading(),
           isA<DuelListError>(),
         ],
+      );
+    });
+
+    // ─── Expired duel sweep ────────────────────────────────────────────────
+    group('expired duel sweep', () {
+      const userId = 'test-user-123';
+
+      blocTest<DuelListBloc, DuelListState>(
+        'completes expired active duels and moves them to history',
+        build: () {
+          // First fetch returns the expired duel; refetch after the sweep
+          // returns the post-completion lists.
+          var activeCalls = 0;
+          when(() => mockGetActiveDuels(userId)).thenAnswer((_) async {
+            activeCalls++;
+            return activeCalls == 1
+                ? Right([tExpiredActiveDuel])
+                : const Right(<Duel>[]);
+          });
+          var historyCalls = 0;
+          when(() => mockGetDuelHistory(userId)).thenAnswer((_) async {
+            historyCalls++;
+            return historyCalls == 1
+                ? const Right(<Duel>[])
+                : Right([tJustCompletedDuel]);
+          });
+          mockGetPendingDuels.setupSuccess(userId, []);
+          mockCompleteDuel.setupSuccess(tDuelId, tJustCompletedDuel);
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
+        expect: () => [
+          const DuelListLoading(),
+          isA<DuelListLoaded>()
+              .having((s) => s.activeDuels, 'activeDuels', isEmpty)
+              .having(
+                (s) => s.historyDuels.map((d) => d.id),
+                'historyDuelIds',
+                [tDuelId],
+              ),
+        ],
+        verify: (_) {
+          verify(() => mockCompleteDuel(tDuelId)).called(1);
+        },
+      );
+
+      blocTest<DuelListBloc, DuelListState>(
+        'still emits DuelListLoaded when completing an expired duel fails',
+        build: () {
+          mockGetActiveDuels.setupSuccess(userId, [tExpiredActiveDuel]);
+          mockGetPendingDuels.setupSuccess(userId, []);
+          mockGetDuelHistory.setupSuccess(userId, []);
+          mockCompleteDuel.setupFailure(
+            tDuelId,
+            const ServerFailure(message: 'permission denied'),
+          );
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(const DuelListLoadRequested(userId)),
+        expect: () => [
+          const DuelListLoading(),
+          isA<DuelListLoaded>().having(
+            (s) => s.activeDuels.map((d) => d.id),
+            'activeDuelIds',
+            [tDuelId],
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockCompleteDuel(tDuelId)).called(1);
+        },
       );
     });
 

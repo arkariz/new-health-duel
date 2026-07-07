@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:health_duel/core/error/failures.dart';
 import 'package:health_duel/data/session/data/models/user_model.dart';
 import 'package:health_duel/features/duel/data/models/duel_dto.dart';
 import 'package:health_duel/features/duel/domain/value_objects/duel_status.dart';
@@ -75,6 +76,57 @@ class DuelFirestoreDataSource {
     // Return updated duel
     final doc = await _duelsCollection.doc(duelId).get();
     return DuelDto.fromFirestore(doc);
+  }
+
+  /// Finalize an expired active duel (client-side completion)
+  ///
+  /// Atomically writes status=completed, winnerId (null on tie), and
+  /// completedAt=endTime via a Firestore transaction. Idempotent: if the
+  /// duel is no longer active (already completed by the other participant
+  /// or a sweep), returns the duel unchanged without writing.
+  Future<DuelDto> completeDuel(String duelId) async {
+    final docRef = _duelsCollection.doc(duelId);
+
+    await _firestore.runTransaction((transaction) async {
+      final doc = await transaction.get(docRef);
+
+      if (!doc.exists) {
+        throw Exception('Duel not found: $duelId');
+      }
+
+      final data = doc.data()!;
+      if (data['status'] != DuelStatus.active.name) {
+        // Already completed/cancelled by another writer — idempotent success
+        return;
+      }
+
+      final endTime = (data['endTime'] as Timestamp).toDate();
+      if (DateTime.now().isBefore(endTime)) {
+        throw const ValidationFailure(message: 'Duel has not ended yet');
+      }
+
+      final challengerSteps = data['challengerSteps'] as int? ?? 0;
+      final challengedSteps = data['challengedSteps'] as int? ?? 0;
+      final String? winnerId;
+      if (challengerSteps == challengedSteps) {
+        winnerId = null; // Tie
+      } else {
+        winnerId = challengerSteps > challengedSteps
+            ? data['challengerId'] as String
+            : data['challengedId'] as String;
+      }
+
+      transaction.update(docRef, {
+        'status': DuelStatus.completed.name,
+        'winnerId': winnerId,
+        // Deterministic completedAt: winner is decided exactly at the
+        // 24-hour mark, and racing writers produce identical payloads.
+        'completedAt': Timestamp.fromDate(endTime),
+      });
+    });
+
+    // Return updated duel
+    return getDuelById(duelId);
   }
 
   /// Cancel/decline a duel

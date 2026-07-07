@@ -147,6 +147,62 @@ Duel get tPendingDuel => Duel(
       createdAt: tPendingCreatedAt,
     );
 
+/// Expired-but-still-active duel — endTime in the past, status still active
+///
+/// Uses runtime timestamps so [Duel.needsCompletion] returns true.
+/// Challenger (tUserModel, 1500 steps) leads challenged (1200 steps).
+DateTime get tExpiredStartTime => DateTime.now().subtract(const Duration(hours: 25));
+DateTime get tExpiredEndTime => DateTime.now().subtract(const Duration(hours: 1));
+
+Duel get tExpiredActiveDuel => Duel(
+      id: tDuelId,
+      challengerId: tUserModel.id,
+      challengedId: tOpponentModel.id,
+      challengerName: tUserModel.name,
+      challengedName: tOpponentModel.name,
+      challengerSteps: duel.StepCount(1500),
+      challengedSteps: duel.StepCount(1200),
+      status: DuelStatus.active,
+      startTime: tExpiredStartTime,
+      endTime: tExpiredEndTime,
+      createdAt: tDuelCreatedAt,
+      acceptedAt: tDuelAcceptedAt,
+    );
+
+/// [tExpiredActiveDuel] after client-side completion — status completed,
+/// completedAt equals endTime (deterministic completion timestamp).
+Duel get tJustCompletedDuel => Duel(
+      id: tDuelId,
+      challengerId: tUserModel.id,
+      challengedId: tOpponentModel.id,
+      challengerName: tUserModel.name,
+      challengedName: tOpponentModel.name,
+      challengerSteps: duel.StepCount(1500),
+      challengedSteps: duel.StepCount(1200),
+      status: DuelStatus.completed,
+      startTime: tExpiredStartTime,
+      endTime: tExpiredEndTime,
+      createdAt: tDuelCreatedAt,
+      acceptedAt: tDuelAcceptedAt,
+      completedAt: tExpiredEndTime,
+    );
+
+/// Expired-active duel with equal step counts (tie scenario)
+Duel get tExpiredTiedDuel => Duel(
+      id: tDuelId,
+      challengerId: tUserModel.id,
+      challengedId: tOpponentModel.id,
+      challengerName: tUserModel.name,
+      challengedName: tOpponentModel.name,
+      challengerSteps: duel.StepCount(1500),
+      challengedSteps: duel.StepCount(1500),
+      status: DuelStatus.active,
+      startTime: tExpiredStartTime,
+      endTime: tExpiredEndTime,
+      createdAt: tDuelCreatedAt,
+      acceptedAt: tDuelAcceptedAt,
+    );
+
 /// Completed duel — challenger won
 final tCompletedDuel = Duel(
   id: tHistoryDuelId,

@@ -39,6 +39,15 @@ abstract class DuelRepository {
   /// Returns [Failure] if operation fails.
   Future<Either<Failure, void>> cancelDuel(String duelId);
 
+  /// Finalize an expired active duel (client-side completion)
+  ///
+  /// Writes status=completed, winnerId (null on tie), completedAt=endTime
+  /// atomically via Firestore transaction. Idempotent: returns the duel
+  /// unchanged if it is already completed/cancelled.
+  ///
+  /// Returns completed [Duel] or [Failure].
+  Future<Either<Failure, Duel>> completeDuel(String duelId);
+
   /// Get duel by ID
   ///
   /// Returns [Duel] or [Failure] if not found.

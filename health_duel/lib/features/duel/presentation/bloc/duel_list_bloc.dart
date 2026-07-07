@@ -26,6 +26,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     required DeclineDuel declineDuel,
     required SyncHealthData syncHealthData,
     required CheckHealthPermissions checkHealthPermissions,
+    required CompleteDuel completeDuel,
   })  : _getActiveDuels = getActiveDuels,
         _getPendingDuels = getPendingDuels,
         _getDuelHistory = getDuelHistory,
@@ -33,6 +34,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
         _declineDuel = declineDuel,
         _syncHealthData = syncHealthData,
         _checkHealthPermissions = checkHealthPermissions,
+        _completeDuel = completeDuel,
         super(const DuelListInitial()) {
     on<DuelListLoadRequested>(_onLoadRequested);
     on<DuelAcceptRequested>(_onAcceptRequested);
@@ -45,6 +47,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
   final DeclineDuel _declineDuel;
   final SyncHealthData _syncHealthData;
   final CheckHealthPermissions _checkHealthPermissions;
+  final CompleteDuel _completeDuel;
 
   Future<void> _onLoadRequested(
     DuelListLoadRequested event,
@@ -83,12 +86,27 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
       return;
     }
 
-    final activeList = activeResult.getOrElse(() => []);
+    var activeList = activeResult.getOrElse(() => []);
+    var historyList = historyResult.getOrElse(() => []);
+
+    // Sweep: finalize expired duels still marked active in Firestore so
+    // they move to History even if the duel screen is never opened.
+    final expired = activeList.where((d) => d.needsCompletion).toList();
+    if (expired.isNotEmpty) {
+      for (final duel in expired) {
+        // Failures are non-fatal — the duel stays in Active until next load
+        await _completeDuel(duel.id);
+      }
+      final refreshedActive = await _getActiveDuels(event.userId);
+      final refreshedHistory = await _getDuelHistory(event.userId);
+      activeList = refreshedActive.getOrElse(() => activeList);
+      historyList = refreshedHistory.getOrElse(() => historyList);
+    }
 
     emit(DuelListLoaded(
       activeDuels: activeList,
       pendingDuels: pendingResult.getOrElse(() => []),
-      historyDuels: historyResult.getOrElse(() => []),
+      historyDuels: historyList,
     ));
 
     // Background health sync — only if permissions are already granted

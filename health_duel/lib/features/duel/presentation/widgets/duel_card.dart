@@ -238,13 +238,16 @@ class _HistoryDuelCard extends StatelessWidget {
     final opponentId = isChallenger ? duel.challengedId : duel.challengerId;
     final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
     final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
-    final iWon = duel.currentLeader == currentUserId;
+    final isTie = duel.currentLeader == null;
+    final iWon = !isTie && duel.currentLeader == currentUserId;
 
     final resultColor = duel.status == DuelStatus.completed
-        ? (iWon ? context.appColors.success : context.appColors.opponent)
+        ? (isTie
+            ? context.appColors.warning
+            : (iWon ? context.appColors.success : context.appColors.opponent))
         : context.appColors.divider;
     final resultLabel = duel.status == DuelStatus.completed
-        ? (iWon ? 'WIN' : 'LOSS')
+        ? (isTie ? 'TIE' : (iWon ? 'WIN' : 'LOSS'))
         : duel.status.toString().split('.').last.toUpperCase();
 
     return GestureDetector(
@@ -273,7 +276,7 @@ class _HistoryDuelCard extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  iWon ? '🏆' : '💪',
+                  isTie ? '🤝' : (iWon ? '🏆' : '💪'),
                   style: const TextStyle(fontSize: 20),
                 ),
               ),

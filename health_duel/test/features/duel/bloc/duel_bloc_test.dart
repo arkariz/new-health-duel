@@ -20,6 +20,7 @@ void main() {
   late MockSessionRepository mockSessionRepository;
   late MockCheckHealthPermissions mockCheckHealthPermissions;
   late MockRequestHealthPermissions mockRequestHealthPermissions;
+  late MockCompleteDuel mockCompleteDuel;
 
   setUpAll(registerFallbackValues);
 
@@ -29,6 +30,7 @@ void main() {
     mockSessionRepository = MockSessionRepository();
     mockCheckHealthPermissions = MockCheckHealthPermissions();
     mockRequestHealthPermissions = MockRequestHealthPermissions();
+    mockCompleteDuel = MockCompleteDuel();
     mockCheckHealthPermissions.setupSuccess(HealthPermissionStatus.authorized);
     mockRequestHealthPermissions.setupSuccess(granted: true);
   });
@@ -39,6 +41,7 @@ void main() {
         sessionRepository: mockSessionRepository,
         checkHealthPermissions: mockCheckHealthPermissions,
         requestHealthPermissions: mockRequestHealthPermissions,
+        completeDuel: mockCompleteDuel,
       );
 
   group('DuelBloc', () {
@@ -100,14 +103,99 @@ void main() {
       );
 
       blocTest<DuelBloc, DuelState>(
-        'emits DuelLoaded with duel completed effect when duel is completed',
+        'emits DuelLoaded with navigate-to-result effect when duel is completed',
         build: buildBloc,
         act: (bloc) => bloc.add(DuelUpdateSucceeded(tCompletedDuel)),
         expect: () => [
           isA<DuelLoaded>()
               .having((s) => s.duel.id, 'duel.id', tHistoryDuelId)
+              .having((s) => s.effect, 'effect', isA<NavigatePushEffect>()),
+        ],
+      );
+    });
+
+    // ─── Duel completion (client-side) ─────────────────────────────────────
+    group('duel completion', () {
+      blocTest<DuelBloc, DuelState>(
+        'completes expired-active duel from stream update and navigates to result',
+        build: () {
+          mockCompleteDuel.setupSuccess(tDuelId, tJustCompletedDuel);
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(DuelUpdateSucceeded(tExpiredActiveDuel)),
+        expect: () => [
+          // Normal emit while completion is being written
+          isA<DuelLoaded>()
+              .having((s) => s.duel.id, 'duel.id', tDuelId)
+              .having((s) => s.effect, 'effect', isNot(isA<NavigatePushEffect>())),
+          // Completion succeeded → navigate to result
+          isA<DuelLoaded>()
+              .having((s) => s.duel.status.name, 'duel.status', 'completed')
+              .having((s) => s.effect, 'effect', isA<NavigatePushEffect>()),
+        ],
+        verify: (_) {
+          verify(() => mockCompleteDuel(tDuelId)).called(1);
+        },
+      );
+
+      blocTest<DuelBloc, DuelState>(
+        'navigates only once when stream echoes the completed duel back',
+        build: () {
+          mockCompleteDuel.setupSuccess(tDuelId, tJustCompletedDuel);
+          return buildBloc();
+        },
+        act: (bloc) async {
+          bloc.add(DuelUpdateSucceeded(tExpiredActiveDuel));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          // Firestore stream echoes our own completion write back
+          bloc.add(DuelUpdateSucceeded(tJustCompletedDuel));
+        },
+        skip: 2, // normal emit + navigate emit (covered above)
+        expect: () => [
+          isA<DuelLoaded>()
+              .having((s) => s.duel.status.name, 'duel.status', 'completed')
+              .having((s) => s.effect, 'effect', isNull),
+        ],
+      );
+
+      blocTest<DuelBloc, DuelState>(
+        'falls back to snackbar effect when completion write fails',
+        build: () {
+          mockCompleteDuel.setupFailure(
+            tDuelId,
+            const ServerFailure(message: 'permission denied'),
+          );
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(DuelUpdateSucceeded(tExpiredActiveDuel)),
+        expect: () => [
+          isA<DuelLoaded>()
+              .having((s) => s.duel.id, 'duel.id', tDuelId)
+              .having((s) => s.effect, 'effect', isNot(isA<NavigatePushEffect>())),
+          isA<DuelLoaded>()
               .having((s) => s.effect, 'effect', isA<ShowSnackBarEffect>()),
         ],
+        verify: (_) {
+          verify(() => mockCompleteDuel(tDuelId)).called(1);
+        },
+      );
+
+      blocTest<DuelBloc, DuelState>(
+        'completes tied expired duel and navigates to result',
+        build: () {
+          mockCompleteDuel.setupSuccess(tDuelId, tJustCompletedDuel);
+          return buildBloc();
+        },
+        act: (bloc) => bloc.add(DuelUpdateSucceeded(tExpiredTiedDuel)),
+        expect: () => [
+          isA<DuelLoaded>().having((s) => s.duel.id, 'duel.id', tDuelId),
+          isA<DuelLoaded>()
+              .having((s) => s.duel.status.name, 'duel.status', 'completed')
+              .having((s) => s.effect, 'effect', isA<NavigatePushEffect>()),
+        ],
+        verify: (_) {
+          verify(() => mockCompleteDuel(tDuelId)).called(1);
+        },
       );
     });
 

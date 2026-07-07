@@ -77,6 +77,11 @@ class Duel extends Equatable {
     return status == DuelStatus.active && now.isAfter(endTime);
   }
 
+  /// Duel is past its end time but Firestore still says `active` —
+  /// the client must finalize it (write completed status + winner).
+  bool get needsCompletion =>
+      status == DuelStatus.active && DateTime.now().isAfter(endTime);
+
   /// Check if pending invitation has expired (24 hours)
   ///
   /// Pending invitations expire if not accepted within 24 hours.
