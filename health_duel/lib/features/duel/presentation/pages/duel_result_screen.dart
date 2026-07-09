@@ -1,8 +1,15 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/core/theme/theme.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
+import 'package:health_duel/features/duel/presentation/services/duel_share_service.dart';
+import 'package:health_duel/features/duel/presentation/widgets/share_card_widget.dart';
 
 /// Duel Result Screen — Sports-energy dark aesthetic
 ///
@@ -12,18 +19,41 @@ import 'package:health_duel/features/duel/domain/domain.dart';
 /// - Step comparison: two stat cards side-by-side (winner glows green)
 /// - Details row: start date, end date, duration
 /// - CTA: Challenge Again (filled) + Back to Duels (outlined)
-class DuelResultScreen extends StatelessWidget {
+class DuelResultScreen extends StatefulWidget {
 
   const DuelResultScreen({
     required this.duel,
     required this.currentUserId,
+    this.shareService,
+    this.captureOverride,
     super.key,
   });
   final Duel duel;
   final String currentUserId;
 
+  /// Test seam — overrides the resolved [DuelShareService]. Production code
+  /// always resolves it from GetIt.
+  final DuelShareService? shareService;
+
+  /// Test seam — overrides the share-card image capture step, since
+  /// `RenderRepaintBoundary.toImage()` cannot run meaningfully inside
+  /// `flutter_test`. Production code always captures the real widget.
+  final Future<Uint8List> Function(GlobalKey key)? captureOverride;
+
+  @override
+  State<DuelResultScreen> createState() => _DuelResultScreenState();
+}
+
+class _DuelResultScreenState extends State<DuelResultScreen> {
+  late final DuelShareService _shareService = widget.shareService ?? GetIt.instance<DuelShareService>();
+  final GlobalKey _shareCardKey = GlobalKey();
+  bool _isSharing = false;
+
   @override
   Widget build(BuildContext context) {
+    final duel = widget.duel;
+    final currentUserId = widget.currentUserId;
+
     if (!duel.isCompleted) return _buildNotCompleted(context);
 
     return Scaffold(
@@ -31,33 +61,90 @@ class DuelResultScreen extends StatelessWidget {
         title: const Text('Duel Result'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share_rounded),
-            onPressed: () => _onShare(context),
+            icon: _isSharing
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.share_rounded),
+            onPressed: _isSharing ? null : _onShare,
             tooltip: 'Share Result',
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.md,
-          AppSpacing.sm,
-          AppSpacing.md,
-          AppSpacing.lg,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _ResultHeader(duel: duel, currentUserId: currentUserId),
-            const SizedBox(height: AppSpacing.md),
-            _StepComparison(duel: duel, currentUserId: currentUserId),
-            const SizedBox(height: AppSpacing.md),
-            _DetailsCard(duel: duel),
-            const SizedBox(height: AppSpacing.lg),
-            _ActionButtons(currentUserId: currentUserId),
-          ],
-        ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.sm,
+              AppSpacing.md,
+              AppSpacing.lg,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _ResultHeader(duel: duel, currentUserId: currentUserId),
+                const SizedBox(height: AppSpacing.md),
+                _StepComparison(duel: duel, currentUserId: currentUserId),
+                const SizedBox(height: AppSpacing.md),
+                _DetailsCard(duel: duel),
+                const SizedBox(height: AppSpacing.lg),
+                _ActionButtons(currentUserId: currentUserId),
+              ],
+            ),
+          ),
+          // Always mounted (never conditionally built) so the RepaintBoundary
+          // has a real layout/paint pass to capture from when Share is
+          // tapped. Positioned far off-screen rather than wrapped in
+          // Offstage/Visibility(visible: false) — both of those skip
+          // RenderObject.paint() entirely, which leaves the RepaintBoundary
+          // with debugNeedsPaint == true and toImage() throws.
+          Positioned(
+            left: -9999,
+            top: -9999,
+            child: IgnorePointer(
+              child: RepaintBoundary(
+                key: _shareCardKey,
+                child: ShareCardWidget(duel: duel, currentUserId: currentUserId),
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> _onShare() async {
+    if (_isSharing) return;
+    setState(() => _isSharing = true);
+    try {
+      final bytes = await (widget.captureOverride ?? _captureShareCard)(_shareCardKey);
+      await _shareService.shareImage(
+        bytes: bytes,
+        fileName: 'health-duel-result.png',
+        text: 'Challenge me on Health Duel!',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Shared!')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not share result. Please try again.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSharing = false);
+    }
+  }
+
+  Future<Uint8List> _captureShareCard(GlobalKey key) async {
+    final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    final image = await boundary.toImage(pixelRatio: 2);
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
   }
 
   Widget _buildNotCompleted(BuildContext context) {
@@ -92,11 +179,6 @@ class DuelResultScreen extends StatelessWidget {
     );
   }
 
-  void _onShare(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Share functionality coming soon!')),
-    );
-  }
 }
 
 // ─── Result Header ────────────────────────────────────────────────────────────

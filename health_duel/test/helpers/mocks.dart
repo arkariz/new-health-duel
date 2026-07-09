@@ -5,6 +5,7 @@
 library;
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
@@ -47,6 +48,7 @@ import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart'
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_state.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
+import 'package:health_duel/features/duel/presentation/services/duel_share_service.dart';
 import 'package:health_duel/features/friends/domain/usecases/get_friends.dart';
 import 'package:health_duel/features/health/domain/entities/entities.dart';
 import 'package:health_duel/features/health/domain/repositories/health_repository.dart';
@@ -132,6 +134,7 @@ void registerFallbackValues() {
   registerFallbackValue(const Right<Failure, List<Duel>>([]));
   registerFallbackValue(const Left<Failure, List<Duel>>(ServerFailure(message: 'test')));
   registerFallbackValue(const Right<Failure, Duel?>(null));
+  registerFallbackValue(Uint8List(0));
 }
 
 /// Fake UserModel for fallback registration
@@ -253,6 +256,8 @@ class MockDeclineDuel extends Mock implements DeclineDuel {}
 class MockCompleteDuel extends Mock implements CompleteDuel {}
 
 class MockExpirePendingDuel extends Mock implements ExpirePendingDuel {}
+
+class MockDuelShareService extends Mock implements DuelShareService {}
 
 class MockGetOpponents extends Mock implements GetOpponents {}
 
@@ -530,6 +535,24 @@ extension MockExpirePendingDuelX on MockExpirePendingDuel {
 
   void setupFailure(String duelId, Failure failure) {
     when(() => call(duelId)).thenAnswer((_) async => Left(failure));
+  }
+}
+
+extension MockDuelShareServiceX on MockDuelShareService {
+  void setupSuccess() {
+    when(() => shareImage(
+          bytes: any(named: 'bytes'),
+          fileName: any(named: 'fileName'),
+          text: any(named: 'text'),
+        )).thenAnswer((_) async {});
+  }
+
+  void setupFailure() {
+    when(() => shareImage(
+          bytes: any(named: 'bytes'),
+          fileName: any(named: 'fileName'),
+          text: any(named: 'text'),
+        )).thenThrow(Exception('share failed'));
   }
 }
 

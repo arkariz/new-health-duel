@@ -6,8 +6,8 @@
 **Platform:** Android & iOS (Flutter)
 **Version:** MVP v1.0
 **Owner:** Product / Engineering
-**Status:** In Development — ~42% of MVP acceptance criteria implemented as of
-2026-07-07 (see the Implementation Status note below and the `[x]` marks
+**Status:** In Development — ~47% of MVP acceptance criteria implemented as of
+2026-07-09 (see the Implementation Status note below and the `[x]` marks
 throughout Section 7)
 
 Health Duel is a mobile application that enables users to challenge friends in
@@ -15,22 +15,22 @@ Health Duel is a mobile application that enables users to challenge friends in
 accountability with health habits to create engaging, time-bound competitions
 that motivate daily activity.
 
-> **Note — Implementation status (2026-07-07):** Section 7 was audited
-> requirement-by-requirement against the current codebase. Grouping tightly
-> related and nested criteria into 86 distinct requirements, 36 are
-> implemented (also 36 of the section's 111 individual checkboxes — the
-> counts agree because every implemented item happens to be a single-line
-> criterion), 11 are partially implemented (annotated inline below), and 39
-> are not started. Each criterion is checked off (`- [x]`) only if fully
-> implemented; a partial implementation stays unchecked with a short note
-> explaining the gap. The single largest gap is **push notifications**: no
-> Cloud Functions exist in the repository and `firebase_messaging` is an
+> **Note — Implementation status (last updated 2026-07-09):** Section 7 was
+> audited requirement-by-requirement against the current codebase on
+> 2026-07-07. Grouping tightly related and nested criteria into 86 distinct
+> requirements, 37 are implemented, 12 are partially implemented (annotated
+> inline below), and 37 are not started; 52 of the section's 111 individual
+> checkboxes are checked. Each criterion is checked off (`- [x]`) only if
+> fully implemented; a partial implementation stays unchecked with a short
+> note explaining the gap. The single largest gap is **push notifications**:
+> no Cloud Functions exist in the repository and `firebase_messaging` is an
 > unused dependency, so every "notify the other participant" criterion across
 > FR-DUEL-002, FR-DUEL-003, FR-DUEL-005, and all of FR-NOTIF-001–004 is
 > unimplemented for this one structural reason. The duel lifecycle itself
 > (creation through completion, including sent/received invitations and
-> client-side 24-hour expiry) is the most complete area; share cards,
-> notifications, and the user profile screen are the least complete.
+> client-side 24-hour expiry) and share cards (FR-SHARE-001/002, added
+> 2026-07-09) are the most complete areas; notifications and the user profile
+> screen are the least complete.
 
 ## 2. Problem Statement
 
@@ -420,8 +420,8 @@ consequence for the loser that we can share on social media."
 - [ ] Loser shown with punishment emoji (🙇 default) — uses 💪 instead; see
       FR-RESULT-002, no punishment concept exists in code
 - [x] Time range of duel displayed
-- [ ] Share button to generate share card — the button exists, but tapping it
-      only shows a "coming soon" snackbar
+- [x] Share button to generate share card — implemented 2026-07-09, see
+      FR-SHARE-001/002
 - [ ] Return to home button — only "Challenge Again" and "Back to Duels"
       exist; the latter pops the current route rather than routing home
 
@@ -432,40 +432,52 @@ consequence for the loser that we can share on social media."
 - [ ] Default emoji: 🙇 (bowing person) — the result screen shows 💪 for the
       loser instead
 - [ ] Displayed prominently on result screen — n/a, no punishment emoji exists
-- [ ] Included in share card — n/a, share cards aren't generated (FR-SHARE-001)
+- [x] Included in share card — share card shows 🙇 for the loser (FR-SHARE-001),
+      even though the on-screen result still shows 💪 (unchanged gap above)
 - [x] No financial or serious consequences (MVP scope)
 
 ### 7.8 Share Cards
 
-> **Note:** Neither FR-SHARE-001 nor FR-SHARE-002 is implemented — there's no
-> image-generation code (no `RepaintBoundary`/canvas capture) and no share
-> package (e.g. `share_plus`) in `pubspec.yaml`. The result screen's Share
-> button is a placeholder (see FR-RESULT-001).
+> **Note — Implemented 2026-07-09:** `ShareCardWidget` + `DuelShareService`
+> (`share_plus`) capture a `RepaintBoundary` via `toImage()` and hand the PNG
+> to the system share sheet from `DuelResultScreen`. Verified hands-on on a
+> real device (share sheet opens with the image attached). Avatars are
+> initial/emoji circles (reusing `DuelPlayerTile`), not real photos —
+> `Duel` has no photo-URL field, out of scope by design (see the Share Card
+> plan's locked decisions). "Saved to photo library with permission" isn't a
+> separate explicit flow; it relies on the OS share sheet's own built-in
+> "Save Image" option, so no custom permission handling was added.
 
 **FR-SHARE-001: Share Card Generation**
 - System generates shareable image of duel results
 
 **Acceptance Criteria:**
-- [ ] Auto-generate PNG image with duel results
-- [ ] Image includes:
-  - [ ] Health Duel branding/logo
-  - [ ] "24-Hour Step Duel" title
-  - [ ] Both participant names and avatars
-  - [ ] Final step counts with winner indicator
-  - [ ] Loser punishment emoji
-  - [ ] Date range of duel
-- [ ] Image sized for social media (1200x630px recommended)
-- [ ] Image includes invitation CTA: "Challenge me on Health Duel!"
+- [x] Auto-generate PNG image with duel results
+- [x] Image includes:
+  - [x] Health Duel branding/logo
+  - [x] "24-Hour Step Duel" title
+  - [x] Both participant names and avatars — initial/emoji circle avatars,
+        not real photos (see note above)
+  - [x] Final step counts with winner indicator
+  - [x] Loser punishment emoji — 🙇 on the share card (differs from the
+        on-screen result screen, which still shows 💪; see FR-RESULT-001/002)
+  - [x] Date range of duel
+- [x] Image sized for social media (1200x630px recommended) — 600x315
+      logical size captured at `pixelRatio: 2` → exactly 1200x630px
+- [x] Image includes invitation CTA: "Challenge me on Health Duel!"
 
 **FR-SHARE-002: Share Functionality**
 - Users can export and share the generated card
 
 **Acceptance Criteria:**
-- [ ] "Share" button on result screen
-- [ ] Tapping share opens system share sheet
-- [ ] Image can be shared to any installed app (WhatsApp, Instagram, Messages, etc.)
-- [ ] Image saved to device photo library with permission
-- [ ] Success feedback after share
+- [x] "Share" button on result screen
+- [x] Tapping share opens system share sheet
+- [x] Image can be shared to any installed app (WhatsApp, Instagram, Messages, etc.)
+- [ ] Image saved to device photo library with permission — no dedicated
+      save flow; relies on the OS share sheet's own built-in "Save Image"
+      option (see note above)
+- [x] Success feedback after share — "Shared!" snackbar on success, error
+      snackbar on failure
 
 ## 8. Non-Functional Requirements
 
@@ -736,8 +748,9 @@ for UI design system.
 ---
 
 **Document Version:** 1.0
-**Last Updated:** 2026-07-07 (Section 7 checkboxes updated to reflect
-implementation status; requirements text unchanged)
-**Status:** Approved - Development in Progress (~42% of MVP acceptance
+**Last Updated:** 2026-07-09 (FR-SHARE-001/002 and related FR-RESULT-001/002
+checkboxes updated to reflect the newly implemented and device-verified
+share card feature; requirements text unchanged)
+**Status:** Approved - Development in Progress (~47% of MVP acceptance
 criteria implemented)
 **Owner:** Product & Engineering Team
