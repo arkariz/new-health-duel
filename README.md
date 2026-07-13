@@ -1,3 +1,6 @@
+<img width="752" height="1424" alt="1771320049477" src="https://github.com/user-attachments/assets/c98fe3a5-c235-4631-87a1-51f5dd23370b" />
+
+
 # 🏃 24-Hour Health Duels
 
 > **Challenge friends. Compete in 24 hours. Win bragging rights.**
