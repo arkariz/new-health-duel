@@ -51,7 +51,7 @@ GoRouter createAppRouter(AuthBloc authBloc) {
       GoRoute(
         path: AppRoutes.home,
         name: 'home',
-        builder: (_, __) => MultiBlocProvider(
+        builder: (_, _) => MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => getIt<HomeBloc>()),
             BlocProvider(create: (_) => getIt<HealthBloc>()),

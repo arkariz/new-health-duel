@@ -25,32 +25,32 @@ void registerFriendsModule() {
   // DATA SOURCES
   // ════════════════════════════════════════════════════════════════════════
 
-  getIt.registerLazySingleton<FriendFirestoreDataSource>(
+  getIt..registerLazySingleton<FriendFirestoreDataSource>(
     () => FriendFirestoreDataSource(getIt<FirebaseFirestore>()),
-  );
+  )
 
   // ════════════════════════════════════════════════════════════════════════
   // REPOSITORIES
   // ════════════════════════════════════════════════════════════════════════
 
-  getIt.registerLazySingleton<FriendRepository>(
+  ..registerLazySingleton<FriendRepository>(
     () => FriendRepositoryImpl(getIt<FriendFirestoreDataSource>()),
-  );
+  )
 
   // ════════════════════════════════════════════════════════════════════════
   // USE CASES
   // ════════════════════════════════════════════════════════════════════════
 
-  getIt.registerFactory(() => GetFriends(getIt<FriendRepository>()));
-  getIt.registerFactory(() => AddFriend(getIt<FriendRepository>()));
-  getIt.registerFactory(() => RemoveFriend(getIt<FriendRepository>()));
-  getIt.registerFactory(() => SearchUsers(getIt<FriendRepository>()));
+  ..registerFactory(() => GetFriends(getIt<FriendRepository>()))
+  ..registerFactory(() => AddFriend(getIt<FriendRepository>()))
+  ..registerFactory(() => RemoveFriend(getIt<FriendRepository>()))
+  ..registerFactory(() => SearchUsers(getIt<FriendRepository>()))
 
   // ════════════════════════════════════════════════════════════════════════
   // PRESENTATION (BLoCs)
   // ════════════════════════════════════════════════════════════════════════
 
-  getIt.registerFactory(
+  ..registerFactory(
     () => FriendsBloc(
       getFriends: getIt<GetFriends>(),
       addFriend: getIt<AddFriend>(),

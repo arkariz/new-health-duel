@@ -11,11 +11,6 @@ import 'package:health_duel/features/duel/domain/entities/duel.dart';
 /// When both step counts are 0, both bars render empty (0 width) instead of
 /// showing a misleading 50/50 split.
 class DuelBattleBar extends StatelessWidget {
-  final int mySteps;
-  final int opponentSteps;
-
-  /// Bar thickness in logical pixels. Divider dimensions are derived automatically.
-  final double height;
 
   const DuelBattleBar({
     required this.mySteps,
@@ -23,6 +18,11 @@ class DuelBattleBar extends StatelessWidget {
     this.height = 8.0,
     super.key,
   });
+  final int mySteps;
+  final int opponentSteps;
+
+  /// Bar thickness in logical pixels. Divider dimensions are derived automatically.
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +85,6 @@ class DuelBattleBar extends StatelessWidget {
                       height: height,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
                           colors: [const Color(0xFFCC4410), opponent],
                         ),
                       ),
@@ -113,6 +111,17 @@ class DuelBattleBar extends StatelessWidget {
 /// - Emoji: `Text('🏃', style: TextStyle(fontSize: 18))`
 /// - Initials: `Text('Me', style: theme.textTheme.labelSmall?.copyWith(...))`
 class DuelPlayerTile extends StatelessWidget {
+
+  const DuelPlayerTile({
+    required this.avatarChild,
+    required this.isMe,
+    required this.name,
+    required this.steps,
+    required this.color,
+    this.avatarSize = 40.0,
+    this.compact = false,
+    super.key,
+  });
   /// Content rendered inside the avatar circle (emoji or initials).
   final Widget avatarChild;
 
@@ -131,17 +140,6 @@ class DuelPlayerTile extends StatelessWidget {
   /// When `true`, uses compact label text styles instead of title/body styles.
   /// Set to `true` for the DuelCard compact list variant.
   final bool compact;
-
-  const DuelPlayerTile({
-    required this.avatarChild,
-    required this.isMe,
-    required this.name,
-    required this.steps,
-    required this.color,
-    this.avatarSize = 40.0,
-    this.compact = false,
-    super.key,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +197,18 @@ class DuelPlayerTile extends StatelessWidget {
 /// The [footerTimeText] and optional [footerTrailingText]/[footerTrailingColor]
 /// cover every bottom-row variant without requiring callers to build Widget trees.
 class DuelActiveCard extends StatelessWidget {
+
+  const DuelActiveCard({
+    required this.duel,
+    required this.currentUserId,
+    required this.footerTimeText,
+    this.onTap,
+    this.compact = false,
+    this.margin,
+    this.footerTrailingText,
+    this.footerTrailingColor,
+    super.key,
+  });
   final Duel duel;
   final String currentUserId;
   final VoidCallback? onTap;
@@ -219,18 +229,6 @@ class DuelActiveCard extends StatelessWidget {
   /// Color for [footerTrailingText]. Defaults to [onSurfaceVariant] if omitted.
   final Color? footerTrailingColor;
 
-  const DuelActiveCard({
-    required this.duel,
-    required this.currentUserId,
-    required this.footerTimeText,
-    this.onTap,
-    this.compact = false,
-    this.margin,
-    this.footerTrailingText,
-    this.footerTrailingColor,
-    super.key,
-  });
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -242,8 +240,8 @@ class DuelActiveCard extends StatelessWidget {
     final oppSteps = isChallenger ? duel.challengedSteps.value : duel.challengerSteps.value;
     final opponentName = isChallenger ? duel.challengedName : duel.challengerName;
 
-    final double avatarSize = compact ? 32.0 : 40.0;
-    final double barHeight = compact ? 5.0 : 8.0;
+    final avatarSize = compact ? 32.0 : 40.0;
+    final barHeight = compact ? 5.0 : 8.0;
 
     // Avatar inner content — initials for compact, emoji for full-size
     final meAvatar = compact
@@ -379,10 +377,6 @@ class DuelActiveCard extends StatelessWidget {
 }
 
 class _DuelCardFooter extends StatelessWidget {
-  final String timeText;
-  final String? trailingText;
-  final Color? trailingColor;
-  final bool compact;
 
   const _DuelCardFooter({
     required this.timeText,
@@ -390,6 +384,10 @@ class _DuelCardFooter extends StatelessWidget {
     this.trailingText,
     this.trailingColor,
   });
+  final String timeText;
+  final String? trailingText;
+  final Color? trailingColor;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {

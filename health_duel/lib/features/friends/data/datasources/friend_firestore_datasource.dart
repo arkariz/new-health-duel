@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:health_duel/data/session/data/models/user_model.dart';
 
 class FriendFirestoreDataSource {
-  final FirebaseFirestore _firestore;
   const FriendFirestoreDataSource(this._firestore);
+  final FirebaseFirestore _firestore;
 
   CollectionReference<Map<String, dynamic>> _friendsOf(String userId) =>
       _firestore.collection('users').doc(userId).collection('friends');
@@ -39,7 +39,7 @@ class FriendFirestoreDataSource {
         .get();
     return snap.docs
         .where((doc) => doc.id != excludeUserId)
-        .map((doc) => UserModel.fromFirestore(doc))
+        .map(UserModel.fromFirestore)
         .toList();
   }
 }
