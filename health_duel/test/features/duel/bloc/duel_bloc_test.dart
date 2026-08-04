@@ -5,6 +5,8 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/core/offline_queue/domain/entities/queued_action.dart';
+import 'package:health_duel/core/offline_queue/presentation/offline_aware_action.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
@@ -21,6 +23,10 @@ void main() {
   late MockCheckHealthPermissions mockCheckHealthPermissions;
   late MockRequestHealthPermissions mockRequestHealthPermissions;
   late MockCompleteDuel mockCompleteDuel;
+  late MockActiveDuelPointer mockActiveDuelPointer;
+  late MockBackgroundSyncController mockBackgroundSyncController;
+  late MockConnectivityCubit mockConnectivityCubit;
+  late MockEnqueueOfflineAction mockEnqueueOfflineAction;
 
   setUpAll(registerFallbackValues);
 
@@ -31,8 +37,34 @@ void main() {
     mockCheckHealthPermissions = MockCheckHealthPermissions();
     mockRequestHealthPermissions = MockRequestHealthPermissions();
     mockCompleteDuel = MockCompleteDuel();
+    mockActiveDuelPointer = MockActiveDuelPointer();
+    mockBackgroundSyncController = MockBackgroundSyncController();
     mockCheckHealthPermissions.setupSuccess(HealthPermissionStatus.authorized);
     mockRequestHealthPermissions.setupSuccess(granted: true);
+    when(
+      () => mockActiveDuelPointer.set(
+        duelId: any(named: 'duelId'),
+        userId: any(named: 'userId'),
+      ),
+    ).thenAnswer((_) async {});
+    when(() => mockActiveDuelPointer.clear()).thenAnswer((_) async {});
+    when(
+      () => mockBackgroundSyncController.register(
+        duelId: any(named: 'duelId'),
+      ),
+    ).thenAnswer((_) async {});
+    when(() => mockBackgroundSyncController.cancel())
+        .thenAnswer((_) async {});
+    mockEnqueueOfflineAction = MockEnqueueOfflineAction();
+    when(
+      () => mockEnqueueOfflineAction(
+        type: any(named: 'type'),
+        payload: any(named: 'payload'),
+        dedupKey: any(named: 'dedupKey'),
+      ),
+    ).thenAnswer((_) async => const Right(null));
+    mockConnectivityCubit = MockConnectivityCubit();
+    when(() => mockConnectivityCubit.isOffline).thenReturn(false);
   });
 
   DuelBloc buildBloc() => DuelBloc(
@@ -42,6 +74,10 @@ void main() {
         checkHealthPermissions: mockCheckHealthPermissions,
         requestHealthPermissions: mockRequestHealthPermissions,
         completeDuel: mockCompleteDuel,
+        activeDuelPointer: mockActiveDuelPointer,
+        backgroundSyncController: mockBackgroundSyncController,
+        offlineAwareAction:
+            OfflineAwareAction(mockConnectivityCubit, mockEnqueueOfflineAction),
       );
 
   group('DuelBloc', () {
@@ -99,6 +135,19 @@ void main() {
         act: (bloc) => bloc.add(DuelUpdateSucceeded(tActiveDuel)),
         expect: () => [
           isA<DuelLoaded>().having((s) => s.duel.id, 'duel.id', tDuelId),
+        ],
+      );
+
+      blocTest<DuelBloc, DuelState>(
+        'emits DuelLoaded with lastSyncTime null when no prior sync happened',
+        build: buildBloc,
+        act: (bloc) => bloc.add(DuelUpdateSucceeded(tActiveDuel)),
+        expect: () => [
+          isA<DuelLoaded>().having(
+            (s) => s.lastSyncTime,
+            'lastSyncTime',
+            isNull,
+          ),
         ],
       );
 
@@ -239,6 +288,42 @@ void main() {
       });
 
       test(
+          'enqueues silently instead of calling SyncHealthData when offline',
+          () async {
+        final streamController =
+            StreamController<Either<Failure, Duel>>.broadcast();
+
+        when(() => mockConnectivityCubit.isOffline).thenReturn(true);
+        mockSessionRepository.setupGetCurrentUserDuel(tUserModel);
+        when(() => mockWatchDuel(tDuelId))
+            .thenAnswer((_) => streamController.stream);
+
+        final bloc = buildBloc()
+        ..add(const DuelLoadRequested(tDuelId));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        bloc.add(const DuelHealthSyncTriggered(tDuelId));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        verifyNever(
+          () => mockSyncHealthData(
+            duelId: any(named: 'duelId'),
+            userId: any(named: 'userId'),
+          ),
+        );
+        verify(
+          () => mockEnqueueOfflineAction(
+            type: OfflineActionType.syncStepCount,
+            payload: {'duelId': tDuelId, 'userId': tUserModel.id},
+            dedupKey: 'steps_${tDuelId}_${tUserModel.id}',
+          ),
+        ).called(greaterThanOrEqualTo(1));
+
+        await streamController.close();
+        await bloc.close();
+      });
+
+      test(
           'updates lastSyncTime after full DuelLoadRequested flow when sync succeeds',
           () async {
         final streamController =
@@ -264,6 +349,34 @@ void main() {
 
         // No error thrown and bloc is still operational
         expect(bloc.isClosed, isFalse);
+
+        await streamController.close();
+        await bloc.close();
+      });
+
+      test('leaves lastSyncTime unchanged when sync fails', () async {
+        final streamController =
+            StreamController<Either<Failure, Duel>>.broadcast();
+
+        mockSessionRepository.setupGetCurrentUserDuel(tUserModel);
+        when(() => mockWatchDuel(tDuelId))
+            .thenAnswer((_) => streamController.stream);
+        mockSyncHealthData.setupFailure(
+          duelId: tDuelId,
+          userId: tUserModel.id,
+          failure: const ServerFailure(message: 'Health Connect unavailable'),
+        );
+
+        final bloc = buildBloc()
+        ..add(const DuelLoadRequested(tDuelId));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        streamController.add(Right(tActiveDuel));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        final state = bloc.state;
+        expect(state, isA<DuelLoaded>());
+        expect((state as DuelLoaded).lastSyncTime, isNull);
 
         await streamController.close();
         await bloc.close();

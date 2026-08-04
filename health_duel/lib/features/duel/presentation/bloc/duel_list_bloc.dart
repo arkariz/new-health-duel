@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
+import 'package:health_duel/core/offline_queue/domain/entities/queued_action.dart';
+import 'package:health_duel/core/offline_queue/presentation/offline_aware_action.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_state.dart';
@@ -29,6 +31,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     required CheckHealthPermissions checkHealthPermissions,
     required CompleteDuel completeDuel,
     required ExpirePendingDuel expirePendingDuel,
+    required OfflineAwareAction offlineAwareAction,
   })  : _getActiveDuels = getActiveDuels,
         _getPendingDuels = getPendingDuels,
         _getSentDuels = getSentDuels,
@@ -39,6 +42,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
         _checkHealthPermissions = checkHealthPermissions,
         _completeDuel = completeDuel,
         _expirePendingDuel = expirePendingDuel,
+        _offlineAwareAction = offlineAwareAction,
         super(const DuelListInitial()) {
     on<DuelListLoadRequested>(_onLoadRequested);
     on<DuelAcceptRequested>(_onAcceptRequested);
@@ -54,6 +58,7 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
   final CheckHealthPermissions _checkHealthPermissions;
   final CompleteDuel _completeDuel;
   final ExpirePendingDuel _expirePendingDuel;
+  final OfflineAwareAction _offlineAwareAction;
 
   Future<void> _onLoadRequested(
     DuelListLoadRequested event,
@@ -176,7 +181,19 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     DuelAcceptRequested event,
     Emitter<DuelListState> emit,
   ) async {
-    final result = await _acceptDuel(event.duelId);
+    final result = await _offlineAwareAction.runOrQueue(
+      online: () => _acceptDuel(event.duelId),
+      type: OfflineActionType.acceptDuel,
+      payload: {'duelId': event.duelId},
+      dedupKey: 'duel_${event.duelId}',
+    );
+
+    if (result == null) {
+      if (state is DuelListLoaded) {
+        emitWithEffect(emit, state, _effectQueued());
+      }
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -207,7 +224,19 @@ class DuelListBloc extends EffectBloc<DuelListEvent, DuelListState> {
     DuelDeclineRequested event,
     Emitter<DuelListState> emit,
   ) async {
-    final result = await _declineDuel(event.duelId);
+    final result = await _offlineAwareAction.runOrQueue(
+      online: () => _declineDuel(event.duelId),
+      type: OfflineActionType.declineDuel,
+      payload: {'duelId': event.duelId},
+      dedupKey: 'duel_${event.duelId}',
+    );
+
+    if (result == null) {
+      if (state is DuelListLoaded) {
+        emitWithEffect(emit, state, _effectQueued());
+      }
+      return;
+    }
 
     result.fold(
       (failure) {

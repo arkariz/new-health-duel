@@ -7,6 +7,7 @@ import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
 import 'package:health_duel/features/duel/presentation/widgets/duel_arena_widgets.dart';
+import 'package:health_duel/features/duel/presentation/widgets/sync_indicator.dart';
 
 /// Active Duel Screen — Sports-energy dark aesthetic
 ///
@@ -164,6 +165,16 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
             footerTimeText: 'Ends ${_formatTime(duel.endTime)}',
             footerTrailingText:
                 '${(duel.timeElapsedPercentage * 100).toStringAsFixed(0)}% elapsed',
+          ),
+
+          const SizedBox(height: AppSpacing.md),
+
+          // ── Sync Status ────────────────────────────────────────────────────
+          SyncIndicator(
+            lastSyncTime: state.lastSyncTime,
+            onRefresh: () => context
+                .read<DuelBloc>()
+                .add(DuelManualRefreshRequested(widget.duelId)),
           ),
 
           const SizedBox(height: AppSpacing.md),

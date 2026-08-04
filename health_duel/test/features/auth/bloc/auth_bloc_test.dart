@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/error/failures.dart';
@@ -8,6 +9,7 @@ import 'package:health_duel/data/session/data/models/user_model.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_event.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_state.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/helpers.dart';
 
@@ -20,6 +22,7 @@ void main() {
   late MockSignInWithApple mockSignInWithApple;
   late MockRegisterWithEmail mockRegisterWithEmail;
   late MockSignOut mockSignOut;
+  late MockClearOfflineQueue mockClearOfflineQueue;
 
   // Auth state stream controller
   late StreamController<UserModel?> authStateController;
@@ -34,6 +37,8 @@ void main() {
     mockSignInWithApple = MockSignInWithApple();
     mockRegisterWithEmail = MockRegisterWithEmail();
     mockSignOut = MockSignOut();
+    mockClearOfflineQueue = MockClearOfflineQueue();
+    when(() => mockClearOfflineQueue()).thenAnswer((_) async => const Right(null));
 
     authStateController = StreamController<UserModel?>.broadcast();
     mockAuthRepository.setupAuthStateChanges(authStateController);
@@ -51,6 +56,7 @@ void main() {
     signInWithApple: mockSignInWithApple,
     registerWithEmail: mockRegisterWithEmail,
     signOut: mockSignOut,
+    clearOfflineQueue: mockClearOfflineQueue,
   );
 
   /// Matcher that ignores effect property in state comparison

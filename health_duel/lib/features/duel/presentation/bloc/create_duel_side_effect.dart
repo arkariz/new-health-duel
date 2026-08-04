@@ -10,4 +10,9 @@ extension CreateDuelSideEffect on CreateDuelBloc {
         message: message,
         severity: FeedbackSeverity.error,
       );
+
+  ShowSnackBarEffect _effectQueued() => ShowSnackBarEffect(
+        message: "You're offline — challenge queued and will send "
+            'automatically.',
+      );
 }

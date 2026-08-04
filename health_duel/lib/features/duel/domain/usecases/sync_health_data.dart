@@ -37,10 +37,16 @@ class SyncHealthData {
           return const Left(ValidationFailure(message: 'Duel is not active'));
         }
 
-        // Fetch steps from health platform for duel time window
+        // Fetch steps from health platform for duel time window, clamped
+        // to duel.endTime so a late sync (duel expired but not yet swept
+        // to completed) never reads steps from outside the duel window.
+        final now = DateTime.now();
+        final effectiveEndTime = now.isAfter(duel.endTime)
+            ? duel.endTime
+            : now;
         final stepsResult = await _healthRepository.getStepCount(
           startTime: duel.startTime,
-          endTime: DateTime.now(), // Current time (capped at endTime by platform)
+          endTime: effectiveEndTime,
         );
 
         return stepsResult.fold(

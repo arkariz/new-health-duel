@@ -72,6 +72,36 @@ void main() {
 
         expect(result, Right<Failure, Duel>(activeDuel));
       });
+
+      test(
+          'never queries the health platform past duel.endTime',
+          () async {
+        final activeDuel = tActiveDuel;
+        mockDuelRepository.setupGetDuelById(tDuelId, activeDuel);
+        when(
+          () => mockHealthRepository.getStepCount(
+            startTime: any(named: 'startTime'),
+            endTime: any(named: 'endTime'),
+          ),
+        ).thenAnswer((_) async => Right(tStepDataRaw()));
+        mockDuelRepository.setupUpdateStepCount(
+          duelId: tDuelId,
+          userId: userId,
+          steps: duel.StepCount(steps),
+          result: activeDuel,
+        );
+
+        await syncHealthData(duelId: tDuelId, userId: userId);
+
+        final captured = verify(
+          () => mockHealthRepository.getStepCount(
+            startTime: activeDuel.startTime,
+            endTime: captureAny(named: 'endTime'),
+          ),
+        ).captured;
+        final capturedEndTime = captured.single as DateTime;
+        expect(capturedEndTime.isAfter(activeDuel.endTime), isFalse);
+      });
     });
 
     group('failure', () {

@@ -1,15 +1,33 @@
 /// Widget test utilities for pumping app with proper providers
 library;
 
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_duel/core/presentation/widgets/connectivity/connectivity.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_state.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
+import 'package:mocktail/mocktail.dart';
+
+/// Mock ConnectivityCubit defaulting to online, for screens that render an
+/// [AnimatedOfflineBanner] (ADR-006) but aren't testing connectivity itself.
+class _DefaultOnlineConnectivityCubit extends MockCubit<ConnectivityStatus>
+    implements ConnectivityCubit {}
+
+ConnectivityCubit _buildDefaultOnlineConnectivityCubit() {
+  final cubit = _DefaultOnlineConnectivityCubit();
+  whenListen(
+    cubit,
+    const Stream<ConnectivityStatus>.empty(),
+    initialState: ConnectivityStatus.online,
+  );
+  return cubit;
+}
 
 /// Pumps a widget with required providers for testing
 ///
@@ -37,14 +55,23 @@ extension PumpApp on WidgetTester {
   }
 
   /// Pumps a widget with [DuelListBloc] provided
+  ///
+  /// Also provides a default-online [ConnectivityCubit] since
+  /// [DuelListScreen] renders an [AnimatedOfflineBanner] (ADR-006).
   Future<void> pumpDuelListApp(
     Widget widget, {
     required DuelListBloc duelListBloc,
+    ConnectivityCubit? connectivityCubit,
   }) async {
     await pumpWidget(
       MaterialApp(
-        home: BlocProvider<DuelListBloc>.value(
-          value: duelListBloc,
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider<DuelListBloc>.value(value: duelListBloc),
+            BlocProvider<ConnectivityCubit>.value(
+              value: connectivityCubit ?? _buildDefaultOnlineConnectivityCubit(),
+            ),
+          ],
           child: widget,
         ),
       ),
@@ -52,14 +79,23 @@ extension PumpApp on WidgetTester {
   }
 
   /// Pumps a widget with [CreateDuelBloc] provided
+  ///
+  /// Also provides a default-online [ConnectivityCubit] since
+  /// [CreateDuelScreen] renders an [AnimatedOfflineBanner] (ADR-006).
   Future<void> pumpCreateDuelApp(
     Widget widget, {
     required CreateDuelBloc createDuelBloc,
+    ConnectivityCubit? connectivityCubit,
   }) async {
     await pumpWidget(
       MaterialApp(
-        home: BlocProvider<CreateDuelBloc>.value(
-          value: createDuelBloc,
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider<CreateDuelBloc>.value(value: createDuelBloc),
+            BlocProvider<ConnectivityCubit>.value(
+              value: connectivityCubit ?? _buildDefaultOnlineConnectivityCubit(),
+            ),
+          ],
           child: widget,
         ),
       ),

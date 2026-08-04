@@ -68,7 +68,7 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
   Widget build(BuildContext context) {
     return EffectListener<CreateDuelBloc, CreateDuelState>(
       child: BlocListener<CreateDuelBloc, CreateDuelState>(
-        listenWhen: (_, current) => current is CreateDuelSuccess,
+        listenWhen: (_, current) => current is CreateDuelSuccess || current is CreateDuelQueued,
         listener: (_, _) => context.pop(),
         child: BlocBuilder<CreateDuelBloc, CreateDuelState>(
           builder: (context, state) {
@@ -79,6 +79,8 @@ class _CreateDuelScreenState extends State<CreateDuelScreen> {
               appBar: AppBar(title: const Text('New Challenge')),
               body: Column(
                 children: [
+                  const AnimatedOfflineBanner(),
+
                   // How it works card
                   const Padding(
                     padding: EdgeInsets.fromLTRB(
@@ -425,9 +427,9 @@ class _OpponentCard extends StatelessWidget {
 // ─── No Opponents State ───────────────────────────────────────────────────────
 
 class _NoOpponentsState extends StatelessWidget {
-  final OpponentSource source;
-
   const _NoOpponentsState({required this.source});
+
+  final OpponentSource source;
 
   @override
   Widget build(BuildContext context) {

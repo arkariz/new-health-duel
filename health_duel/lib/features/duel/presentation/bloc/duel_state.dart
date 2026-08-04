@@ -53,12 +53,12 @@ class DuelLoaded extends DuelState {
 
   const DuelLoaded({
     required this.duel,
-    required this.lastSyncTime,
     required this.currentTime,
+    this.lastSyncTime,
     super.effect,
   });
   final Duel duel;
-  final DateTime lastSyncTime;
+  final DateTime? lastSyncTime;
   final DateTime currentTime;
 
   @override

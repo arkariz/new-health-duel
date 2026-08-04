@@ -1,10 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
+import 'package:health_duel/core/offline_queue/domain/entities/queued_action.dart';
+import 'package:health_duel/core/offline_queue/presentation/offline_aware_action.dart';
 import 'package:health_duel/data/session/domain/repositories/session_repository.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
-import 'package:health_duel/features/friends/domain/usecases/get_friends.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_state.dart';
+import 'package:health_duel/features/friends/domain/usecases/get_friends.dart';
 
 part 'create_duel_side_effect.dart';
 
@@ -26,10 +28,12 @@ class CreateDuelBloc extends EffectBloc<CreateDuelEvent, CreateDuelState> {
     required GetOpponents getOpponents,
     required CreateDuel createDuel,
     required SessionRepository sessionRepository,
+    required OfflineAwareAction offlineAwareAction,
   })  : _getFriends = getFriends,
         _getOpponents = getOpponents,
         _createDuel = createDuel,
         _sessionRepository = sessionRepository,
+        _offlineAwareAction = offlineAwareAction,
         super(const CreateDuelInitial()) {
     on<CreateDuelOpponentsRequested>(_onOpponentsRequested);
     on<CreateDuelSubmitted>(_onSubmitted);
@@ -38,6 +42,7 @@ class CreateDuelBloc extends EffectBloc<CreateDuelEvent, CreateDuelState> {
   final GetOpponents _getOpponents;
   final CreateDuel _createDuel;
   final SessionRepository _sessionRepository;
+  final OfflineAwareAction _offlineAwareAction;
 
   Future<void> _onOpponentsRequested(
     CreateDuelOpponentsRequested event,
@@ -49,6 +54,8 @@ class CreateDuelBloc extends EffectBloc<CreateDuelEvent, CreateDuelState> {
         ? await _getFriends(event.currentUserId)
         : await _getOpponents(event.currentUserId);
 
+    //
+    // ignore: cascade_invocations
     result.fold(
       (failure) => emit(CreateDuelFailure(
         failure.message,
@@ -81,12 +88,27 @@ class CreateDuelBloc extends EffectBloc<CreateDuelEvent, CreateDuelState> {
       return;
     }
 
-    final result = await _createDuel(
-      challengerId: event.challengerId,
-      challengedId: event.challengedId,
-      challengerName: challengerName,
-      challengedName: event.challengedName,
+    final result = await _offlineAwareAction.runOrQueue(
+      online: () => _createDuel(
+        challengerId: event.challengerId,
+        challengedId: event.challengedId,
+        challengerName: challengerName,
+        challengedName: event.challengedName,
+      ),
+      type: OfflineActionType.createDuel,
+      payload: {
+        'challengerId': event.challengerId,
+        'challengedId': event.challengedId,
+        'challengerName': challengerName,
+        'challengedName': event.challengedName,
+      },
+      dedupKey: 'create_${event.challengerId}_${event.challengedId}',
     );
+
+    if (result == null) {
+      emit(CreateDuelQueued(effect: _effectQueued()));
+      return;
+    }
 
     result.fold(
       (failure) => emit(CreateDuelFailure(

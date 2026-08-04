@@ -3,6 +3,8 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/core/offline_queue/domain/entities/queued_action.dart';
+import 'package:health_duel/core/offline_queue/presentation/offline_aware_action.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_state.dart';
@@ -15,6 +17,8 @@ void main() {
   late MockGetOpponents mockGetOpponents;
   late MockCreateDuel mockCreateDuel;
   late MockSessionRepository mockSessionRepository;
+  late MockConnectivityCubit mockConnectivityCubit;
+  late MockEnqueueOfflineAction mockEnqueueOfflineAction;
 
   setUpAll(registerFallbackValues);
 
@@ -23,6 +27,16 @@ void main() {
     mockGetOpponents = MockGetOpponents();
     mockCreateDuel = MockCreateDuel();
     mockSessionRepository = MockSessionRepository();
+    mockEnqueueOfflineAction = MockEnqueueOfflineAction();
+    when(
+      () => mockEnqueueOfflineAction(
+        type: any(named: 'type'),
+        payload: any(named: 'payload'),
+        dedupKey: any(named: 'dedupKey'),
+      ),
+    ).thenAnswer((_) async => const Right(null));
+    mockConnectivityCubit = MockConnectivityCubit();
+    when(() => mockConnectivityCubit.isOffline).thenReturn(false);
   });
 
   CreateDuelBloc buildBloc() => CreateDuelBloc(
@@ -30,6 +44,8 @@ void main() {
         getOpponents: mockGetOpponents,
         createDuel: mockCreateDuel,
         sessionRepository: mockSessionRepository,
+        offlineAwareAction:
+            OfflineAwareAction(mockConnectivityCubit, mockEnqueueOfflineAction),
       );
 
   group('CreateDuelBloc', () {
@@ -204,6 +220,55 @@ void main() {
           isA<CreateDuelFailure>()
               .having((s) => s.effect, 'effect', isA<ShowSnackBarEffect>()),
         ],
+      );
+
+      blocTest<CreateDuelBloc, CreateDuelState>(
+        'emits [Submitting, Queued] and enqueues instead of calling CreateDuel when offline',
+        build: () {
+          when(() => mockConnectivityCubit.isOffline).thenReturn(true);
+          mockGetFriends.setupSuccess(challengerId, [tOpponentModel]);
+          mockSessionRepository.setupGetCurrentUserDuel(tUserModel);
+          return buildBloc();
+        },
+        act: (bloc) async {
+          bloc.add(const CreateDuelOpponentsRequested(challengerId));
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          bloc.add(const CreateDuelSubmitted(
+            challengerId: challengerId,
+            challengedId: challengedId,
+            challengedName: challengedName,
+          ));
+        },
+        skip: 2,
+        expect: () => [
+          isA<CreateDuelSubmitting>(),
+          isA<CreateDuelQueued>().having(
+            (s) => s.effect,
+            'effect',
+            isA<ShowSnackBarEffect>()
+                .having((e) => e.message, 'message', contains('queued')),
+          ),
+        ],
+        verify: (_) {
+          verifyNever(() => mockCreateDuel(
+                challengerId: any(named: 'challengerId'),
+                challengedId: any(named: 'challengedId'),
+                challengerName: any(named: 'challengerName'),
+                challengedName: any(named: 'challengedName'),
+              ));
+          verify(
+            () => mockEnqueueOfflineAction(
+              type: OfflineActionType.createDuel,
+              payload: {
+                'challengerId': challengerId,
+                'challengedId': challengedId,
+                'challengerName': tUserModel.name,
+                'challengedName': challengedName,
+              },
+              dedupKey: 'create_${challengerId}_$challengedId',
+            ),
+          ).called(1);
+        },
       );
 
       blocTest<CreateDuelBloc, CreateDuelState>(

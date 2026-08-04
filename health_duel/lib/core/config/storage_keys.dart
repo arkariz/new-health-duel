@@ -15,4 +15,7 @@ class StorageKeys {
 
   /// Key for encryption keys used by Hive
   static const String secureKeyStorage = 'secure_keys';
+
+  /// Key for the offline action queue box (ADR-006)
+  static const String offlineQueueActions = 'feature_offline_queue_actions';
 }

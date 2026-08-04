@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:health_duel/core/di/core_module.dart';
+import 'package:health_duel/core/offline_queue/domain/usecases/clear_offline_queue.dart';
 import 'package:health_duel/data/session/data/data.dart';
 import 'package:health_duel/data/session/domain/domain.dart';
 import 'package:health_duel/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -101,6 +102,7 @@ void registerAuthModule() {
       signInWithApple: getIt<SignInWithApple>(),
       registerWithEmail: getIt<RegisterWithEmail>(),
       signOut: getIt<SignOut>(),
+      clearOfflineQueue: getIt<ClearOfflineQueue>(),
     ),
   );
 }

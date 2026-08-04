@@ -18,4 +18,9 @@ extension DuelListSideEffect on DuelListBloc {
         message: message,
         severity: FeedbackSeverity.error,
       );
+
+  ShowSnackBarEffect _effectQueued() => ShowSnackBarEffect(
+        message: "You're offline — action queued and will sync "
+            'automatically.',
+      );
 }

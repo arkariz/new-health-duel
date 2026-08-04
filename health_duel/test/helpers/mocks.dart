@@ -10,6 +10,10 @@ import 'dart:typed_data';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/core/offline_queue/domain/entities/queued_action.dart';
+import 'package:health_duel/core/offline_queue/domain/repositories/offline_queue_repository.dart';
+import 'package:health_duel/core/offline_queue/domain/usecases/clear_offline_queue.dart';
+import 'package:health_duel/core/offline_queue/domain/usecases/enqueue_offline_action.dart';
 import 'package:health_duel/core/presentation/widgets/connectivity/connectivity.dart';
 import 'package:health_duel/data/session/data/models/user_model.dart';
 import 'package:health_duel/data/session/domain/domain.dart';
@@ -21,6 +25,8 @@ import 'package:health_duel/features/auth/domain/usecases/sign_in_with_google.da
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_event.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_state.dart';
+import 'package:health_duel/features/duel/data/background/active_duel_pointer.dart';
+import 'package:health_duel/features/duel/data/background/background_sync_controller.dart';
 import 'package:health_duel/features/duel/data/datasources/duel_firestore_datasource.dart';
 import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/domain/repositories/duel_repository.dart';
@@ -72,6 +78,8 @@ class MockSignInWithApple extends Mock implements SignInWithApple {}
 class MockRegisterWithEmail extends Mock implements RegisterWithEmail {}
 
 class MockSignOut extends Mock implements SignOut {}
+
+class MockClearOfflineQueue extends Mock implements ClearOfflineQueue {}
 
 /// Mock AuthBloc for widget testing
 ///
@@ -135,10 +143,18 @@ void registerFallbackValues() {
   registerFallbackValue(const Left<Failure, List<Duel>>(ServerFailure(message: 'test')));
   registerFallbackValue(const Right<Failure, Duel?>(null));
   registerFallbackValue(Uint8List(0));
+
+  // Offline Queue
+  registerFallbackValue(OfflineActionType.acceptDuel);
+  registerFallbackValue(FakeQueuedAction());
+  registerFallbackValue(const Right<Failure, List<QueuedAction>>([]));
 }
 
 /// Fake UserModel for fallback registration
 class FakeUserModel extends Fake implements UserModel {}
+
+/// Fake QueuedAction for fallback registration
+class FakeQueuedAction extends Fake implements QueuedAction {}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Auth Mock Setup Helpers
@@ -267,7 +283,17 @@ class MockWatchDuel extends Mock implements WatchDuel {}
 
 class MockSyncHealthData extends Mock implements SyncHealthData {}
 
+class MockActiveDuelPointer extends Mock implements ActiveDuelPointer {}
+
+class MockBackgroundSyncController extends Mock
+    implements BackgroundSyncController {}
+
 class MockUpdateStepCount extends Mock implements UpdateStepCount {}
+
+class MockEnqueueOfflineAction extends Mock implements EnqueueOfflineAction {}
+
+class MockOfflineQueueRepository extends Mock
+    implements OfflineQueueRepository {}
 
 class MockGetFriends extends Mock implements GetFriends {}
 

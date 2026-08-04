@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:health_duel/core/presentation/widgets/connectivity/connectivity.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_state.dart';
@@ -12,15 +13,25 @@ import '../../../../helpers/helpers.dart';
 
 void main() {
   late MockDuelListBloc mockDuelListBloc;
+  late MockConnectivityCubit mockConnectivityCubit;
 
   setUp(() {
     mockDuelListBloc = MockDuelListBloc();
+    mockConnectivityCubit = MockConnectivityCubit();
+    whenListen(
+      mockConnectivityCubit,
+      const Stream<ConnectivityStatus>.empty(),
+      initialState: ConnectivityStatus.online,
+    );
   });
 
   Widget buildSubject({String userId = 'test-user-123'}) {
     return MaterialApp(
-      home: BlocProvider<DuelListBloc>.value(
-        value: mockDuelListBloc,
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<DuelListBloc>.value(value: mockDuelListBloc),
+          BlocProvider<ConnectivityCubit>.value(value: mockConnectivityCubit),
+        ],
         child: DuelListScreen(currentUserId: userId),
       ),
     );

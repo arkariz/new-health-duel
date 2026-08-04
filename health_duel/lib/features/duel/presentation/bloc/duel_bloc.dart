@@ -2,8 +2,12 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
+import 'package:health_duel/core/offline_queue/domain/entities/queued_action.dart';
+import 'package:health_duel/core/offline_queue/presentation/offline_aware_action.dart';
 import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/data/session/domain/repositories/session_repository.dart';
+import 'package:health_duel/features/duel/data/background/active_duel_pointer.dart';
+import 'package:health_duel/features/duel/data/background/background_sync_controller.dart';
 import 'package:health_duel/features/duel/domain/domain.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_event.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_state.dart';
@@ -35,12 +39,18 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
     required CheckHealthPermissions checkHealthPermissions,
     required RequestHealthPermissions requestHealthPermissions,
     required CompleteDuel completeDuel,
+    required ActiveDuelPointer activeDuelPointer,
+    required BackgroundSyncController backgroundSyncController,
+    required OfflineAwareAction offlineAwareAction,
   })  : _watchDuel = watchDuel,
         _syncHealthData = syncHealthData,
         _sessionRepository = sessionRepository,
         _checkHealthPermissions = checkHealthPermissions,
         _requestHealthPermissions = requestHealthPermissions,
         _completeDuel = completeDuel,
+        _activeDuelPointer = activeDuelPointer,
+        _backgroundSyncController = backgroundSyncController,
+        _offlineAwareAction = offlineAwareAction,
         super(const DuelInitial()) {
     // Register event handlers
     on<DuelLoadRequested>(_onLoadRequested);
@@ -57,6 +67,9 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
   final CheckHealthPermissions _checkHealthPermissions;
   final RequestHealthPermissions _requestHealthPermissions;
   final CompleteDuel _completeDuel;
+  final ActiveDuelPointer _activeDuelPointer;
+  final BackgroundSyncController _backgroundSyncController;
+  final OfflineAwareAction _offlineAwareAction;
 
   // Three subscriptions as per design
   StreamSubscription<dynamic>? _duelStreamSubscription;
@@ -114,6 +127,11 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
     // Cancel existing subscriptions before starting new ones
     await _cancelSubscriptions();
 
+    // Point the background isolate at this duel so it can sync while the
+    // app is backgrounded/killed.
+    await _activeDuelPointer.set(duelId: event.duelId, userId: currentUser.id);
+    await _backgroundSyncController.register(duelId: event.duelId);
+
     // Start Firestore real-time listener
     _duelStreamSubscription = _watchDuel(event.duelId).listen((result) {
       result.fold(
@@ -158,9 +176,11 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
         effect: alreadyNavigated ? null : _effectNavigateToResult(duel),
         lastSyncTime: state is DuelLoaded
           ? (state as DuelLoaded).lastSyncTime
-          : now,
+          : null,
       ));
       _cancelTimers(); // Stop timers when duel completes
+      unawaited(_activeDuelPointer.clear());
+      unawaited(_backgroundSyncController.cancel());
       return;
     }
 
@@ -184,7 +204,7 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
       duel: duel,
       lastSyncTime: state is DuelLoaded
         ? (state as DuelLoaded).lastSyncTime
-        : now,
+        : null,
       currentTime: now,
       effect: effect,
     ));
@@ -208,12 +228,20 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
     // Just update lastSyncTime on success
 
     // Early return if user ID not available
-    if (_currentUserId == null) return;
+    final currentUserId = _currentUserId;
+    if (currentUserId == null) return;
 
-    final result = await _syncHealthData(
-      duelId: event.duelId,
-      userId: _currentUserId!,
+    // Silent on queue — no snackbar. The 5-minute timer re-triggers this
+    // event repeatedly while offline, but dedup-replace collapses those
+    // into a single latest-wins queued entry per duel/user.
+    final result = await _offlineAwareAction.runOrQueue(
+      online: () => _syncHealthData(duelId: event.duelId, userId: currentUserId),
+      type: OfflineActionType.syncStepCount,
+      payload: {'duelId': event.duelId, 'userId': currentUserId},
+      dedupKey: 'steps_${event.duelId}_$currentUserId',
     );
+
+    if (result == null) return;
 
     result.fold(
       (failure) {
@@ -281,6 +309,8 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
         final alreadyNavigated = _navigatedToResult;
         _navigatedToResult = true;
         _cancelTimers();
+        unawaited(_activeDuelPointer.clear());
+        unawaited(_backgroundSyncController.cancel());
         final now = DateTime.now();
         emit(DuelLoaded(
           duel: completedDuel,
@@ -290,7 +320,7 @@ class DuelBloc extends EffectBloc<DuelEvent, DuelState> {
               : _effectNavigateToResult(completedDuel),
           lastSyncTime: state is DuelLoaded
               ? (state as DuelLoaded).lastSyncTime
-              : now,
+              : null,
         ));
       },
     );

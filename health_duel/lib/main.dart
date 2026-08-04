@@ -19,8 +19,13 @@ void main() async {
   // Initialize app configuration with flavor from launch.json (dart-define FLAVOR)
   AppConfig.init(FlavorUtil.getFlavorFromEnv());
 
-  // Initialize dependency injection
+  // Step 1 — dependencies the first frame cannot run without. Must finish
+  // before runApp(): router, AuthBloc, etc. are resolved right after this.
   await initializeDependencies();
+
+  // Step 2 — dependencies safe to keep initializing in the background.
+  // Deliberately not awaited; nothing in the initial UI depends on these.
+  warmUpDependencies();
 
   // Trigger initial auth check (once, before app starts)
   getIt<AuthBloc>().add(const AuthCheckRequested());

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
+import 'package:health_duel/core/offline_queue/domain/usecases/clear_offline_queue.dart';
 import 'package:health_duel/core/router/router.dart';
 import 'package:health_duel/data/session/data/models/user_model.dart';
 import 'package:health_duel/data/session/domain/domain.dart';
@@ -39,12 +40,14 @@ class AuthBloc extends EffectBloc<AuthEvent, AuthState> {
     required SignInWithApple signInWithApple,
     required RegisterWithEmail registerWithEmail,
     required SignOut signOut,
+    required ClearOfflineQueue clearOfflineQueue,
   }) :  _authRepository = authRepository,
         _signInWithEmail = signInWithEmail,
         _signInWithGoogle = signInWithGoogle,
         _signInWithApple = signInWithApple,
         _registerWithEmail = registerWithEmail,
         _signOut = signOut,
+        _clearOfflineQueue = clearOfflineQueue,
         _sessionRepository = sessionRepository,
   super(const AuthInitial()) {
     // Register event handlers
@@ -68,6 +71,7 @@ class AuthBloc extends EffectBloc<AuthEvent, AuthState> {
   final SignInWithApple _signInWithApple;
   final RegisterWithEmail _registerWithEmail;
   final SignOut _signOut;
+  final ClearOfflineQueue _clearOfflineQueue;
 
   StreamSubscription<UserModel?>? _authStateSubscription;
 
@@ -162,6 +166,10 @@ class AuthBloc extends EffectBloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading(message: 'Signing out...'));
+
+    // Queued actions carry the outgoing user's ID — replaying them after
+    // switching accounts would apply the wrong user's intent (ADR-006).
+    await _clearOfflineQueue();
 
     final result = await _signOut();
 

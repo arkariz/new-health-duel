@@ -4,7 +4,7 @@
 - **Decision ID:** ADR-001
 - **Date:** 2026-02-08
 - **Roadmap Phase:** Phase 1 (Foundation & Core Architecture)
-- **Status:** Accepted
+- **Status:** Accepted (amended by [ADR-006](0006-offline-action-queue.md))
 - **Scope:** Global (affects all data access patterns)
 
 ## 2. Context (Why this decision exists)
@@ -411,6 +411,12 @@ This decision should be re-evaluated if:
 ### Related ADRs
 - [ADR-002: Exception Isolation Strategy](0002-exception-isolation-strategy.md)
 - [ADR-007: Git Dependency Strategy](0007-git-dependency-strategy.md)
+- [ADR-006: Offline Action Queue](0006-offline-action-queue.md) — controlled
+  deviation from this ADR's rejection of Option A (offline queue), scoped
+  narrowly to accept/decline/create/step-sync write actions. The fairness
+  argument against caching real-time duel state (lead status, step counts)
+  is unchanged; queued actions never optimistically mutate displayed duel
+  state before Firestore confirms them.
 
 ---
 

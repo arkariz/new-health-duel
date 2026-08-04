@@ -144,6 +144,23 @@ void main() {
       ).called(1);
     });
 
+    testWidgets('shows "Not synced yet" when lastSyncTime is null',
+        (tester) async {
+      final now = DateTime.now();
+      whenListen(
+        mockDuelBloc,
+        Stream<DuelState>.fromIterable([
+          DuelLoaded(duel: tActiveDuel, currentTime: now),
+        ]),
+        initialState: DuelLoaded(duel: tActiveDuel, currentTime: now),
+      );
+
+      await tester.pumpWidget(buildSubject());
+      await tester.pump();
+
+      expect(find.text('Not synced yet'), findsOneWidget);
+    });
+
     testWidgets('dispatches DuelLoadRequested after first frame', (tester) async {
       whenListen(
         mockDuelBloc,

@@ -98,6 +98,21 @@ class CreateDuelSuccess extends CreateDuelState {
       CreateDuelSuccess(duel, effect: effect);
 }
 
+/// Duel submission queued for later sync (offline — ADR-006)
+class CreateDuelQueued extends CreateDuelState {
+  const CreateDuelQueued({super.effect});
+
+  @override
+  List<Object?> get props => [];
+
+  @override
+  CreateDuelState copyWith({UiEffect? effect}) => _copyWithEffect(effect);
+
+  @override
+  CreateDuelState _copyWithEffect(UiEffect? effect) =>
+      CreateDuelQueued(effect: effect);
+}
+
 /// Failed to load opponents or create duel
 class CreateDuelFailure extends CreateDuelState {
 

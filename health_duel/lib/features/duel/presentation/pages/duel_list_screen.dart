@@ -78,12 +78,19 @@ class _DuelListScreenState extends State<DuelListScreen>
             ],
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
+        body: Column(
           children: [
-            _ActiveDuelsTab(currentUserId: widget.currentUserId),
-            _PendingDuelsTab(currentUserId: widget.currentUserId),
-            _HistoryTab(currentUserId: widget.currentUserId),
+            const AnimatedOfflineBanner(),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _ActiveDuelsTab(currentUserId: widget.currentUserId),
+                  _PendingDuelsTab(currentUserId: widget.currentUserId),
+                  _HistoryTab(currentUserId: widget.currentUserId),
+                ],
+              ),
+            ),
           ],
         ),
       ),

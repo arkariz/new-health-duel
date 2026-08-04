@@ -525,7 +525,10 @@ consequence for the loser that we can share on social media."
 **Acceptance Criteria:**
 - [ ] View cached duel history offline
 - [ ] Graceful error messages when offline
-- [ ] Queue actions for sync when connectivity returns
+- [x] Queue actions for sync when connectivity returns — implemented
+      2026-07-17, see ADR-006. Scope: accept/decline/cancel duel, create
+      duel, and periodic step sync. Conflicts (duel changed/expired while
+      offline) are dropped with a snackbar, not silently merged.
 - [x] Sync indicator shows connection status — `ConnectivityCubit` tracks
       online/offline via `connectivity_plus` and is wired app-wide (spot-checked)
 
@@ -748,9 +751,11 @@ for UI design system.
 ---
 
 **Document Version:** 1.0
-**Last Updated:** 2026-07-09 (FR-SHARE-001/002 and related FR-RESULT-001/002
-checkboxes updated to reflect the newly implemented and device-verified
-share card feature; requirements text unchanged)
+**Last Updated:** 2026-07-17 (NFR-REL-001 "Queue actions for sync when
+connectivity returns" checkbox updated to reflect the newly implemented
+offline action queue feature — see ADR-006; FR-SHARE-001/002 and related
+FR-RESULT-001/002 checkboxes previously updated 2026-07-09 for the share
+card feature; requirements text unchanged)
 **Status:** Approved - Development in Progress (~47% of MVP acceptance
 criteria implemented)
 **Owner:** Product & Engineering Team

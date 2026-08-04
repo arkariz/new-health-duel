@@ -3,6 +3,8 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/error/failures.dart';
+import 'package:health_duel/core/offline_queue/domain/entities/queued_action.dart';
+import 'package:health_duel/core/offline_queue/presentation/offline_aware_action.dart';
 import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_list_event.dart';
@@ -23,6 +25,8 @@ void main() {
   late MockCheckHealthPermissions mockCheckHealthPermissions;
   late MockCompleteDuel mockCompleteDuel;
   late MockExpirePendingDuel mockExpirePendingDuel;
+  late MockConnectivityCubit mockConnectivityCubit;
+  late MockEnqueueOfflineAction mockEnqueueOfflineAction;
 
   setUpAll(registerFallbackValues);
 
@@ -35,6 +39,18 @@ void main() {
     mockSyncHealthData = MockSyncHealthData();
     mockCompleteDuel = MockCompleteDuel();
     mockExpirePendingDuel = MockExpirePendingDuel();
+    mockEnqueueOfflineAction = MockEnqueueOfflineAction();
+    when(
+      () => mockEnqueueOfflineAction(
+        type: any(named: 'type'),
+        payload: any(named: 'payload'),
+        dedupKey: any(named: 'dedupKey'),
+      ),
+    ).thenAnswer((_) async => const Right(null));
+    // Online by default so existing tests exercise the normal (non-queued)
+    // path unless a test explicitly stubs offline.
+    mockConnectivityCubit = MockConnectivityCubit();
+    when(() => mockConnectivityCubit.isOffline).thenReturn(false);
     // Empty by default so tests that don't care about outgoing challenges
     // don't need to stub it explicitly; existing [Loading, Loaded]
     // expectations remain exact.
@@ -58,6 +74,8 @@ void main() {
         checkHealthPermissions: mockCheckHealthPermissions,
         completeDuel: mockCompleteDuel,
         expirePendingDuel: mockExpirePendingDuel,
+        offlineAwareAction:
+            OfflineAwareAction(mockConnectivityCubit, mockEnqueueOfflineAction),
       );
 
   group('DuelListBloc', () {
@@ -417,6 +435,50 @@ void main() {
       );
 
       blocTest<DuelListBloc, DuelListState>(
+        'enqueues offline instead of calling AcceptDuel when offline',
+        build: () {
+          when(() => mockConnectivityCubit.isOffline).thenReturn(true);
+          mockGetActiveDuels.setupSuccess(userId, []);
+          mockGetPendingDuels.setupSuccess(userId, [tPendingDuel]);
+          mockGetDuelHistory.setupSuccess(userId, []);
+          return buildBloc();
+        },
+        act: (bloc) async {
+          bloc.add(const DuelListLoadRequested(userId));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          bloc.add(const DuelAcceptRequested(tPendingDuelId));
+        },
+        skip: 2,
+        expect: () => [
+          isA<DuelListLoaded>()
+              .having(
+                (s) => s.pendingDuels.map((d) => d.id),
+                'pendingDuelIds',
+                contains(tPendingDuelId),
+              )
+              .having(
+                (s) => s.effect,
+                'effect',
+                isA<ShowSnackBarEffect>().having(
+                  (e) => e.message,
+                  'message',
+                  contains('queued'),
+                ),
+              ),
+        ],
+        verify: (_) {
+          verifyNever(() => mockAcceptDuel(any()));
+          verify(
+            () => mockEnqueueOfflineAction(
+              type: OfflineActionType.acceptDuel,
+              payload: {'duelId': tPendingDuelId},
+              dedupKey: 'duel_$tPendingDuelId',
+            ),
+          ).called(1);
+        },
+      );
+
+      blocTest<DuelListBloc, DuelListState>(
         'emits DuelListLoaded with error effect when accept fails',
         build: () {
           mockGetActiveDuels.setupSuccess(userId, []);
@@ -476,6 +538,50 @@ void main() {
                 isA<ShowSnackBarEffect>(),
               ),
         ],
+      );
+
+      blocTest<DuelListBloc, DuelListState>(
+        'enqueues offline instead of calling DeclineDuel when offline',
+        build: () {
+          when(() => mockConnectivityCubit.isOffline).thenReturn(true);
+          mockGetActiveDuels.setupSuccess(userId, []);
+          mockGetPendingDuels.setupSuccess(userId, [tPendingDuel]);
+          mockGetDuelHistory.setupSuccess(userId, []);
+          return buildBloc();
+        },
+        act: (bloc) async {
+          bloc.add(const DuelListLoadRequested(userId));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          bloc.add(const DuelDeclineRequested(tPendingDuelId));
+        },
+        skip: 2,
+        expect: () => [
+          isA<DuelListLoaded>()
+              .having(
+                (s) => s.pendingDuels.map((d) => d.id),
+                'pendingDuelIds',
+                contains(tPendingDuelId),
+              )
+              .having(
+                (s) => s.effect,
+                'effect',
+                isA<ShowSnackBarEffect>().having(
+                  (e) => e.message,
+                  'message',
+                  contains('queued'),
+                ),
+              ),
+        ],
+        verify: (_) {
+          verifyNever(() => mockDeclineDuel(any()));
+          verify(
+            () => mockEnqueueOfflineAction(
+              type: OfflineActionType.declineDuel,
+              payload: {'duelId': tPendingDuelId},
+              dedupKey: 'duel_$tPendingDuelId',
+            ),
+          ).called(1);
+        },
       );
 
       blocTest<DuelListBloc, DuelListState>(

@@ -16,7 +16,7 @@ class SyncIndicator extends StatelessWidget {
     this.onRefresh,
     super.key,
   });
-  final DateTime lastSyncTime;
+  final DateTime? lastSyncTime;
   final bool isSyncing;
   final VoidCallback? onRefresh;
 
@@ -59,7 +59,9 @@ class SyncIndicator extends StatelessWidget {
             child: Text(
               isSyncing
                   ? 'Syncing health data...'
-                  : 'Last synced ${timeago.format(lastSyncTime)}',
+                  : lastSyncTime != null
+                      ? 'Last synced ${timeago.format(lastSyncTime!)}'
+                      : 'Not synced yet',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

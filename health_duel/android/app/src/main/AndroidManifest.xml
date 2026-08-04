@@ -12,7 +12,10 @@
     <uses-permission android:name="androidx.health.permission.Steps.WRITE" />
 
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
-    
+
+    <!-- Lets the health-sync periodic WorkManager task survive device reboots -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application
         android:label="health_duel"
         android:name="${applicationName}"
