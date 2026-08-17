@@ -32,15 +32,8 @@ dependencies:
       url: https://github.com/arkariz/flutter-package-core
       ref: 2.0.0
       path: packages/security
-  firestore:
-    git:
-      url: https://github.com/arkariz/flutter-package-core
-      ref: 2.0.0
-      path: packages/firestore
 
   # External Libraries
-  cupertino_icons: ^1.0.8
-  dio: ^5.9.2
   envied: ^1.3.5
   flutter_bloc: ^9.1.1
   get_it: ^9.2.1
@@ -57,7 +50,6 @@ dependencies:
   # Firebase
   firebase_core: ^4.10.0
   firebase_auth: ^6.5.2
-  firebase_messaging: ^16.3.0
   cloud_firestore: ^6.5.0
 
   # Social Auth
@@ -65,7 +57,6 @@ dependencies:
 
   # Health
   health: ^13.1.3
-  permission_handler: ^12.0.3
 
   # Sharing
   share_plus: ^12.0.0
@@ -81,6 +72,7 @@ dev_dependencies:
   envied_generator: ^1.3.5
   build_runner: ^2.7.1
   very_good_analysis: ^10.2.0
+  dio: ^5.9.2
 
 flutter:
   uses-material-design: true

@@ -68,9 +68,6 @@ void main() {
         expect(find.text('Sign In'), findsOneWidget);
         expect(find.text('Continue with Google'), findsOneWidget);
         expect(find.text('Register'), findsOneWidget);
-
-        // Test credentials hint
-        expect(find.text('Test Credentials'), findsOneWidget);
       });
 
       testWidgets(

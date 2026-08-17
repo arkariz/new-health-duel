@@ -276,7 +276,7 @@ class _HistoryDuelCard extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  isTie ? '🤝' : (iWon ? '🏆' : '💪'),
+                  isTie ? '🤝' : (iWon ? '🏆' : '🙇'),
                   style: const TextStyle(fontSize: 20),
                 ),
               ),

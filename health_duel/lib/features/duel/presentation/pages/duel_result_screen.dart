@@ -226,7 +226,7 @@ class _ResultHeader extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            isWinner ? '🏆' : '💪',
+            isWinner ? '🏆' : '🙇',
             style: const TextStyle(fontSize: 64),
           ),
           const SizedBox(height: AppSpacing.md),

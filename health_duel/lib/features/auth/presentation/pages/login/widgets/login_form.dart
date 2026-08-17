@@ -121,11 +121,6 @@ class LoginForm extends StatelessWidget {
                   ),
                 ],
               ),
-
-              const SizedBox(height: AppSpacing.lg),
-
-              // Test credentials hint (dev only)
-              const _TestCredentialsHint(),
             ],
           ),
         ),
@@ -285,53 +280,6 @@ class _OrDivider extends StatelessWidget {
         ),
         const Expanded(child: Divider()),
       ],
-    );
-  }
-}
-
-/// Test credentials hint for development
-class _TestCredentialsHint extends StatelessWidget {
-  const _TestCredentialsHint();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: context.appColors.subtleBackground,
-        borderRadius: AppRadius.mdBorder,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                size: 16,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                'Test Credentials',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Email: test@email.com\nPassword: test123',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontFamily: 'monospace',
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

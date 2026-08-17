@@ -5,11 +5,9 @@
     <!-- Health Connect Permissions -->
     <!-- Health Connect Permissions (Android 14+) -->
     <uses-permission android:name="android.permission.health.READ_STEPS"/>
-    <uses-permission android:name="android.permission.health.WRITE_STEPS"/>
-    
+
     <!-- Health Connect Permissions (Android < 14) -->
     <uses-permission android:name="androidx.health.permission.Steps.READ" />
-    <uses-permission android:name="androidx.health.permission.Steps.WRITE" />
 
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
 
@@ -17,7 +15,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
-        android:label="health_duel"
+        android:label="Health Duel"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

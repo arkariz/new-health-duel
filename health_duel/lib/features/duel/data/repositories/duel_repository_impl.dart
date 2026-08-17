@@ -41,6 +41,8 @@ class DuelRepositoryImpl implements DuelRepository {
     try {
       final duelDto = await _dataSource.acceptDuel(duelId);
       return Right(duelDto.toEntity());
+    } on Failure catch (failure) {
+      return Left(failure);
     } catch (e) {
       return Left(ServerFailure(message: 'Failed to accept duel: $e'));
     }
@@ -75,6 +77,8 @@ class DuelRepositoryImpl implements DuelRepository {
     try {
       await _dataSource.cancelDuel(duelId);
       return const Right(null);
+    } on Failure catch (failure) {
+      return Left(failure);
     } catch (e) {
       return Left(ServerFailure(message: 'Failed to cancel duel: $e'));
     }

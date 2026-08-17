@@ -50,7 +50,7 @@ class HealthPermissionView extends StatelessWidget {
 
               // Description
               Text(
-                'To display your step count, we need access to your health data. Please grant permission to continue.',
+                'Health Duel reads your step count to track duel progress. Your data is private and only shared with duel participants.',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurface.withAlpha((255 * 0.7).round()),
                 ),
@@ -76,7 +76,7 @@ class HealthPermissionView extends StatelessWidget {
                   Icon(Icons.lock_outline, size: 16, color: theme.colorScheme.onSurface.withAlpha((255 * 0.5).round())),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
-                    'Your data stays private',
+                    'Only your step count, only during a duel',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurface.withAlpha((255 * 0.5).round()),
                     ),
