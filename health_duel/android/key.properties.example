@@ -1,0 +1,11 @@
+# Template for android/key.properties — copy this file to "key.properties" in the
+# same directory and fill in real values. key.properties itself is git-ignored
+# (see android/.gitignore); this .example file is the only copy that's committed.
+#
+# See KEYSTORE_README.md in this directory for how to generate the keystore and
+# what to do if it's lost.
+
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=upload
+storeFile=upload-keystore.jks

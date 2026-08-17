@@ -1,4 +1,4 @@
-package com.example.health_duel
+package app.arkariz.healthduel
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
