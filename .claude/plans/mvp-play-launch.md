@@ -32,7 +32,7 @@ Legend: `[x]` selesai & terverifikasi · `[~]` sebagian / blocked · `[ ]` belum
   2. Download `google-services.json` baru, replace `health_duel/android/app/google-services.json`
   3. Run `flutterfire configure` (atau update manual `lib/core/config/firebase_options.dart` — Android `appId` masih nunjuk ke app registration lama)
   4. Setelah upload pertama ke Play Console, tambahin **Play App Signing SHA-1 + upload-key SHA-1** ke Firebase project settings, kalau enggak Google Sign-In bakal break di production
-- [ ] App icon + adaptive icon (`flutter_launcher_icons`) — masih default Flutter icon
+- [x] App icon + adaptive icon (`flutter_launcher_icons`) — "Spark" bolt mark, brand green `#00E5A0` di atas `#080C10`
 - [ ] `isMinifyEnabled` + `proguard-rules.pro`
 - [x] `android/key.properties.example` + `android/KEYSTORE_README.md` dibuat (template + dokumentasi backup/recovery)
 
@@ -270,7 +270,7 @@ Semua di `health_duel/android/`. Bukan feature work; semuanya hard reject kalau 
 | 3 | `targetSdk` 35 → **36** (deadline Play: **2026-08-31**) | `android/app/build.gradle.kts:26` | ✅ |
 | 4 | `android:label="health_duel"` → `"Health Duel"` | `AndroidManifest.xml:20` | ✅ |
 | 5 | Hapus `WRITE_STEPS` + `Steps.WRITE` — dideclare, gak pernah dipakai (`_accessTypes = [HealthDataAccess.READ]`). Health-write permission yang gak dipakai itu penyebab rejection yang umum | `AndroidManifest.xml:8,12` | ✅ |
-| 6 | Icon asli + adaptive icon (`mipmap-anydpi-v26/`) — sekarang masih byte-identical sama default Flutter | tambah `flutter_launcher_icons` | ⬜ |
+| 6 | Icon asli + adaptive icon (`mipmap-anydpi-v26/`) — "Spark" bolt mark (brand green `#00E5A0` / bg `#080C10`), generated via `flutter_launcher_icons` dari `assets/icon/icon_master.png` + `icon_foreground.png` | `pubspec.yaml`, `android/app/src/main/res/mipmap-*` | ✅ |
 | 7 | **Hapus `_TestCredentialsHint`** — render `test@email.com / test123` unconditional, gak ada guard `kDebugMode` | `login_form.dart:293-337`, dipakai di `:128` | ✅ |
 | 8 | Drop unused deps: `firebase_messaging`, `permission_handler`, `firestore` (git), `cupertino_icons`; pindahin `dio` ke dev | `pubspec.yaml` | ✅ |
 | 9 | Regenerate `google-services.json` buat ID baru; tambahin **Play App Signing SHA-1 + upload-key SHA-1** ke Firebase kalau gak **Google Sign-In break di production** | Firebase console | ⬜ **BLOCKED — aksi user** |
