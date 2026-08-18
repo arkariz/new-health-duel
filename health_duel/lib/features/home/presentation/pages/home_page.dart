@@ -44,16 +44,10 @@ class _HomePageState extends State<HomePage> {
             elevation: 0,
             automaticallyImplyLeading: false,
             actions: [
-              BlocSelector<HomeBloc, HomeState, bool>(
-                selector: (state) => state.isLoading,
-                builder: (context, isLoading) {
-                  if (isLoading) return const SizedBox.shrink();
-                  return IconButton(
-                    icon: const Icon(Icons.logout_rounded),
-                    tooltip: 'Sign Out',
-                    onPressed: () => context.read<HomeBloc>().add(const HomeSignOutRequested()),
-                  );
-                },
+              IconButton(
+                icon: const Icon(Icons.settings_outlined),
+                tooltip: 'Settings',
+                onPressed: () => context.push(AppRoutes.settings),
               ),
             ],
           ),

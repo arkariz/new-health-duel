@@ -13,11 +13,6 @@ class HomeLoadUserRequested extends HomeEvent {
   const HomeLoadUserRequested();
 }
 
-/// Request to sign out the current user
-class HomeSignOutRequested extends HomeEvent {
-  const HomeSignOutRequested();
-}
-
 /// Request to refresh user data (pull-to-refresh)
 class HomeRefreshRequested extends HomeEvent {
   const HomeRefreshRequested();

@@ -22,19 +22,15 @@ part 'home_side_effect.dart';
 class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
 
   HomeBloc({
-    required SessionRepository sessionRepository, 
-    required SignOut signOut,
+    required SessionRepository sessionRepository,
   })
     : _sessionRepository = sessionRepository,
-      _signOut = signOut,
   super(const HomeState()) {
     on<HomeLoadUserRequested>(_onLoadUserRequested);
-    on<HomeSignOutRequested>(_onSignOutRequested);
     on<HomeRefreshRequested>(_onRefreshRequested);
     on<HomeNavigateToHealthRequested>(_onNavigateToHealthRequested);
   }
   final SessionRepository _sessionRepository;
-  final SignOut _signOut;
 
   /// Load current user data
   Future<void> _onLoadUserRequested(HomeLoadUserRequested event, Emitter<HomeState> emit) async {
@@ -64,25 +60,6 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
           );
         }
       },
-    );
-  }
-
-  /// Sign out and navigate to login
-  Future<void> _onSignOutRequested(HomeSignOutRequested event, Emitter<HomeState> emit) async {
-    emit(state.copyWith(status: HomeStatus.loading));
-
-    final result = await _signOut();
-
-    result.fold(
-      (failure) => emit(
-        state.copyWith(
-          status: HomeStatus.loaded, // Stay on loaded state
-          effect: _effectError(failure.message),
-        ),
-      ),
-      (_) => emit(
-        state.copyWith(status: HomeStatus.initial, clearUser: true, effect: _effectNavigateToLogin),
-      ),
     );
   }
 

@@ -62,6 +62,10 @@ void registerHealthModule(GetIt getIt) {
     () => CheckHealthConnectAvailable(getIt<HealthRepository>()),
   )
 
+  ..registerFactory<RevokeHealthPermissions>(
+    () => RevokeHealthPermissions(getIt<HealthRepository>()),
+  )
+
   // ========================
   // Bloc
   // ========================

@@ -165,6 +165,24 @@ service cloud.firestore {
         && onlyChanged(['status'])
         && request.resource.data.status == 'expired';
 
+      // Account deletion (account_remote_data_source.dart) — a participant
+      // may anonymize their OWN display fields on a duel doc, at any
+      // status, any time. Never the other participant's fields, never
+      // status/scores. This is what keeps a completed duel's history
+      // intact for the surviving participant after the other deletes
+      // their account — see privacy policy / delete-account page.
+      allow update: if isSignedIn() && isChallenger()
+        && onlyChanged(['challengerName', 'challengerPhotoUrl'])
+        && request.resource.data.challengerName is string
+        && request.resource.data.challengerName.size() > 0
+        && request.resource.data.challengerName.size() <= 100;
+
+      allow update: if isSignedIn() && isChallenged()
+        && onlyChanged(['challengedName', 'challengedPhotoUrl'])
+        && request.resource.data.challengedName is string
+        && request.resource.data.challengedName.size() > 0
+        && request.resource.data.challengedName.size() <= 100;
+
       // updateStepCount (duel_firestore_datasource.dart:280-301) — THE
       // FIX for the step-tampering hole. The Dart code picks the field
       // name client-side (challenger vs challenged); nothing in app code

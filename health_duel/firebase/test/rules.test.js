@@ -278,6 +278,54 @@ describe('duels/{duelId} — cancel (P0 fix: cannot cancel a LIVE duel)', () => 
   });
 });
 
+describe('duels/{duelId} — anonymize own fields (account deletion)', () => {
+  it('the challenger can anonymize their own name and photo', async () => {
+    await seed('duels', 'd1', pendingDuelData({ challengerId: 'alice', challengedId: 'bob' }));
+    const alice = testEnv.authenticatedContext('alice');
+    await assertSucceeds(updateDoc(doc(alice.firestore(), 'duels/d1'), {
+      challengerName: 'Deleted user',
+      challengerPhotoUrl: null,
+    }));
+  });
+
+  it('the challenged user can anonymize their own name and photo', async () => {
+    await seed('duels', 'd1', pendingDuelData({ challengerId: 'alice', challengedId: 'bob' }));
+    const bob = testEnv.authenticatedContext('bob');
+    await assertSucceeds(updateDoc(doc(bob.firestore(), 'duels/d1'), {
+      challengedName: 'Deleted user',
+      challengedPhotoUrl: null,
+    }));
+  });
+
+  it('the challenger CANNOT anonymize the challenged user’s fields', async () => {
+    await seed('duels', 'd1', pendingDuelData({ challengerId: 'alice', challengedId: 'bob' }));
+    const alice = testEnv.authenticatedContext('alice');
+    await assertFails(updateDoc(doc(alice.firestore(), 'duels/d1'), {
+      challengedName: 'Deleted user',
+      challengedPhotoUrl: null,
+    }));
+  });
+
+  it('anonymizing cannot smuggle a status or score change through the same write', async () => {
+    await seed('duels', 'd1', pendingDuelData({ challengerId: 'alice', challengedId: 'bob' }));
+    const alice = testEnv.authenticatedContext('alice');
+    await assertFails(updateDoc(doc(alice.firestore(), 'duels/d1'), {
+      challengerName: 'Deleted user',
+      challengerPhotoUrl: null,
+      status: 'cancelled',
+    }));
+  });
+
+  it('rejects an empty anonymized name', async () => {
+    await seed('duels', 'd1', pendingDuelData({ challengerId: 'alice', challengedId: 'bob' }));
+    const alice = testEnv.authenticatedContext('alice');
+    await assertFails(updateDoc(doc(alice.firestore(), 'duels/d1'), {
+      challengerName: '',
+      challengerPhotoUrl: null,
+    }));
+  });
+});
+
 describe('duels/{duelId} — step writes (field-level tampering protection)', () => {
   async function seedActive(id) {
     const now = nowTs();

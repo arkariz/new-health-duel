@@ -9,6 +9,7 @@ import 'package:health_duel/core/offline_queue/application/offline_queue_process
 import 'package:health_duel/core/offline_queue/di/offline_queue_module.dart';
 import 'package:health_duel/core/router/app_router.dart';
 import 'package:health_duel/data/session/di/session_module.dart';
+import 'package:health_duel/features/account/di/account_module.dart';
 import 'package:health_duel/features/auth/di/auth_module.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:health_duel/features/duel/data/background/health_sync_background_task.dart';
@@ -82,11 +83,13 @@ Future<void> initializeDependencies() async {
   // Duel feature: duel management, step competitions (Phase 4)
   registerDuelModule();
 
+  // Account feature: Settings screen, account deletion (M2.4). Depends on
+  // auth (FirebaseAuth/GoogleSignIn), session (SignOut), and health
+  // (RevokeHealthPermissions) modules registered above.
+  registerAccountModule();
+
   // 3. Register Router (needs AuthBloc for redirect logic)
   _registerRouter();
-
-  // TODO(rizky): Future phases - Register additional feature modules
-  // registerProfileModule();
 }
 
 /// Register GoRouter with auth-aware redirects
