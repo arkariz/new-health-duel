@@ -47,7 +47,7 @@ Legend: `[x]` selesai & terverifikasi · `[~]` sebagian / blocked · `[ ]` belum
 - [x] **M2.4 Settings screen + account deletion** — `features/account/` baru, `/settings` diregister di `app_router.dart`. Reauth-aware delete (password buat email/password, native Google picker buat Google), Firestore atomic wipe + anonymize, `RevokeHealthPermissions`, sign-out dipindah dari home app bar ke sini. **Diverifikasi run + debug beneran di emulator**, bukan cuma analyze/test
 - [x] **M2.5 Health Connect rationale copy** — "Your data stays private" (yang gak akurat, karena steps di-share ke opponent) diganti jadi copy yang jujur (commit di step 1)
   - [ ] "Learn more" link ke `/privacy` belum ditambah (nunggu M2.3)
-- [ ] **M2.6 Crash reporting** — belum ada `firebase_crashlytics`, belum ada `runZonedGuarded`/`FlutterError.onError` di `main.dart`
+- [x] **M2.6 Crash reporting** — `firebase_crashlytics` ditambah, `main.dart` dibungkus `runZonedGuarded` + `FlutterError.onError` + `PlatformDispatcher.instance.onError`. Collection dimatikan di debug (`!kDebugMode`) biar gak spam dari hot reload. Diverifikasi: `flutter analyze` 0 error, `flutter build apk --release` sukses (58.9MB)
 - [ ] **M2.7 Health Apps declaration form** — form di Play Console, tinggal isi (dependency: M1 permission cleanup udah selesai, jadi tinggal isi form pas submit)
 
 ### M3 — Gate C part 1: solo spine (belum dimulai)
@@ -220,7 +220,7 @@ gak adil head-to-head tapi fine kalau lawan diri sendiri. Model `DuelMetric` den
 
 | Gate | Pertanyaan | Status |
 |---|---|---|
-| **A — Legal** | Google bisa list app ini secara legal? | ⚠️ Firestore rules verified + deployed, privacy website deployed, **account deletion selesai** — sisa cuma ganti placeholder contact & M2.6 crash reporting |
+| **A — Legal** | Google bisa list app ini secara legal? | ⚠️ Rules, website, account deletion, crash reporting semua selesai — sisa cuma ganti placeholder contact di `/privacy` & `/delete-account` sebelum submit |
 | **B — Technical** | Play bakal terima upload-nya? | ✅ **Selesai** — signing, applicationId, google-services.json, icon, minify/proguard semua beres; `flutter build apk --release` sukses end-to-end |
 | **C — Product loop** | Jalan buat satu orang di hari pertama? | ❌ solo loop belum dibangun |
 | **D — Listing** | Ada store page yang layak di-tap? | ❌ belum ada apa-apa |
@@ -392,11 +392,26 @@ Firestore dan dibaca opponent. Diganti jadi copy yang jujur:
 
 Link "Learn more" ke `/privacy` **belum ditambah** (nunggu M2.3 jadi).
 
-### M2.6 Crash reporting ⬜
+### M2.6 Crash reporting ✅
 
-Nol match buat `FlutterError.onError`, `runZonedGuarded`, atau `PlatformDispatcher` di mana pun —
-gak bakal ada visibility ke Play pre-launch-report crash. Perlu tambah `firebase_crashlytics` +
-`runZonedGuarded` + `FlutterError.onError` di `main.dart`.
+`firebase_crashlytics: ^5.2.7` ditambah (`flutter pub add`, resolve otomatis compatible sama BOM
+Firebase yang lain di project). `main.dart` sekarang:
+
+- Seluruh `main()` dibungkus `runZonedGuarded` — nangkep error yang lolos dari Flutter framework
+  error zone, termasuk yang kejadian sebelum `FlutterError.onError` sempat di-wire (mis. crash pas
+  `initializeDependencies()`).
+- `FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError` — widget-tree
+  errors.
+- `PlatformDispatcher.instance.onError` — uncaught async/platform errors di luar widget tree.
+- `setCrashlyticsCollectionEnabled(!kDebugMode)` — collection mati total di debug build (hot
+  reload/restart bukan crash beneran), otomatis nyala buat dev & prod flavor lainnya.
+- Gak nambah Crashlytics Gradle plugin (`com.google.firebase.crashlytics`) di
+  `android/app/build.gradle.kts` — itu cuma buat upload ProGuard mapping file (readable stack trace
+  di release yang di-obfuscate), bukan syarat crash reporting basic buat nyala. Bisa ditambah nanti
+  kalau stack trace release build susah dibaca di Crashlytics console.
+
+**Diverifikasi:** `flutter analyze` → 0 error (baseline 40 info/warning gak berubah),
+`flutter build apk --release` → sukses, 58.9MB (naik ~0.1MB dari M1, wajar buat SDK baru).
 
 ### M2.7 Health Apps declaration ⬜
 
@@ -556,8 +571,8 @@ verification · onboarding tutorial · streak freezes · group duels · server-s
 ## Cara lanjut di sesi berikutnya (checklist singkat)
 
 1. Baca bagian "⚠️ Yang TIDAK ada di git" di atas, pastiin semua file secret udah dipindah kalau ganti komputer
-2. M1 (Gate B) dan M2.1/M2.2/M2.3/M2.4 udah selesai — gak ada blocker manual yang nyisa
-3. **Ganti placeholder contact** di `/privacy` & `/delete-account` (`TODO-privacy-contact@example.com`, `TODO: developer/entity name`) sebelum submit ke Play — satu-satunya utang dari M2.3/M2.4
-4. Lanjut M2.6 (crash reporting — `firebase_crashlytics` + `runZonedGuarded`) — kerjaan mekanis kecil yang masih nyisa dari Gate A/B
-5. M3 (solo spine) adalah kerjaan produk paling besar & paling penting yang belum disentuh sama sekali — prioritas berikutnya
-6. M4 (duel via QR) dan M5 (local notifications) nunggu M3 kelar
+2. **Gate A dan Gate B selesai total** (M1, M2.1–M2.4, M2.6) — gak ada blocker manual yang nyisa
+3. **Ganti placeholder contact** di `/privacy` & `/delete-account` (`TODO-privacy-contact@example.com`, `TODO: developer/entity name`) sebelum submit ke Play — satu-satunya utang yang masih nyisa dari Gate A
+4. M2.7 (Health Apps declaration form) tinggal isi form di Play Console pas submit — bukan kerjaan kode
+5. M3 (solo spine) adalah kerjaan produk paling besar & paling penting yang belum disentuh sama sekali — prioritas berikutnya, dan satu-satunya yang nyisa buat Gate C
+6. M4 (duel via QR) dan M5 (local notifications) nunggu M3 kelar; M6 (store listing) independen, bisa disiapin kapan aja
