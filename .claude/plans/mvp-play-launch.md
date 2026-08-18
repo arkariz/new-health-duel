@@ -33,7 +33,7 @@ Legend: `[x]` selesai & terverifikasi · `[~]` sebagian / blocked · `[ ]` belum
   3. Run `flutterfire configure` (atau update manual `lib/core/config/firebase_options.dart` — Android `appId` masih nunjuk ke app registration lama)
   4. Setelah upload pertama ke Play Console, tambahin **Play App Signing SHA-1 + upload-key SHA-1** ke Firebase project settings, kalau enggak Google Sign-In bakal break di production
 - [x] App icon + adaptive icon (`flutter_launcher_icons`) — "Spark" bolt mark, brand green `#00E5A0` di atas `#080C10`
-- [ ] `isMinifyEnabled` + `proguard-rules.pro`
+- [x] `isMinifyEnabled` + `proguard-rules.pro` — verified dengan `flutter build apk --release` sukses end-to-end (59.0MB), termasuk `isShrinkResources`
 - [x] `android/key.properties.example` + `android/KEYSTORE_README.md` dibuat (template + dokumentasi backup/recovery)
 
 ### M2 — Gate A: legal + security
@@ -41,7 +41,7 @@ Legend: `[x]` selesai & terverifikasi · `[~]` sebagian / blocked · `[ ]` belum
   - [x] Email dihapus total dari Firestore (`user_model.dart`, `friend_firestore_datasource.dart`, `friends_screen.dart` search card)
   - [x] `firebase.json` firestore block ditambah, `firestore.indexes.json` dipindah dari repo root ke `health_duel/`
   - [x] `.firebaserc` dibuat, project default `health-duel`
-  - [ ] **BLOCKED — sedang diproses user**: `firebase deploy --only firestore:rules` ke project live. Terakhir dicoba `--dry-run`, kena `401 invalid authentication credentials` (token CLI expired). Fix: `firebase login --reauth` di terminal interaktif, lalu ulangi dry-run, baru deploy beneran
+  - [x] `firebase deploy --only firestore:rules` ke project live — **selesai** (dikerjain user, token direfresh via `firebase login --reauth`). Diverifikasi ulang dengan `--dry-run`: compile sukses, gak ada error auth lagi
 - [x] **M2.2 P0 data-integrity bugs** — `cancelDuel` & `acceptDuel` di `duel_firestore_datasource.dart` sekarang guarded transaction (sebelumnya: participant bisa cancel duel yang lagi aktif). Dibackup dengan Firestore rules juga
 - [ ] **M2.3 Website** (Firebase Hosting free tier) — `/privacy` + `/delete-account`. **Belum ada sama sekali**
 - [ ] **M2.4 Settings screen + account deletion** — **belum ada sama sekali**. `/settings` & `/profile` route udah didefine di `routes.dart` tapi gak pernah diregister di `app_router.dart`. Ini hard blocker Play (wajib ada in-app delete account + web URL)
@@ -95,12 +95,14 @@ Semua file di bawah ini **gitignored dengan sengaja** (secret / environment-spec
 
 ---
 
-## 🔨 Blocker aktif saat ini (per 2026-08-17)
+## 🔨 Blocker aktif saat ini (per 2026-08-18)
 
-1. **`google-services.json` perlu diregenerate** untuk package id baru `app.arkariz.healthduel` — perlu login Firebase console, bukan sesuatu yang bisa dikerjain dari CLI/agent tanpa akses akun. Lihat langkah di checklist M1 di atas.
-2. **Firestore rules belum di-deploy ke production** — CLI login token expired (`401` saat `firebase deploy --only firestore:rules --dry-run`). Fix: `firebase login --reauth` di terminal interaktif (butuh browser, gak bisa lewat agent), lalu ulangi.
+Kedua blocker sebelumnya udah **selesai**:
 
-Begitu dua hal ini selesai, build Android pertama yang sukses end-to-end + rules production yang aktual jadi mungkin — keduanya sebelumnya belum pernah terjadi di repo ini sama sekali (dikonfirmasi: `flutter build apk` sebelumnya gagal karena bug Kotlin plugin, dan gak ada `firestore.rules` sama sekali sebelum sesi ini).
+1. ~~`google-services.json` perlu diregenerate~~ ✅ **Selesai** (dikerjain user). `flutter build apk --release --dart-define=FLAVOR=dev` sukses end-to-end pertama kalinya di repo ini (59.0MB, minify + shrinkResources aktif) — dulu gagal karena bug Kotlin plugin, terus gagal lagi di `processDebugGoogleServices`.
+2. ~~Firestore rules belum di-deploy ke production~~ ✅ **Selesai** (dikerjain user via `firebase login --reauth`, lalu `firebase deploy --only firestore:rules`). Diverifikasi ulang dengan dry-run: compile sukses, gak ada error auth.
+
+**Gak ada blocker aktif yang butuh aksi manual user saat ini.** Gate A (legal) dan Gate B (technical) kini realistis buat dianggap selesai — sisa kerjaan (M2.3 website, M2.4 settings/deletion, M2.6 crash reporting, M3+) semuanya bisa dikerjain langsung tanpa nunggu.
 
 ---
 
@@ -218,8 +220,8 @@ gak adil head-to-head tapi fine kalau lawan diri sendiri. Model `DuelMetric` den
 
 | Gate | Pertanyaan | Status |
 |---|---|---|
-| **A — Legal** | Google bisa list app ini secara legal? | ⚠️ Firestore rules udah ada + verified, belum deploy; account deletion belum ada |
-| **B — Technical** | Play bakal terima upload-nya? | ⚠️ signing/applicationId udah beres, google-services.json blocked, icon/proguard belum |
+| **A — Legal** | Google bisa list app ini secara legal? | ⚠️ Firestore rules verified + **deployed ke production**; privacy policy website & account deletion masih belum ada |
+| **B — Technical** | Play bakal terima upload-nya? | ✅ **Selesai** — signing, applicationId, google-services.json, icon, minify/proguard semua beres; `flutter build apk --release` sukses end-to-end |
 | **C — Product loop** | Jalan buat satu orang di hari pertama? | ❌ solo loop belum dibangun |
 | **D — Listing** | Ada store page yang layak di-tap? | ❌ belum ada apa-apa |
 
@@ -274,7 +276,7 @@ Semua di `health_duel/android/`. Bukan feature work; semuanya hard reject kalau 
 | 7 | **Hapus `_TestCredentialsHint`** — render `test@email.com / test123` unconditional, gak ada guard `kDebugMode` | `login_form.dart:293-337`, dipakai di `:128` | ✅ |
 | 8 | Drop unused deps: `firebase_messaging`, `permission_handler`, `firestore` (git), `cupertino_icons`; pindahin `dio` ke dev | `pubspec.yaml` | ✅ |
 | 9 | Regenerate `google-services.json` buat ID baru; tambahin **Play App Signing SHA-1 + upload-key SHA-1** ke Firebase kalau gak **Google Sign-In break di production** | Firebase console | ⬜ **BLOCKED — aksi user** |
-| 10 | `isMinifyEnabled` + `proguard-rules.pro` | `android/app/build.gradle.kts` | ⬜ |
+| 10 | `isMinifyEnabled` + `isShrinkResources` + `proguard-rules.pro` (play-core `dontwarn` landmine + grpc/firestore optional-dep `dontwarn`) | `android/app/build.gradle.kts`, `android/app/proguard-rules.pro` | ✅ |
 
 **Bonus temuan yang gak ada di plan awal:** Kotlin Android Gradle plugin dideclare di
 `settings.gradle.kts` (`apply false`) tapi **gak pernah di-apply** di `app/build.gradle.kts`. Ini
