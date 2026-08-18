@@ -1,0 +1,203 @@
+rules_version = '2';
+
+// Health Duel — Firestore security rules.
+//
+// This is a client-only app: there are no Cloud Functions, so these rules
+// are the ENTIRE server-side security model. Every write the app makes goes
+// straight from a user's device to Firestore; if a rule doesn't block
+// something, nothing does.
+//
+// Anti-cheat scope, stated explicitly: step counts are read from Health
+// Connect on the user's own device and self-reported to Firestore. These
+// rules stop a participant from tampering with their OPPONENT's score (via
+// field-level write scoping below); they cannot stop a modified client from
+// inflating its own score. v1 duels are trust-based between people who know
+// each other — this is a deliberate scope decision, not an oversight.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    // True if this update only touches fields in `keys` (never adds/removes
+    // other fields, and never touches anything outside `keys`).
+    function onlyChanged(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    // Every write-time decision in this app is a client `DateTime.now()` —
+    // there is no server clock authority. This bounds how far a client's
+    // clock may disagree with Firestore's own `request.time` on any write
+    // that claims to represent "now". It does not prevent a determined
+    // attacker with a modified client from lying by up to 60s; it exists to
+    // catch ordinary clock drift, not to be a real time-authority.
+    function nearNow(ts) {
+      return ts >= request.time - duration.value(60, 's')
+          && ts <= request.time + duration.value(60, 's');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // users/{uid}
+    // ═══════════════════════════════════════════════════════════════════
+    //
+    // Readable by any signed-in user — required for friend/opponent name
+    // search (features/friends). Firestore rules can only restrict which
+    // DOCUMENTS are readable, never which FIELDS within a document, so the
+    // app deliberately never writes `email` into this document at all (see
+    // UserModel.toFirestore) rather than trying to hide it with a rule.
+    // Only the owner may write.
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+
+      allow create: if isSignedIn()
+        && uid() == userId
+        && request.resource.data.keys().hasOnly(['name', 'photoUrl', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && nearNow(request.resource.data.createdAt);
+
+      allow update: if isSignedIn()
+        && uid() == userId
+        && onlyChanged(['name', 'photoUrl'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100;
+
+      allow delete: if isSignedIn() && uid() == userId;
+
+      // users/{uid}/friends/{friendId} — owner-only in both directions.
+      // Nobody can insert themselves into someone else's friend list, and
+      // nobody but the owner can ever read it. Email is never written here
+      // either (see FriendFirestoreDataSource.addFriend).
+      match /friends/{friendId} {
+        allow read: if isSignedIn() && uid() == userId;
+
+        allow create: if isSignedIn()
+          && uid() == userId
+          && request.resource.data.keys().hasOnly(['id', 'name', 'photoUrl', 'addedAt'])
+          && request.resource.data.id == friendId
+          && request.resource.data.name is string;
+
+        allow delete: if isSignedIn() && uid() == userId;
+
+        // Friend entries are add/remove only — no in-place edits.
+        allow update: if false;
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // duels/{duelId}
+    // ═══════════════════════════════════════════════════════════════════
+    //
+    // Every rule below mirrors an existing, already-guarded write path in
+    // DuelFirestoreDataSource — see the file references in each block.
+    match /duels/{duelId} {
+
+      function isChallenger() { return uid() == resource.data.challengerId; }
+      function isChallenged() { return uid() == resource.data.challengedId; }
+      function isParticipant() { return uid() in resource.data.participants; }
+
+      function expectedWinner() {
+        return resource.data.challengerSteps == resource.data.challengedSteps
+          ? null
+          : (resource.data.challengerSteps > resource.data.challengedSteps
+              ? resource.data.challengerId
+              : resource.data.challengedId);
+      }
+
+      allow get: if isSignedIn() && uid() in resource.data.participants;
+      allow list: if isSignedIn() && uid() in resource.data.participants;
+
+      // createDuel (duel_firestore_datasource.dart:25-60) — a fresh
+      // challenge always starts at status "pending" with zeroed steps and
+      // no winner/acceptance/completion yet. startTime is a placeholder
+      // (updated on accept) that equals createdAt at this point; endTime is
+      // the 24h pending-invitation deadline, not the competition window.
+      allow create: if isSignedIn()
+        && request.resource.data.challengerId == uid()
+        && request.resource.data.challengerId != request.resource.data.challengedId
+        && request.resource.data.status == 'pending'
+        && request.resource.data.challengerSteps == 0
+        && request.resource.data.challengedSteps == 0
+        && request.resource.data.acceptedAt == null
+        && request.resource.data.completedAt == null
+        && request.resource.data.winnerId == null
+        && request.resource.data.participants ==
+             [request.resource.data.challengerId, request.resource.data.challengedId]
+        && nearNow(request.resource.data.createdAt)
+        && request.resource.data.startTime == request.resource.data.createdAt
+        && request.resource.data.endTime ==
+             request.resource.data.createdAt + duration.value(24, 'h');
+
+      // acceptDuel (duel_firestore_datasource.dart:62-104) — only the
+      // challenged user, only while still pending, only before the pending
+      // deadline (resource.data.endTime, pre-accept) has passed.
+      allow update: if isSignedIn() && isChallenged()
+        && resource.data.status == 'pending'
+        && resource.data.endTime > request.time
+        && onlyChanged(['status', 'startTime', 'endTime', 'acceptedAt'])
+        && request.resource.data.status == 'active'
+        && nearNow(request.resource.data.startTime)
+        && nearNow(request.resource.data.acceptedAt)
+        && request.resource.data.endTime ==
+             request.resource.data.startTime + duration.value(24, 'h');
+
+      // cancelDuel (duel_firestore_datasource.dart:175-203) — either
+      // participant, only while still pending. This is the fix for the bug
+      // where a participant could otherwise cancel a live, active duel.
+      allow update: if isSignedIn() && isParticipant()
+        && resource.data.status == 'pending'
+        && onlyChanged(['status'])
+        && request.resource.data.status == 'cancelled';
+
+      // expirePendingDuel (duel_firestore_datasource.dart:132-173) — either
+      // participant, only once the pending deadline has passed.
+      allow update: if isSignedIn() && isParticipant()
+        && resource.data.status == 'pending'
+        && resource.data.endTime <= request.time
+        && onlyChanged(['status'])
+        && request.resource.data.status == 'expired';
+
+      // updateStepCount (duel_firestore_datasource.dart:280-301) — THE
+      // FIX for the step-tampering hole. The Dart code picks the field
+      // name client-side (challenger vs challenged); nothing in app code
+      // stops a modified client from writing the OTHER participant's
+      // field. These two rules pin each participant to their own field —
+      // this is the enforcement, the Dart-side logic is not trusted.
+      allow update: if isSignedIn() && isChallenger()
+        && resource.data.status == 'active'
+        && onlyChanged(['challengerSteps'])
+        && request.resource.data.challengerSteps is int
+        && request.resource.data.challengerSteps >= 0
+        && request.resource.data.challengerSteps <= 300000;
+
+      allow update: if isSignedIn() && isChallenged()
+        && resource.data.status == 'active'
+        && onlyChanged(['challengedSteps'])
+        && request.resource.data.challengedSteps is int
+        && request.resource.data.challengedSteps >= 0
+        && request.resource.data.challengedSteps <= 300000;
+
+      // completeDuel (duel_firestore_datasource.dart:81-130) — either
+      // participant, only once the 24h competition window has actually
+      // ended, and only with the deterministic winner/completedAt that
+      // follows from the current step counts.
+      allow update: if isSignedIn() && isParticipant()
+        && resource.data.status == 'active'
+        && resource.data.endTime <= request.time
+        && onlyChanged(['status', 'winnerId', 'completedAt'])
+        && request.resource.data.status == 'completed'
+        && request.resource.data.completedAt == resource.data.endTime
+        && request.resource.data.winnerId == expectedWinner();
+
+      allow delete: if false;
+    }
+  }
+}
