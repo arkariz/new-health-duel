@@ -37,14 +37,14 @@ Legend: `[x]` selesai & terverifikasi · `[~]` sebagian / blocked · `[ ]` belum
 - [x] `android/key.properties.example` + `android/KEYSTORE_README.md` dibuat (template + dokumentasi backup/recovery)
 
 ### M2 — Gate A: legal + security
-- [x] **M2.1 Firestore rules** (commit `4414e51`, `7d9dd62`) — `firestore.rules` mencakup `users/{uid}`, `users/{uid}/friends/{friendId}`, `duels/{duelId}` untuk semua write path yang ada sekarang. **Diverifikasi dengan emulator test suite: 29/29 pass** (`health_duel/firebase/test/rules.test.js`, run via `firebase emulators:exec`)
+- [x] **M2.1 Firestore rules** (commit `4414e51`, `7d9dd62`) — `firestore.rules` mencakup `users/{uid}`, `users/{uid}/friends/{friendId}`, `duels/{duelId}` untuk semua write path yang ada sekarang. **Diverifikasi dengan emulator test suite: 34/34 pass** (naik dari 29 — M2.4 nambah rule + 5 test buat account-deletion anonymize) (`health_duel/firebase/test/rules.test.js`, run via `firebase emulators:exec`)
   - [x] Email dihapus total dari Firestore (`user_model.dart`, `friend_firestore_datasource.dart`, `friends_screen.dart` search card)
   - [x] `firebase.json` firestore block ditambah, `firestore.indexes.json` dipindah dari repo root ke `health_duel/`
   - [x] `.firebaserc` dibuat, project default `health-duel`
-  - [x] `firebase deploy --only firestore:rules` ke project live — **selesai** (dikerjain user, token direfresh via `firebase login --reauth`). Diverifikasi ulang dengan `--dry-run`: compile sukses, gak ada error auth lagi
+  - [x] `firebase deploy --only firestore:rules` ke project live — **selesai** (dikerjain user, token direfresh via `firebase login --reauth`; rule anonymize dari M2.4 dideploy terpisah setelahnya). Diverifikasi ulang dengan `--dry-run`: compile sukses, gak ada error auth lagi
 - [x] **M2.2 P0 data-integrity bugs** — `cancelDuel` & `acceptDuel` di `duel_firestore_datasource.dart` sekarang guarded transaction (sebelumnya: participant bisa cancel duel yang lagi aktif). Dibackup dengan Firestore rules juga
 - [x] **M2.3 Website** (Firebase Hosting free tier) — `/privacy` + `/delete-account`, **deployed** ke `health-duel.web.app`. ⚠️ Kontak email & nama developer masih placeholder (`TODO-privacy-contact@example.com`), ditandai jelas di kedua halaman — ganti sebelum submit ke Play
-- [ ] **M2.4 Settings screen + account deletion** — **belum ada sama sekali**. `/settings` & `/profile` route udah didefine di `routes.dart` tapi gak pernah diregister di `app_router.dart`. Ini hard blocker Play (wajib ada in-app delete account + web URL)
+- [x] **M2.4 Settings screen + account deletion** — `features/account/` baru, `/settings` diregister di `app_router.dart`. Reauth-aware delete (password buat email/password, native Google picker buat Google), Firestore atomic wipe + anonymize, `RevokeHealthPermissions`, sign-out dipindah dari home app bar ke sini. **Diverifikasi run + debug beneran di emulator**, bukan cuma analyze/test
 - [x] **M2.5 Health Connect rationale copy** — "Your data stays private" (yang gak akurat, karena steps di-share ke opponent) diganti jadi copy yang jujur (commit di step 1)
   - [ ] "Learn more" link ke `/privacy` belum ditambah (nunggu M2.3)
 - [ ] **M2.6 Crash reporting** — belum ada `firebase_crashlytics`, belum ada `runZonedGuarded`/`FlutterError.onError` di `main.dart`
@@ -220,7 +220,7 @@ gak adil head-to-head tapi fine kalau lawan diri sendiri. Model `DuelMetric` den
 
 | Gate | Pertanyaan | Status |
 |---|---|---|
-| **A — Legal** | Google bisa list app ini secara legal? | ⚠️ Firestore rules verified + **deployed ke production**; privacy policy website & account deletion masih belum ada |
+| **A — Legal** | Google bisa list app ini secara legal? | ⚠️ Firestore rules verified + deployed, privacy website deployed, **account deletion selesai** — sisa cuma ganti placeholder contact & M2.6 crash reporting |
 | **B — Technical** | Play bakal terima upload-nya? | ✅ **Selesai** — signing, applicationId, google-services.json, icon, minify/proguard semua beres; `flutter build apk --release` sukses end-to-end |
 | **C — Product loop** | Jalan buat satu orang di hari pertama? | ❌ solo loop belum dibangun |
 | **D — Listing** | Ada store page yang layak di-tap? | ❌ belum ada apa-apa |
@@ -351,10 +351,28 @@ lain-lain.
   `TODO: developer/entity name`) — ditandai jelas dengan banner di kedua halaman. **Wajib diganti
   sebelum halaman ini dipakai buat submit ke Play Console.**
 
-### M2.4 Account deletion — hard Play requirement, belum ada sama sekali ⬜
+### M2.4 Account deletion — hard Play requirement ✅
 
-Gak ada delete path, dan **gak ada settings screen sama sekali** (`/settings` dan `/profile` udah
-dideclare di `routes.dart:21-22` tapi gak pernah diregister di `app_router.dart`).
+`/settings` registered di `app_router.dart` (baru `features/account/`, Settings gabung profile
+display + sign-out + delete account, EffectBloc pattern). Sign-out dipindah dari home app bar ke
+sini (`HomeBloc.HomeSignOutRequested` dihapus, gak dipakai lagi).
+
+- **Reauth-aware deletion**: `AccountRepository.deleteAccount({password})` — password wajib buat
+  akun email/password (`EmailAuthProvider.credential` + reauth), native Google picker buat akun
+  Google (gak butuh input diketik). Reauth SELALU jalan duluan sebelum apapun yang destruktif, biar
+  gak ada state "Firestore udah kehapus tapi Auth masih hidup" kalau reauth gagal di tengah.
+- **Firestore wipe** (satu atomic `WriteBatch`): anonymize `challengerName`/`challengerPhotoUrl`
+  (atau versi `challenged*`) di semua duel yang partisipasinya match `uid`, hapus
+  `users/{uid}/friends/*`, hapus `users/{uid}`.
+- **`firestore.rules` ditambah** — dua rule baru: participant boleh anonymize field nama/foto
+  miliknya sendiri di duel doc, kapan aja, status apa aja (bukan cuma punya lawan, bukan bisa
+  smuggle status/score change bareng). **Deployed ke production**, diverifikasi emulator: 34/34
+  pass (naik dari 29 — 5 test baru buat rule ini).
+- `RevokeHealthPermissions` usecase baru (health feature) — dipanggil best-effort setelah delete
+  sukses, gak nge-block flow kalau gagal.
+- Link ke `/privacy` di Settings (pakai `url_launcher`, dependency baru).
+- **Diverifikasi run + debug beneran** di Android emulator (bukan cuma `flutter analyze`/`test`) —
+  register → Settings screen → delete account flow dites end-to-end sama user.
 
 Satu `SettingsScreen` minimal di `/settings`:
 - display name + avatar (nyerap fitur "profile" yang dulu) + streak/stats
@@ -538,8 +556,8 @@ verification · onboarding tutorial · streak freezes · group duels · server-s
 ## Cara lanjut di sesi berikutnya (checklist singkat)
 
 1. Baca bagian "⚠️ Yang TIDAK ada di git" di atas, pastiin semua file secret udah dipindah kalau ganti komputer
-2. Cek "Blocker aktif saat ini" — kemungkinan besar itu yang harus diselesain duluan
-3. Kalau dua blocker udah beres: coba `flutter build apk --debug --dart-define=FLAVOR=dev` end-to-end buat pertama kalinya, lalu `firebase deploy --only firestore:rules` beneran (bukan dry-run)
-4. Lanjut M1 sisa (icon, proguard) — kerjaan mekanis, gak butuh keputusan baru
-5. Lanjut M2.4 (Settings + account deletion) — ini hard Play blocker yang paling besar yang masih nyisa
-6. M3 (solo spine) adalah kerjaan produk paling besar & paling penting yang belum disentuh — mulai dari sini begitu M1/M2 kelar
+2. M1 (Gate B) dan M2.1/M2.2/M2.3/M2.4 udah selesai — gak ada blocker manual yang nyisa
+3. **Ganti placeholder contact** di `/privacy` & `/delete-account` (`TODO-privacy-contact@example.com`, `TODO: developer/entity name`) sebelum submit ke Play — satu-satunya utang dari M2.3/M2.4
+4. Lanjut M2.6 (crash reporting — `firebase_crashlytics` + `runZonedGuarded`) — kerjaan mekanis kecil yang masih nyisa dari Gate A/B
+5. M3 (solo spine) adalah kerjaan produk paling besar & paling penting yang belum disentuh sama sekali — prioritas berikutnya
+6. M4 (duel via QR) dan M5 (local notifications) nunggu M3 kelar
