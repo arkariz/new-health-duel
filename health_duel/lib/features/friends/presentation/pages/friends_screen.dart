@@ -326,19 +326,7 @@ class _SearchResultCard extends StatelessWidget {
           _AvatarCircle(name: user.name, isPrimary: true),
           const SizedBox(width: AppSpacing.md),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(user.name, style: theme.textTheme.titleSmall),
-                Text(
-                  user.email,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+            child: Text(user.name, style: theme.textTheme.titleSmall),
           ),
           if (isFriend)
             Chip(

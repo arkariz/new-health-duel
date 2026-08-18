@@ -17,10 +17,10 @@ class FriendFirestoreDataSource {
   }
 
   Future<void> addFriend(String currentUserId, UserModel friend) async {
+    // Email is deliberately not copied here — see UserModel.toFirestore.
     await _friendsOf(currentUserId).doc(friend.id).set({
       'id': friend.id,
       'name': friend.name,
-      'email': friend.email,
       'photoUrl': friend.photoUrl,
       'addedAt': FieldValue.serverTimestamp(),
     });

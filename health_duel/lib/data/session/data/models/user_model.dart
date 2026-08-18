@@ -55,9 +55,16 @@ class UserModel extends Equatable {
   /// Convert to Firestore document data
   ///
   /// Note: ID is not included as it's the document ID, not a field.
+  ///
+  /// Email is deliberately NOT written here. `users/{uid}` is readable by
+  /// any signed-in user (needed for friend/opponent name search), and
+  /// Firestore security rules can only restrict which *documents* are
+  /// readable, never which *fields* within them — so keeping email out of
+  /// the document entirely is the only way to keep it private. The
+  /// signed-in user's own email is already available from Firebase Auth;
+  /// no other user's email is ever needed by this app.
   Map<String, dynamic> toFirestore() => {
     'name': name,
-    'email': email,
     'photoUrl': photoUrl,
     'createdAt': Timestamp.fromDate(createdAt),
   };
