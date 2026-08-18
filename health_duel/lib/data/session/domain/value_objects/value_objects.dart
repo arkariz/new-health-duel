@@ -6,3 +6,4 @@ library;
 export 'display_name.dart';
 export 'email.dart';
 export 'password.dart';
+export 'streak_update.dart';

@@ -26,5 +26,9 @@ void registerSessionModule(GetIt getIt) {
 
   ..registerFactory<SignOut>(
     () => SignOut(getIt<SessionRepository>()),
+  )
+
+  ..registerFactory<RecordChallengeCompletion>(
+    () => RecordChallengeCompletion(getIt<SessionRepository>()),
   );
 }

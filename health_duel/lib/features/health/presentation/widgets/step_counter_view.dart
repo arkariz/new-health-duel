@@ -6,30 +6,26 @@ import 'package:health_duel/core/utils/extensions/extensions.dart';
 import 'package:health_duel/features/health/domain/entities/entities.dart';
 import 'package:health_duel/features/health/presentation/bloc/bloc.dart';
 
-/// Step Counter View - Displays today's step count
+/// Step Counter View — raw Health Connect diagnostics.
 ///
-/// Shows:
-/// - Large step count number
-/// - Progress ring (visual indicator)
-/// - Source device info
-/// - Manual entry badge (if applicable)
-/// - Pull-to-refresh support
+/// Deliberately has no target/goal of its own: that's the Challenge
+/// screen's job (`/challenge`, real target from an active
+/// `SoloChallenge`). This view exists to answer "is my step data syncing,
+/// and where's it coming from" — source device, manual-entry transparency,
+/// last-updated time — not to duplicate a progress ring.
 class StepCounterView extends StatelessWidget {
   const StepCounterView({
     required this.stepCount,
     this.isRefreshing = false,
-    this.dailyGoal = 10000,
     super.key,
   });
 
   final StepCount stepCount;
   final bool isRefreshing;
-  final int dailyGoal;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final progress = (stepCount.value / dailyGoal).clamp(0.0, 1.0);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -49,31 +45,15 @@ class StepCounterView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Step Counter Ring
-              _StepCounterRing(
-                stepCount: stepCount.value,
-                progress: progress,
-                dailyGoal: dailyGoal,
-                isRefreshing: isRefreshing,
-              ),
+              _StepCountDisplay(stepCount: stepCount.value, isRefreshing: isRefreshing),
 
               const SizedBox(height: AppSpacing.xl),
 
-              // Goal Progress Text
               Text(
-                '${(progress * 100).toInt()}% of daily goal',
-                style: theme.textTheme.titleMedium?.copyWith(
+                'from Health Connect',
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withAlpha((255 * 0.7).round()),
                 ),
-              ),
-
-              const SizedBox(height: AppSpacing.md),
-
-              // Goal indicator
-              _GoalIndicator(
-                current: stepCount.value,
-                goal: dailyGoal,
-                isAchieved: stepCount.value >= dailyGoal,
               ),
 
               const SizedBox(height: AppSpacing.xl),
@@ -104,22 +84,17 @@ class StepCounterView extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
-/// Step Counter Ring Widget
-class _StepCounterRing extends StatelessWidget {
-  const _StepCounterRing({
+/// Plain step count display — a ring with no progress arc, since this
+/// screen doesn't track a target.
+class _StepCountDisplay extends StatelessWidget {
+  const _StepCountDisplay({
     required this.stepCount,
-    required this.progress,
-    required this.dailyGoal,
     this.isRefreshing = false,
   });
 
   final int stepCount;
-  final double progress;
-  final int dailyGoal;
   final bool isRefreshing;
 
   @override
@@ -127,123 +102,40 @@ class _StepCounterRing extends StatelessWidget {
     final theme = Theme.of(context);
     final size = context.responsiveValue<double>(phone: 200, tablet: 250, desktop: 280);
 
-    return SizedBox(
+    return Container(
       width: size,
       height: size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Background ring
-          SizedBox(
-            width: size,
-            height: size,
-            child: CircularProgressIndicator(
-              value: 1,
-              strokeWidth: 12,
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
-              valueColor: AlwaysStoppedAnimation(
-                theme.colorScheme.surfaceContainerHighest,
-              ),
-            ),
-          ),
-
-          // Progress ring
-          SizedBox(
-            width: size,
-            height: size,
-            child: CircularProgressIndicator(
-              value: progress,
-              strokeWidth: 12,
-              backgroundColor: Colors.transparent,
-              valueColor: AlwaysStoppedAnimation(
-                progress >= 1.0 ? theme.colorScheme.primary : theme.colorScheme.secondary,
-              ),
-            ),
-          ),
-
-          // Refreshing indicator
-          if (isRefreshing)
-            const CircularProgressIndicator()
-          else
-            // Step count display
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.directions_walk,
-                  size: 32,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  stepCount.compact,
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                Text(
-                  'steps',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withAlpha((255 * 0.6).round()),
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Goal Indicator
-class _GoalIndicator extends StatelessWidget {
-  const _GoalIndicator({
-    required this.current,
-    required this.goal,
-    required this.isAchieved,
-  });
-
-  final int current;
-  final int goal;
-  final bool isAchieved;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
       decoration: BoxDecoration(
-        color: isAchieved
-            ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.surfaceContainerHighest,
-        borderRadius: AppRadius.lgBorder,
+        shape: BoxShape.circle,
+        border: Border.all(color: theme.colorScheme.surfaceContainerHighest, width: 12),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isAchieved ? Icons.emoji_events : Icons.flag_outlined,
-            size: 20,
-            color: isAchieved
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurface.withAlpha((255 * 0.6).round()),
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          Text(
-            isAchieved ? 'Goal achieved! 🎉' : 'Goal: ${goal.withCommas} steps',
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: isAchieved
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurface.withAlpha((255 * 0.8).round()),
-              fontWeight: isAchieved ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ],
+      child: Center(
+        child: isRefreshing
+            ? const CircularProgressIndicator()
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.directions_walk,
+                    size: 32,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    stepCount.compact,
+                    style: theme.textTheme.displayMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  Text(
+                    'steps today',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

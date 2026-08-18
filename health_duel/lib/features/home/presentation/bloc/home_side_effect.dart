@@ -8,9 +8,6 @@ extension HomeSideEffect on HomeBloc {
   /// Navigate to login page after sign out or unauthenticated state
   NavigateGoEffect get _effectNavigateToLogin => NavigateGoEffect(route: AppRoutes.login);
 
-  /// Navigate to health page
-  NavigatePushEffect get _effectNavigateToHealth => NavigatePushEffect(route: AppRoutes.health);
-
   // ═══════════════════════════════════════════════════════════════════════════
   // SNACKBAR EFFECTS
   // ═══════════════════════════════════════════════════════════════════════════

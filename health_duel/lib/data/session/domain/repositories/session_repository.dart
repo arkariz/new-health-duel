@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:health_duel/core/error/failures.dart';
-import 'package:health_duel/data/session/data/models/user_model.dart';
+import 'package:health_duel/data/session/session.dart';
 
 /// Session Repository Interface (Global Domain Layer)
 ///
@@ -28,4 +28,13 @@ abstract class SessionRepository {
   /// Emits [UserModel] on sign in, null on sign out.
   /// Useful for reactive UI updates across the app.
   Stream<UserModel?> authStateChanges();
+
+  /// Overwrite the current user's streak fields (see [RecordChallengeCompletion]
+  /// for the usecase that computes the next values).
+  Future<Either<Failure, void>> updateStreak({
+    required String userId,
+    required int currentStreak,
+    required int longestStreak,
+    required String? lastCompletedDate,
+  });
 }

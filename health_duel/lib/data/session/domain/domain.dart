@@ -16,6 +16,7 @@ export 'entities/auth_credentials.dart';
 export 'repositories/session_repository.dart';
 
 // Use Cases
+export 'usecases/record_challenge_completion.dart';
 export 'usecases/sign_out.dart';
 
 // Value Objects

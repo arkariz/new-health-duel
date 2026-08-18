@@ -1,5 +1,6 @@
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/data/session/session.dart';
+import 'package:health_duel/features/challenge/domain/entities/solo_challenge.dart';
 
 /// Home feature status
 enum HomeStatus {
@@ -40,7 +41,13 @@ class HomeState extends UiState with EffectClearable<HomeState> {
   // CONSTRUCTOR
   // ═══════════════════════════════════════════════════════════════════
 
-  const HomeState({this.status = HomeStatus.initial, this.user, this.errorMessage, super.effect});
+  const HomeState({
+    this.status = HomeStatus.initial,
+    this.user,
+    this.errorMessage,
+    this.activeChallenge,
+    super.effect,
+  });
   // ═══════════════════════════════════════════════════════════════════
   // RENDERABLE DATA
   // ═══════════════════════════════════════════════════════════════════
@@ -54,12 +61,18 @@ class HomeState extends UiState with EffectClearable<HomeState> {
   /// Error message when status is failure
   final String? errorMessage;
 
+  /// Snapshot of the user's active solo challenge, if any — refreshed
+  /// alongside [user] (pull-to-refresh), not live-watched. The `/challenge`
+  /// screen owns the real-time subscription; this is just enough for the
+  /// home hero card to show real progress instead of a fixed fake goal.
+  final SoloChallenge? activeChallenge;
+
   // ═══════════════════════════════════════════════════════════════════
   // EQUATABLE - Only renderable data, NOT effect
   // ═══════════════════════════════════════════════════════════════════
 
   @override
-  List<Object?> get props => [status, user, errorMessage];
+  List<Object?> get props => [status, user, errorMessage, activeChallenge];
 
   // ═══════════════════════════════════════════════════════════════════
   // COPY WITH
@@ -69,14 +82,17 @@ class HomeState extends UiState with EffectClearable<HomeState> {
     HomeStatus? status,
     UserModel? user,
     String? errorMessage,
+    SoloChallenge? activeChallenge,
     UiEffect? effect,
     bool clearUser = false,
     bool clearError = false,
+    bool clearActiveChallenge = false,
   }) {
     return HomeState(
       status: status ?? this.status,
       user: clearUser ? null : (user ?? this.user),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      activeChallenge: clearActiveChallenge ? null : (activeChallenge ?? this.activeChallenge),
       effect: effect,
     );
   }

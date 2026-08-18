@@ -12,8 +12,8 @@ class DuelDto {
     required this.id,
     required this.challengerId,
     required this.challengedId,
-    required this.challengerSteps,
-    required this.challengedSteps,
+    required this.challengerValue,
+    required this.challengedValue,
     required this.status,
     required this.startTimestamp,
     required this.endTimestamp,
@@ -32,8 +32,8 @@ class DuelDto {
       id: doc.id,
       challengerId: data['challengerId'] as String,
       challengedId: data['challengedId'] as String,
-      challengerSteps: data['challengerSteps'] as int? ?? 0,
-      challengedSteps: data['challengedSteps'] as int? ?? 0,
+      challengerValue: data['challengerValue'] as int? ?? 0,
+      challengedValue: data['challengedValue'] as int? ?? 0,
       status: data['status'] as String,
       startTimestamp: (data['startTime'] as Timestamp).millisecondsSinceEpoch,
       endTimestamp: (data['endTime'] as Timestamp).millisecondsSinceEpoch,
@@ -66,8 +66,8 @@ class DuelDto {
       id: duel.id,
       challengerId: duel.challengerId,
       challengedId: duel.challengedId,
-      challengerSteps: duel.challengerSteps.value,
-      challengedSteps: duel.challengedSteps.value,
+      challengerValue: duel.challengerValue.value,
+      challengedValue: duel.challengedValue.value,
       status: duel.status.name,
       startTimestamp: duel.startTime.millisecondsSinceEpoch,
       endTimestamp: duel.endTime.millisecondsSinceEpoch,
@@ -85,8 +85,8 @@ class DuelDto {
   final String id;
   final String challengerId;
   final String challengedId;
-  final int challengerSteps;
-  final int challengedSteps;
+  final int challengerValue;
+  final int challengedValue;
   final String status;
   final int startTimestamp;
   final int endTimestamp;
@@ -106,8 +106,8 @@ class DuelDto {
   Map<String, dynamic> toFirestore() => {
         'challengerId': challengerId,
         'challengedId': challengedId,
-        'challengerSteps': challengerSteps,
-        'challengedSteps': challengedSteps,
+        'challengerValue': challengerValue,
+        'challengedValue': challengedValue,
         'status': status,
         'startTime': Timestamp.fromMillisecondsSinceEpoch(startTimestamp),
         'endTime': Timestamp.fromMillisecondsSinceEpoch(endTimestamp),
@@ -134,8 +134,8 @@ class DuelDto {
       challengedId: challengedId,
       challengerName: challengerName,
       challengedName: challengedName,
-      challengerSteps: StepCount(challengerSteps),
-      challengedSteps: StepCount(challengedSteps),
+      challengerValue: StepCount(challengerValue),
+      challengedValue: StepCount(challengedValue),
       status: DuelStatus.values.byName(status),
       startTime: DateTime.fromMillisecondsSinceEpoch(startTimestamp),
       endTime: DateTime.fromMillisecondsSinceEpoch(endTimestamp),

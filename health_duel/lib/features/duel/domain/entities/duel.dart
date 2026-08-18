@@ -21,8 +21,8 @@ class Duel extends Equatable {
     required this.challengedId,
     required this.challengerName,
     required this.challengedName,
-    required this.challengerSteps,
-    required this.challengedSteps,
+    required this.challengerValue,
+    required this.challengedValue,
     required this.startTime,
     required this.endTime,
     required this.status,
@@ -35,8 +35,8 @@ class Duel extends Equatable {
   final String challengedId;
   final String challengerName;
   final String challengedName;
-  final StepCount challengerSteps;
-  final StepCount challengedSteps;
+  final StepCount challengerValue;
+  final StepCount challengedValue;
   final DateTime startTime;
   final DateTime endTime;
   final DuelStatus status;
@@ -127,8 +127,8 @@ class Duel extends Equatable {
   /// Returns user ID of participant with more steps.
   /// Returns `null` if tie (equal step counts).
   String? get currentLeader {
-    if (challengerSteps == challengedSteps) return null; // Tie
-    return challengerSteps > challengedSteps ? challengerId : challengedId;
+    if (challengerValue == challengedValue) return null; // Tie
+    return challengerValue > challengedValue ? challengerId : challengedId;
   }
 
   /// Get winner at duel completion
@@ -144,19 +144,19 @@ class Duel extends Equatable {
     }
 
     // Check for tie
-    if (challengerSteps == challengedSteps) {
+    if (challengerValue == challengedValue) {
       return DuelResult.tie(
         challengerId: challengerId,
         challengedId: challengedId,
-        steps: challengerSteps,
+        steps: challengerValue,
       );
     }
 
     // Determine winner and loser
-    final winnerId = challengerSteps > challengedSteps ? challengerId : challengedId;
+    final winnerId = challengerValue > challengedValue ? challengerId : challengedId;
     final loserId = winnerId == challengerId ? challengedId : challengerId;
-    final winnerSteps = winnerId == challengerId ? challengerSteps : challengedSteps;
-    final loserSteps = winnerId == challengerId ? challengedSteps : challengerSteps;
+    final winnerSteps = winnerId == challengerId ? challengerValue : challengedValue;
+    final loserSteps = winnerId == challengerId ? challengedValue : challengerValue;
 
     return DuelResult.winner(
       winnerId: winnerId,
@@ -187,8 +187,8 @@ class Duel extends Equatable {
   ///
   /// Throws [Exception] if user is not a participant.
   StepCount getStepsForUser(String userId) {
-    if (userId == challengerId) return challengerSteps;
-    if (userId == challengedId) return challengedSteps;
+    if (userId == challengerId) return challengerValue;
+    if (userId == challengedId) return challengedValue;
     throw ValidationFailure(message: 'User $userId is not a participant in this duel');
   }
 
@@ -196,7 +196,7 @@ class Duel extends Equatable {
   ///
   /// Returns positive integer representing margin.
   int get stepDifference {
-    return (challengerSteps.value - challengedSteps.value).abs();
+    return (challengerValue.value - challengedValue.value).abs();
   }
 
   /// Check if duel is expiring soon (less than 1 hour remaining)
@@ -223,8 +223,8 @@ class Duel extends Equatable {
     challengedId,
     challengerName,
     challengedName,
-    challengerSteps,
-    challengedSteps,
+    challengerValue,
+    challengedValue,
     startTime,
     endTime,
     status,
@@ -239,6 +239,6 @@ class Duel extends Equatable {
   'challenger: $challengerId, '
   'challenged: $challengedId, '
   'status: $status, '
-  'steps: ${challengerSteps.value} vs ${challengedSteps.value}'
+  'steps: ${challengerValue.value} vs ${challengedValue.value}'
   ')';
 }

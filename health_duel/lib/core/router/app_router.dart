@@ -7,6 +7,7 @@ import 'package:health_duel/core/router/go_router_refresh.dart';
 import 'package:health_duel/core/router/routes.dart';
 import 'package:health_duel/features/account/account.dart';
 import 'package:health_duel/features/auth/auth.dart';
+import 'package:health_duel/features/challenge/challenge.dart';
 import 'package:health_duel/features/duel/domain/entities/duel.dart';
 import 'package:health_duel/features/duel/presentation/bloc/create_duel_bloc.dart';
 import 'package:health_duel/features/duel/presentation/bloc/duel_bloc.dart';
@@ -72,6 +73,14 @@ GoRouter createAppRouter(AuthBloc authBloc) {
         builder: (_, _) => BlocProvider(
           create: (_) => getIt<SettingsBloc>(),
           child: const SettingsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.challenge,
+        name: 'challenge',
+        builder: (_, _) => BlocProvider(
+          create: (_) => getIt<SoloChallengeBloc>(),
+          child: const SoloChallengeScreen(),
         ),
       ),
       GoRoute(

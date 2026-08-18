@@ -11,7 +11,11 @@ class UserModel extends Equatable {
     required this.id,
     required this.name,
     required this.email,
-    required this.createdAt, this.photoUrl,
+    required this.createdAt,
+    this.photoUrl,
+    this.currentStreak = 0,
+    this.longestStreak = 0,
+    this.lastCompletedDate,
   });
 
   /// Create from Firestore document snapshot
@@ -25,6 +29,9 @@ class UserModel extends Equatable {
       email: data['email'] as String? ?? '',
       photoUrl: data['photoUrl'] as String?,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      currentStreak: data['currentStreak'] as int? ?? 0,
+      longestStreak: data['longestStreak'] as int? ?? 0,
+      lastCompletedDate: data['lastCompletedDate'] as String?,
     );
   }
 
@@ -36,6 +43,9 @@ class UserModel extends Equatable {
       email: map['email'] as String? ?? '',
       photoUrl: map['photoUrl'] as String?,
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      currentStreak: map['currentStreak'] as int? ?? 0,
+      longestStreak: map['longestStreak'] as int? ?? 0,
+      lastCompletedDate: map['lastCompletedDate'] as String?,
     );
   }
 
@@ -52,6 +62,18 @@ class UserModel extends Equatable {
   final String? photoUrl;
   final DateTime createdAt;
 
+  /// Consecutive days a solo challenge target was hit, ending at
+  /// [lastCompletedDate]. Not eagerly zeroed by a missed day — see
+  /// `StreakDisplay.effectiveCurrentStreak` for the lazy, display-time
+  /// reset (there's no Cloud Functions cron to do it server-side).
+  final int currentStreak;
+  final int longestStreak;
+
+  /// Local calendar date (`yyyy-MM-dd`) of the last successful challenge
+  /// completion. A string, not a UTC timestamp, so streak day boundaries
+  /// follow the user's own clock and survive timezone travel correctly.
+  final String? lastCompletedDate;
+
   /// Convert to Firestore document data
   ///
   /// Note: ID is not included as it's the document ID, not a field.
@@ -63,14 +85,31 @@ class UserModel extends Equatable {
   /// the document entirely is the only way to keep it private. The
   /// signed-in user's own email is already available from Firebase Auth;
   /// no other user's email is ever needed by this app.
+  ///
+  /// Only used for initial account creation (`set`, never `update`) — the
+  /// streak fields are updated separately, scoped to just those three
+  /// keys (see firestore.rules), so this always writing zero/null defaults
+  /// here is safe.
   Map<String, dynamic> toFirestore() => {
     'name': name,
     'photoUrl': photoUrl,
     'createdAt': Timestamp.fromDate(createdAt),
+    'currentStreak': currentStreak,
+    'longestStreak': longestStreak,
+    'lastCompletedDate': lastCompletedDate,
   };
 
   @override
-  List<Object?> get props => [id, name, email, photoUrl, createdAt];
+  List<Object?> get props => [
+    id,
+    name,
+    email,
+    photoUrl,
+    createdAt,
+    currentStreak,
+    longestStreak,
+    lastCompletedDate,
+  ];
 
   @override
   String toString() => 'UserModel(id: $id, name: $name, email: $email)';

@@ -236,8 +236,8 @@ class _HistoryDuelCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isChallenger = duel.challengerId == currentUserId;
     final opponentName = isChallenger ? duel.challengedName : duel.challengerName;
-    final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
-    final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
+    final mySteps = isChallenger ? duel.challengerValue : duel.challengedValue;
+    final opponentSteps = isChallenger ? duel.challengedValue : duel.challengerValue;
     final isTie = duel.currentLeader == null;
     final iWon = !isTie && duel.currentLeader == currentUserId;
 

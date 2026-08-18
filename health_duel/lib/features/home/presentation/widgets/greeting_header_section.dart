@@ -3,10 +3,16 @@ import 'package:health_duel/core/theme/theme.dart';
 
 class GreetingHeaderSection extends StatelessWidget {
   const GreetingHeaderSection({
-    required this.username, super.key,
+    required this.username,
+    this.streak = 0,
+    super.key,
   });
 
   final String username;
+
+  /// Effective current streak (already zeroed for a missed day — see
+  /// `StreakUpdate.effectiveCurrentStreak`). Hidden entirely when 0.
+  final int streak;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +40,26 @@ class GreetingHeaderSection extends StatelessWidget {
             ],
           ),
         ),
+        if (streak > 0) ...[
+          Container(
+            height: AppSpacing.xl,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: context.appColors.cardBackground,
+              borderRadius: AppRadius.lgBorder,
+              border: Border.all(color: context.appColors.divider),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('🔥'),
+                const SizedBox(width: 4),
+                Text('$streak', style: theme.textTheme.labelLarge),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+        ],
         // Notification button — 36x36, card background, divider border
         Container(
           width: AppSpacing.xl,

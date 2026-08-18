@@ -36,8 +36,8 @@ class DuelFirestoreDataSource {
     final duelData = {
       'challengerId': challengerId,
       'challengedId': challengedId,
-      'challengerSteps': 0,
-      'challengedSteps': 0,
+      'challengerValue': 0,
+      'challengedValue': 0,
       'status': DuelStatus.pending.name,
       'startTime': Timestamp.fromDate(now), // Placeholder (updated on accept)
       'endTime': Timestamp.fromDate(now.add(const Duration(hours: 24))),
@@ -134,13 +134,13 @@ class DuelFirestoreDataSource {
         throw const ValidationFailure(message: 'Duel has not ended yet');
       }
 
-      final challengerSteps = data['challengerSteps'] as int? ?? 0;
-      final challengedSteps = data['challengedSteps'] as int? ?? 0;
+      final challengerValue = data['challengerValue'] as int? ?? 0;
+      final challengedValue = data['challengedValue'] as int? ?? 0;
       final String? winnerId;
-      if (challengerSteps == challengedSteps) {
+      if (challengerValue == challengedValue) {
         winnerId = null; // Tie
       } else {
-        winnerId = challengerSteps > challengedSteps
+        winnerId = challengerValue > challengedValue
             ? data['challengerId'] as String
             : data['challengedId'] as String;
       }
@@ -339,8 +339,8 @@ class DuelFirestoreDataSource {
     final duel = DuelDto.fromFirestore(doc);
 
     final fieldName = duel.challengerId == userId
-        ? 'challengerSteps'
-        : 'challengedSteps';
+        ? 'challengerValue'
+        : 'challengedValue';
 
     await _duelsCollection.doc(duelId).update({
       fieldName: steps,

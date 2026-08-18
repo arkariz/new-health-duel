@@ -236,8 +236,8 @@ class DuelActiveCard extends StatelessWidget {
     final opponent = context.appColors.opponent;
 
     final isChallenger = duel.challengerId == currentUserId;
-    final mySteps = isChallenger ? duel.challengerSteps.value : duel.challengedSteps.value;
-    final oppSteps = isChallenger ? duel.challengedSteps.value : duel.challengerSteps.value;
+    final mySteps = isChallenger ? duel.challengerValue.value : duel.challengedValue.value;
+    final oppSteps = isChallenger ? duel.challengedValue.value : duel.challengerValue.value;
     final opponentName = isChallenger ? duel.challengedName : duel.challengerName;
 
     final avatarSize = compact ? 32.0 : 40.0;

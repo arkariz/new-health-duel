@@ -146,8 +146,8 @@ class _ActiveDuelScreenState extends State<ActiveDuelScreen> {
   Widget _buildDuelView(BuildContext context, DuelLoaded state) {
     final duel = state.duel;
     final isChallenger = duel.challengerId == widget.currentUserId;
-    final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
-    final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
+    final mySteps = isChallenger ? duel.challengerValue : duel.challengedValue;
+    final opponentSteps = isChallenger ? duel.challengedValue : duel.challengerValue;
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.md,

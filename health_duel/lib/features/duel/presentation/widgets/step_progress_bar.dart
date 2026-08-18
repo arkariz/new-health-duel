@@ -26,9 +26,9 @@ class StepProgressBar extends StatelessWidget {
 
     final isChallenger = duel.challengerId == currentUserId;
     final mySteps =
-        isChallenger ? duel.challengerSteps : duel.challengedSteps;
+        isChallenger ? duel.challengerValue : duel.challengedValue;
     final opponentSteps =
-        isChallenger ? duel.challengedSteps : duel.challengerSteps;
+        isChallenger ? duel.challengedValue : duel.challengerValue;
 
     final maxSteps = mySteps > opponentSteps ? mySteps.value : opponentSteps.value;
     final normalizedMax = maxSteps > 0 ? maxSteps : 10000; // Fallback

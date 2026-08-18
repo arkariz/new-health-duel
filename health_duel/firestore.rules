@@ -57,11 +57,15 @@ service cloud.firestore {
 
       allow create: if isSignedIn()
         && uid() == userId
-        && request.resource.data.keys().hasOnly(['name', 'photoUrl', 'createdAt'])
+        && request.resource.data.keys().hasOnly(
+             ['name', 'photoUrl', 'createdAt', 'currentStreak', 'longestStreak', 'lastCompletedDate'])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() <= 100
-        && nearNow(request.resource.data.createdAt);
+        && nearNow(request.resource.data.createdAt)
+        && request.resource.data.currentStreak == 0
+        && request.resource.data.longestStreak == 0
+        && request.resource.data.lastCompletedDate == null;
 
       allow update: if isSignedIn()
         && uid() == userId
@@ -69,6 +73,19 @@ service cloud.firestore {
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() <= 100;
+
+      // RecordChallengeCompletion (data/session) — owner-only, scoped to
+      // just the streak fields. longestStreak can never fall below the
+      // new currentStreak (it's a running max, not a separate counter).
+      allow update: if isSignedIn()
+        && uid() == userId
+        && onlyChanged(['currentStreak', 'longestStreak', 'lastCompletedDate'])
+        && request.resource.data.currentStreak is int
+        && request.resource.data.currentStreak >= 0
+        && request.resource.data.longestStreak is int
+        && request.resource.data.longestStreak >= request.resource.data.currentStreak
+        && (request.resource.data.lastCompletedDate == null
+             || request.resource.data.lastCompletedDate is string);
 
       allow delete: if isSignedIn() && uid() == userId;
 
@@ -90,6 +107,51 @@ service cloud.firestore {
         // Friend entries are add/remove only — no in-place edits.
         allow update: if false;
       }
+
+      // users/{uid}/challenges/{id} — the "solo spine" (M3). Owner-only,
+      // single writer — unlike duels/{duelId}, nothing here is ever
+      // contended between two devices, so there's no field-level
+      // tampering concern and no transaction requirement.
+      match /challenges/{challengeId} {
+        allow get: if isSignedIn() && uid() == userId;
+        allow list: if isSignedIn() && uid() == userId;
+
+        // startChallenge (solo_challenge_firestore_datasource.dart) — a
+        // fresh challenge always starts active, zeroed progress, no
+        // completion yet, exactly 24h long.
+        allow create: if isSignedIn()
+          && uid() == userId
+          && request.resource.data.userId == userId
+          && request.resource.data.metric is string
+          && request.resource.data.status == 'active'
+          && request.resource.data.currentValue == 0
+          && request.resource.data.target is int
+          && request.resource.data.target > 0
+          && request.resource.data.completedAt == null
+          && nearNow(request.resource.data.createdAt)
+          && request.resource.data.startTime == request.resource.data.createdAt
+          && request.resource.data.endTime ==
+               request.resource.data.createdAt + duration.value(24, 'h');
+
+        // updateProgress — owner only, only while active.
+        allow update: if isSignedIn() && uid() == userId
+          && resource.data.status == 'active'
+          && onlyChanged(['currentValue'])
+          && request.resource.data.currentValue is int
+          && request.resource.data.currentValue >= 0
+          && request.resource.data.currentValue <= 300000;
+
+        // completeChallenge — owner only, only once the 24h window has
+        // actually ended.
+        allow update: if isSignedIn() && uid() == userId
+          && resource.data.status == 'active'
+          && resource.data.endTime <= request.time
+          && onlyChanged(['status', 'completedAt'])
+          && request.resource.data.status == 'completed'
+          && request.resource.data.completedAt == resource.data.endTime;
+
+        allow delete: if false;
+      }
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -105,9 +167,9 @@ service cloud.firestore {
       function isParticipant() { return uid() in resource.data.participants; }
 
       function expectedWinner() {
-        return resource.data.challengerSteps == resource.data.challengedSteps
+        return resource.data.challengerValue == resource.data.challengedValue
           ? null
-          : (resource.data.challengerSteps > resource.data.challengedSteps
+          : (resource.data.challengerValue > resource.data.challengedValue
               ? resource.data.challengerId
               : resource.data.challengedId);
       }
@@ -124,8 +186,8 @@ service cloud.firestore {
         && request.resource.data.challengerId == uid()
         && request.resource.data.challengerId != request.resource.data.challengedId
         && request.resource.data.status == 'pending'
-        && request.resource.data.challengerSteps == 0
-        && request.resource.data.challengedSteps == 0
+        && request.resource.data.challengerValue == 0
+        && request.resource.data.challengedValue == 0
         && request.resource.data.acceptedAt == null
         && request.resource.data.completedAt == null
         && request.resource.data.winnerId == null
@@ -191,17 +253,17 @@ service cloud.firestore {
       // this is the enforcement, the Dart-side logic is not trusted.
       allow update: if isSignedIn() && isChallenger()
         && resource.data.status == 'active'
-        && onlyChanged(['challengerSteps'])
-        && request.resource.data.challengerSteps is int
-        && request.resource.data.challengerSteps >= 0
-        && request.resource.data.challengerSteps <= 300000;
+        && onlyChanged(['challengerValue'])
+        && request.resource.data.challengerValue is int
+        && request.resource.data.challengerValue >= 0
+        && request.resource.data.challengerValue <= 300000;
 
       allow update: if isSignedIn() && isChallenged()
         && resource.data.status == 'active'
-        && onlyChanged(['challengedSteps'])
-        && request.resource.data.challengedSteps is int
-        && request.resource.data.challengedSteps >= 0
-        && request.resource.data.challengedSteps <= 300000;
+        && onlyChanged(['challengedValue'])
+        && request.resource.data.challengedValue is int
+        && request.resource.data.challengedValue >= 0
+        && request.resource.data.challengedValue <= 300000;
 
       // completeDuel (duel_firestore_datasource.dart:81-130) — either
       // participant, only once the 24h competition window has actually

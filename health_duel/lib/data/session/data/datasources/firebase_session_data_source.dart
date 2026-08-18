@@ -99,6 +99,26 @@ class FirebaseSessionDataSource implements SessionDataSource {
     });
   }
 
+  @override
+  Future<void> updateStreak({
+    required String userId,
+    required int currentStreak,
+    required int longestStreak,
+    required String? lastCompletedDate,
+  }) {
+    return processFirestoreCall(
+      module: 'Session',
+      function: 'updateStreak',
+      call: () async {
+        await firestore.collection(usersCollection).doc(userId).update({
+          'currentStreak': currentStreak,
+          'longestStreak': longestStreak,
+          'lastCompletedDate': lastCompletedDate,
+        });
+      },
+    );
+  }
+
   /// Bootstrap user in Firestore (idempotent)
   ///
   /// Creates user document if it doesn't exist, returns existing if it does.

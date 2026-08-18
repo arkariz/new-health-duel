@@ -17,4 +17,12 @@ abstract class SessionDataSource {
 
   /// Stream of auth state changes
   Stream<UserModel?> authStateChanges();
+
+  /// Overwrite the current user's streak fields.
+  Future<void> updateStreak({
+    required String userId,
+    required int currentStreak,
+    required int longestStreak,
+    required String? lastCompletedDate,
+  });
 }

@@ -17,8 +17,3 @@ class HomeLoadUserRequested extends HomeEvent {
 class HomeRefreshRequested extends HomeEvent {
   const HomeRefreshRequested();
 }
-
-/// Request to navigate to health feature
-class HomeNavigateToHealthRequested extends HomeEvent {
-  const HomeNavigateToHealthRequested();
-}

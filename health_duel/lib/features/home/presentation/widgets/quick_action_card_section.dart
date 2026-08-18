@@ -3,15 +3,17 @@ import 'package:health_duel/core/theme/theme.dart';
 
 class QuickActionCardSection extends StatelessWidget {
   const QuickActionCardSection({
-    super.key,
     required this.onTapNewDuel,
     required this.onTapWeeklyStats,
     required this.onTapFriends,
+    required this.onTapHealth,
+    super.key,
   });
 
   final VoidCallback onTapNewDuel;
   final VoidCallback onTapWeeklyStats;
   final VoidCallback onTapFriends;
+  final VoidCallback onTapHealth;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +49,12 @@ class QuickActionCardSection extends StatelessWidget {
               label: 'Friends',
               value: 'Manage friends',
               onTap: onTapFriends,
+            ),
+            _QuickActionCard(
+              icon: '❤️',
+              label: 'Health Data',
+              value: 'Permissions & sync',
+              onTap: onTapHealth,
             ),
           ],
         ),

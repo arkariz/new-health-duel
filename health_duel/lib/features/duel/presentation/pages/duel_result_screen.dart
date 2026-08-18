@@ -317,8 +317,8 @@ class _StepComparison extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isChallenger = duel.challengerId == currentUserId;
-    final mySteps = isChallenger ? duel.challengerSteps : duel.challengedSteps;
-    final opponentSteps = isChallenger ? duel.challengedSteps : duel.challengerSteps;
+    final mySteps = isChallenger ? duel.challengerValue : duel.challengedValue;
+    final opponentSteps = isChallenger ? duel.challengedValue : duel.challengerValue;
     final opponentId = isChallenger ? duel.challengedId : duel.challengerId;
     final iWon = duel.currentLeader == currentUserId;
     final oppWon = duel.currentLeader == opponentId;

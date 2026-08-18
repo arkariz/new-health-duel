@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_duel/core/bloc/bloc.dart';
 import 'package:health_duel/core/router/router.dart';
 import 'package:health_duel/data/session/domain/domain.dart';
+import 'package:health_duel/features/challenge/domain/usecases/get_active_solo_challenge.dart';
 import 'package:health_duel/features/home/presentation/bloc/home_event.dart';
 import 'package:health_duel/features/home/presentation/bloc/home_state.dart';
 
@@ -23,14 +24,16 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
 
   HomeBloc({
     required SessionRepository sessionRepository,
+    required GetActiveSoloChallenge getActiveSoloChallenge,
   })
     : _sessionRepository = sessionRepository,
+      _getActiveSoloChallenge = getActiveSoloChallenge,
   super(const HomeState()) {
     on<HomeLoadUserRequested>(_onLoadUserRequested);
     on<HomeRefreshRequested>(_onRefreshRequested);
-    on<HomeNavigateToHealthRequested>(_onNavigateToHealthRequested);
   }
   final SessionRepository _sessionRepository;
+  final GetActiveSoloChallenge _getActiveSoloChallenge;
 
   /// Load current user data
   Future<void> _onLoadUserRequested(HomeLoadUserRequested event, Emitter<HomeState> emit) async {
@@ -38,18 +41,16 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
 
     final result = await _sessionRepository.getCurrentUser();
 
-    result.fold(
-      (failure) => emit(
+    await result.fold(
+      (failure) async => emit(
         state.copyWith(
           status: HomeStatus.failure,
           errorMessage: failure.message,
           effect: _effectError(failure.message),
         ),
       ),
-      (user) {
-        if (user != null) {
-          emit(state.copyWith(status: HomeStatus.loaded, user: user, clearError: true));
-        } else {
+      (user) async {
+        if (user == null) {
           // User not logged in, navigate to login
           emit(
             state.copyWith(
@@ -58,7 +59,17 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
               effect: _effectNavigateToLogin,
             ),
           );
+          return;
         }
+
+        final challenge = (await _getActiveSoloChallenge(user.id)).fold((_) => null, (c) => c);
+        emit(state.copyWith(
+          status: HomeStatus.loaded,
+          user: user,
+          activeChallenge: challenge,
+          clearActiveChallenge: challenge == null,
+          clearError: true,
+        ));
       },
     );
   }
@@ -68,22 +79,23 @@ class HomeBloc extends EffectBloc<HomeEvent, HomeState> {
     // Keep current state while refreshing (no loading indicator)
     final result = await _sessionRepository.getCurrentUser();
 
-    result.fold(
-      (failure) => emit(
+    await result.fold(
+      (failure) async => emit(
         state.copyWith(
           effect: _effectRefreshError(failure.message),
         ),
       ),
-      (user) {
-        if (user != null) {
-          emit(state.copyWith(status: HomeStatus.loaded, user: user));
-        }
+      (user) async {
+        if (user == null) return;
+
+        final challenge = (await _getActiveSoloChallenge(user.id)).fold((_) => null, (c) => c);
+        emit(state.copyWith(
+          status: HomeStatus.loaded,
+          user: user,
+          activeChallenge: challenge,
+          clearActiveChallenge: challenge == null,
+        ));
       },
     );
-  }
-
-  /// Navigate to health feature
-  void _onNavigateToHealthRequested(HomeNavigateToHealthRequested event, Emitter<HomeState> emit) {
-    emit(state.withEffect(_effectNavigateToHealth));
   }
 }

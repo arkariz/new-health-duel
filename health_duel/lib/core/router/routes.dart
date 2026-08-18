@@ -21,6 +21,7 @@ abstract final class AppRoutes {
   static const settings = '/settings';
   static const profile = '/profile';
   static const friends = '/friends';
+  static const challenge = '/challenge';
 
   // ═══════════════════════════════════════════════════════════════════════════
   // Duel Routes (Protected)

@@ -12,6 +12,7 @@ import 'package:health_duel/data/session/di/session_module.dart';
 import 'package:health_duel/features/account/di/account_module.dart';
 import 'package:health_duel/features/auth/di/auth_module.dart';
 import 'package:health_duel/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:health_duel/features/challenge/di/challenge_module.dart';
 import 'package:health_duel/features/duel/data/background/health_sync_background_task.dart';
 import 'package:health_duel/features/duel/di/duel_module.dart';
 import 'package:health_duel/features/friends/di/friends_module.dart';
@@ -71,6 +72,10 @@ Future<void> initializeDependencies() async {
 
   // Health feature: step counting, health permissions
   registerHealthModule(getIt);
+
+  // Challenge feature: solo 24h target + streak (M3 solo spine). Must
+  // come after session & health modules (reuses their dependencies).
+  registerChallengeModule();
 
   // Friends feature: friend management and user search
   registerFriendsModule();

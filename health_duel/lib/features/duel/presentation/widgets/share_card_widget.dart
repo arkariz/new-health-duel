@@ -143,9 +143,9 @@ class _ParticipantRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _buildTile(context, duel.challengerId, duel.challengerName, duel.challengerSteps, isMe: true),
+        _buildTile(context, duel.challengerId, duel.challengerName, duel.challengerValue, isMe: true),
         const SizedBox(width: AppSpacing.md),
-        _buildTile(context, duel.challengedId, duel.challengedName, duel.challengedSteps, isMe: false),
+        _buildTile(context, duel.challengedId, duel.challengedName, duel.challengedValue, isMe: false),
       ],
     );
   }

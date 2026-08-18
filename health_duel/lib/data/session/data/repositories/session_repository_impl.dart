@@ -60,4 +60,31 @@ class SessionRepositoryImpl implements SessionRepository {
   Stream<UserModel?> authStateChanges() {
     return _sessionDataSource.authStateChanges();
   }
+
+  @override
+  Future<Either<Failure, void>> updateStreak({
+    required String userId,
+    required int currentStreak,
+    required int longestStreak,
+    required String? lastCompletedDate,
+  }) async {
+    try {
+      await _sessionDataSource.updateStreak(
+        userId: userId,
+        currentStreak: currentStreak,
+        longestStreak: longestStreak,
+        lastCompletedDate: lastCompletedDate,
+      );
+      return const Right(null);
+    } on CoreException catch (e) {
+      return Left(ExceptionMapper.toFailure(e));
+    } catch (e) {
+      return Left(
+        UnexpectedFailure(
+          message: 'An unexpected error occurred while updating streak',
+          originalException: e.toString(),
+        ),
+      );
+    }
+  }
 }
