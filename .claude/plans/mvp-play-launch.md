@@ -43,7 +43,7 @@ Legend: `[x]` selesai & terverifikasi · `[~]` sebagian / blocked · `[ ]` belum
   - [x] `.firebaserc` dibuat, project default `health-duel`
   - [x] `firebase deploy --only firestore:rules` ke project live — **selesai** (dikerjain user, token direfresh via `firebase login --reauth`). Diverifikasi ulang dengan `--dry-run`: compile sukses, gak ada error auth lagi
 - [x] **M2.2 P0 data-integrity bugs** — `cancelDuel` & `acceptDuel` di `duel_firestore_datasource.dart` sekarang guarded transaction (sebelumnya: participant bisa cancel duel yang lagi aktif). Dibackup dengan Firestore rules juga
-- [ ] **M2.3 Website** (Firebase Hosting free tier) — `/privacy` + `/delete-account`. **Belum ada sama sekali**
+- [x] **M2.3 Website** (Firebase Hosting free tier) — `/privacy` + `/delete-account`, **deployed** ke `health-duel.web.app`. ⚠️ Kontak email & nama developer masih placeholder (`TODO-privacy-contact@example.com`), ditandai jelas di kedua halaman — ganti sebelum submit ke Play
 - [ ] **M2.4 Settings screen + account deletion** — **belum ada sama sekali**. `/settings` & `/profile` route udah didefine di `routes.dart` tapi gak pernah diregister di `app_router.dart`. Ini hard blocker Play (wajib ada in-app delete account + web URL)
 - [x] **M2.5 Health Connect rationale copy** — "Your data stays private" (yang gak akurat, karena steps di-share ke opponent) diganti jadi copy yang jujur (commit di step 1)
   - [ ] "Learn more" link ke `/privacy` belum ditambah (nunggu M2.3)
@@ -336,13 +336,20 @@ lain-lain.
 - `acceptDuel` juga sama, sekarang guarded (cek status pending + belum lewat deadline).
 - Dibackup dengan Firestore rules juga.
 
-### M2.3 The website (Firebase Hosting, free Spark tier) ⬜
+### M2.3 The website (Firebase Hosting, free Spark tier) ✅
 
-`health_duel/public/` → `health-duel.web.app`. **Belum dibuat sama sekali.**
+`health_duel/public/` → **live** di `health-duel.web.app`. Plain HTML/CSS, gak ada JS/build step,
+`hosting` block ditambah ke `firebase.json` (clean URLs, no trailing slash).
 
-- `/privacy` — **wajib.** Health data + accounts. State apa yang dikumpulin (name, photo, step
-  counts), bahwa value di-share ke opponent duel, dan cara hapus datanya.
-- `/delete-account` — **wajib.** Play mewajibkan web deletion URL selain in-app path.
+- `/privacy` — data yang dikumpulin (nama, foto, step count via `READ_STEPS`), bahwa value
+  di-share ke opponent duel selama duel aktif, caveat trust-based security model (konsisten sama
+  M2.5), cara hapus data.
+- `/delete-account` — instruksi in-app (`Settings → Delete Account`, asumsi M2.4 udah jalan), apa
+  yang dihapus vs. di-anonymize (duel record lawan tetap ada tapi gak bisa ditrace balik ke kamu),
+  plus fallback manual via email buat yang gak bisa akses app lagi.
+- ⚠️ **Kontak email & nama developer masih placeholder** (`TODO-privacy-contact@example.com`,
+  `TODO: developer/entity name`) — ditandai jelas dengan banner di kedua halaman. **Wajib diganti
+  sebelum halaman ini dipakai buat submit ke Play Console.**
 
 ### M2.4 Account deletion — hard Play requirement, belum ada sama sekali ⬜
 
